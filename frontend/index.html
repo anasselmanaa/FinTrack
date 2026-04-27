@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack – Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 3v18h18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M7 16l4-4 4 4 6-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <span class="logo-text">FinTrack</span>
+        </div>
+        <button class="sidebar-collapse" id="sidebarCollapse">‹</button>
+    </div>
+
+    <nav class="nav">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="#" class="nav-item active" data-page="dashboard">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+            </span>
+            <span class="nav-text">Home</span>
+        </a>
+        <a href="#" class="nav-item" data-page="transactions">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+            </span>
+            <span class="nav-text">Transactions</span>
+        </a>
+        <a href="#" class="nav-item" data-page="budgets">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                </svg>
+            </span>
+            <span class="nav-text">Budgets</span>
+        </a>
+        <a href="#" class="nav-item" data-page="goals">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                </svg>
+            </span>
+            <span class="nav-text">Goals</span>
+        </a>
+        <a href="#" class="nav-item" data-page="investments">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+                </svg>
+            </span>
+            <span class="nav-text">Investments</span>
+        </a>
+        <a href="#" class="nav-item" data-page="recurring">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+            </span>
+            <span class="nav-text">Recurring Payments</span>
+        </a>
+        <a href="#" class="nav-item" data-page="categories">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+            </span>
+            <span class="nav-text">Money Coach</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settings">
+            <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+            </span>
+            <span class="nav-text">Settings</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-profile">
+            <div class="user-avatar">JD</div>
+            <div class="user-info">
+                <p class="user-name">John Doe</p>
+                <p class="user-plan">Premium Plan</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<main class="main" id="main">
+
+    <!-- TOP NAV -->
+    <header class="topnav">
+        <div class="topnav-left">
+            <div class="page-title-block">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back, John! Here's your financial overview.</p>
+            </div>
+        </div>
+        <div class="topnav-right">
+            <div class="search-bar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search transactions..." />
+            </div>
+            <button class="btn-primary" id="addNewBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add New
+            </button>
+            <button class="icon-btn" id="themeToggle" title="Toggle theme">
+                <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg id="sunIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <button class="icon-btn notif-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-badge">3</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SCROLLABLE CONTENT -->
+    <div class="content" id="content">
+
+        <!-- ── DASHBOARD PAGE ── -->
+        <div class="page active" id="page-dashboard">
+
+            <!-- STAT CARDS ROW -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Total Balance</p>
+                            <p class="stat-value" id="stat-balance">$48,574.21</p>
+                            <p class="stat-change positive">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                                12.5% from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon green">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Monthly Income</p>
+                            <p class="stat-value" id="stat-income">$8,420.00</p>
+                            <p class="stat-change positive">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                                8.2% from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Monthly Expenses</p>
+                            <p class="stat-value" id="stat-expenses">$3,842.50</p>
+                            <p class="stat-change negative">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                4.1% from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon red">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Total Savings</p>
+                            <p class="stat-value" id="stat-savings">$12,350.00</p>
+                            <p class="stat-change positive">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                                15.3% from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon purple">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card quick-actions-card">
+                <h3 class="card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Quick Actions
+                </h3>
+                <div class="quick-actions">
+                    <button class="qa-btn">
+                        <span class="qa-icon green-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </span>
+                        <span>Transfer</span>
+                    </button>
+                    <button class="qa-btn">
+                        <span class="qa-icon green-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                        </span>
+                        <span>Deposit</span>
+                    </button>
+                    <button class="qa-btn">
+                        <span class="qa-icon orange-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                        </span>
+                        <span>Withdraw</span>
+                    </button>
+                    <button class="qa-btn">
+                        <span class="qa-icon purple-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+                        </span>
+                        <span>Pay Bills</span>
+                    </button>
+                    <button class="qa-btn">
+                        <span class="qa-icon blue-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                        </span>
+                        <span>Recurring</span>
+                    </button>
+                    <button class="qa-btn">
+                        <span class="qa-icon teal-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg>
+                        </span>
+                        <span>Calculator</span>
+                    </button>
+                    <button class="qa-btn" id="importCsvBtn">
+                        <span class="qa-icon gray-light">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </span>
+                        <span>Import CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW -->
+            <div class="grid-2">
+                <div class="card chart-card">
+                    <div class="chart-header">
+                        <h3 class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                            Income vs Expenses
+                        </h3>
+                        <div class="chart-tabs">
+                            <button class="chart-tab">6M</button>
+                            <button class="chart-tab active">1Y</button>
+                            <button class="chart-tab">All</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+                <div class="card chart-card">
+                    <h3 class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        Spending by Category
+                    </h3>
+                    <div class="donut-wrap">
+                        <div class="donut-container">
+                            <canvas id="spendingChart"></canvas>
+                            <div class="donut-center">
+                                <p class="donut-amount">$2,942</p>
+                                <p class="donut-label">This Month</p>
+                            </div>
+                        </div>
+                        <div class="donut-legend">
+                            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span><span>Housing</span><strong>$1,800</strong></div>
+                            <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span><span>Groceries</span><strong>$420</strong></div>
+                            <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span><span>Dining</span><strong>$280</strong></div>
+                            <div class="legend-item"><span class="legend-dot" style="background:#ec4899"></span><span>Transport</span><strong>$150</strong></div>
+                            <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span><span>Entertainment</span><strong>$95</strong></div>
+                            <div class="legend-item"><span class="legend-dot" style="background:#9ca3af"></span><span>Other</span><strong>$197</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCOUNTS + RECENT TRANSACTIONS -->
+            <div class="grid-2">
+                <!-- ACCOUNTS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                            Accounts
+                        </h3>
+                        <button class="link-btn">+ Add</button>
+                    </div>
+                    <div class="total-balance-banner">
+                        <p class="tb-label">Total Balance</p>
+                        <p class="tb-amount">$48,574.21</p>
+                        <p class="tb-sub">Across 4 accounts</p>
+                    </div>
+                    <div class="accounts-list">
+                        <div class="account-item">
+                            <div class="account-icon gray-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            </div>
+                            <div class="account-info">
+                                <p class="account-name">Main Checking</p>
+                                <p class="account-sub">Chase Bank •••• 4523</p>
+                            </div>
+                            <div class="account-right">
+                                <p class="account-balance">$12,450.32</p>
+                                <span class="account-tag">Checking</span>
+                            </div>
+                            <button class="dots-btn">···</button>
+                        </div>
+                        <div class="account-item">
+                            <div class="account-icon gray-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div class="account-info">
+                                <p class="account-name">High-Yield Savings</p>
+                                <p class="account-sub">Marcus •••• 8891</p>
+                            </div>
+                            <div class="account-right">
+                                <p class="account-balance">$28,350.00</p>
+                                <span class="account-tag">Savings</span>
+                            </div>
+                            <button class="dots-btn">···</button>
+                        </div>
+                        <div class="account-item">
+                            <div class="account-icon red-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                            </div>
+                            <div class="account-info">
+                                <p class="account-name">Credit Card</p>
+                                <p class="account-sub">Visa •••• 2341</p>
+                            </div>
+                            <div class="account-right">
+                                <p class="account-balance negative-bal">-$3,426.11</p>
+                                <span class="account-tag red-tag">Credit</span>
+                            </div>
+                            <button class="dots-btn">···</button>
+                        </div>
+                        <div class="account-item">
+                            <div class="account-icon blue-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                            </div>
+                            <div class="account-info">
+                                <p class="account-name">Investment Account</p>
+                                <p class="account-sub">Fidelity •••• 7892</p>
+                            </div>
+                            <div class="account-right">
+                                <p class="account-balance">$11,200.00</p>
+                                <span class="account-tag blue-tag">Invest</span>
+                            </div>
+                            <button class="dots-btn">···</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT TRANSACTIONS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+                            Recent Transactions
+                        </h3>
+                        <button class="link-btn">View All</button>
+                    </div>
+                    <div class="tx-list" id="dashboard-recent-tx">
+                        <div class="tx-item">
+                            <div class="tx-icon green-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Salary Deposit</p>
+                                <p class="tx-meta">Income · Today</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount positive">+$4,210.00</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                        <div class="tx-item">
+                            <div class="tx-icon gray-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Whole Foods Market</p>
+                                <p class="tx-meta">Groceries · Today</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount">-$156.42</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                        <div class="tx-item">
+                            <div class="tx-icon red-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Netflix Subscription</p>
+                                <p class="tx-meta">Entertainment · Yesterday</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount">-$15.99</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                        <div class="tx-item">
+                            <div class="tx-icon blue-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Uber Ride</p>
+                                <p class="tx-meta">Transport · Yesterday</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount">-$24.50</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                        <div class="tx-item">
+                            <div class="tx-icon yellow-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Electric Bill</p>
+                                <p class="tx-meta">Utilities · 2 days ago</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount">-$145.00</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                        <div class="tx-item">
+                            <div class="tx-icon purple-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            </div>
+                            <div class="tx-info">
+                                <p class="tx-name">Rent Payment</p>
+                                <p class="tx-meta">Housing · 3 days ago</p>
+                            </div>
+                            <div class="tx-right">
+                                <p class="tx-amount">-$1,800.00</p>
+                                <button class="dots-btn">···</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BUDGET + INVESTMENTS -->
+            <div class="grid-2">
+                <!-- BUDGET OVERVIEW -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/></svg>
+                            Budget Overview
+                        </h3>
+                        <button class="link-btn">+ Add</button>
+                    </div>
+                    <div class="budget-list">
+                        <div class="budget-item">
+                            <div class="budget-row">
+                                <div class="budget-left">
+                                    <span class="budget-icon">🛒</span>
+                                    <span class="budget-name">Groceries</span>
+                                </div>
+                                <div class="budget-right">
+                                    <span class="budget-spent warning">$420</span>
+                                    <span class="budget-total"> / $500</span>
+                                    <span class="budget-pct warning">84%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill warning" style="width:84%"></div></div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-row">
+                                <div class="budget-left">
+                                    <span class="budget-icon">🍽️</span>
+                                    <span class="budget-name">Dining Out</span>
+                                </div>
+                                <div class="budget-right">
+                                    <span class="budget-spent danger">$280</span>
+                                    <span class="budget-total"> / $300</span>
+                                    <span class="budget-pct danger">93%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill danger" style="width:93%"></div></div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-row">
+                                <div class="budget-left">
+                                    <span class="budget-icon">🚗</span>
+                                    <span class="budget-name">Transportation</span>
+                                </div>
+                                <div class="budget-right">
+                                    <span class="budget-spent ok">$150</span>
+                                    <span class="budget-total"> / $400</span>
+                                    <span class="budget-pct ok">38%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill ok" style="width:38%"></div></div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-row">
+                                <div class="budget-left">
+                                    <span class="budget-icon">🏠</span>
+                                    <span class="budget-name">Housing</span>
+                                </div>
+                                <div class="budget-right">
+                                    <span class="budget-spent warning">$1,800</span>
+                                    <span class="budget-total"> / $2,000</span>
+                                    <span class="budget-pct warning">90%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill warning" style="width:90%"></div></div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-row">
+                                <div class="budget-left">
+                                    <span class="budget-icon">🎬</span>
+                                    <span class="budget-name">Entertainment</span>
+                                </div>
+                                <div class="budget-right">
+                                    <span class="budget-spent ok">$95</span>
+                                    <span class="budget-total"> / $200</span>
+                                    <span class="budget-pct ok">48%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill ok" style="width:48%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVESTMENT PORTFOLIO -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                            Investment Portfolio
+                        </h3>
+                        <button class="link-btn">View All →</button>
+                    </div>
+                    <div class="portfolio-banner">
+                        <div>
+                            <p class="portfolio-label">Total Portfolio Value</p>
+                            <p class="portfolio-value">$10,200.00</p>
+                        </div>
+                        <p class="portfolio-change positive">↗ +$168.30 <span>+1.68% today</span></p>
+                    </div>
+                    <div class="invest-list">
+                        <div class="invest-item">
+                            <div class="invest-avatar" style="background:#dcfce7;color:#16a34a">AA</div>
+                            <div class="invest-info">
+                                <p class="invest-name">Apple Inc.</p>
+                                <p class="invest-sub">25 shares @ $165</p>
+                            </div>
+                            <div class="invest-right">
+                                <p class="invest-value">$4,250.00</p>
+                                <p class="invest-change positive">↗ +3.04%</p>
+                            </div>
+                        </div>
+                        <div class="invest-item">
+                            <div class="invest-avatar" style="background:#dbeafe;color:#1d4ed8">VO</div>
+                            <div class="invest-info">
+                                <p class="invest-name">S&P 500 ETF</p>
+                                <p class="invest-sub">8 shares @ $420</p>
+                            </div>
+                            <div class="invest-right">
+                                <p class="invest-value">$3,500.00</p>
+                                <p class="invest-change negative">↘ -1.27%</p>
+                            </div>
+                        </div>
+                        <div class="invest-item">
+                            <div class="invest-avatar" style="background:#f3e8ff;color:#7c3aed">MS</div>
+                            <div class="invest-info">
+                                <p class="invest-name">Microsoft Corp.</p>
+                                <p class="invest-sub">6 shares @ $380</p>
+                            </div>
+                            <div class="invest-right">
+                                <p class="invest-value">$2,450.00</p>
+                                <p class="invest-change positive">↗ +3.72%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAVINGS GOALS -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        Savings Goals
+                    </h3>
+                    <button class="link-btn">+ Add</button>
+                </div>
+                <div class="goals-grid">
+                    <div class="goal-card green-goal">
+                        <div class="goal-top">
+                            <div class="goal-icon-wrap green-wrap">✈️</div>
+                            <span class="goal-date">Aug 2026</span>
+                        </div>
+                        <p class="goal-name">Vacation Fund</p>
+                        <p class="goal-progress">$3,200 <span>/ $5,000</span></p>
+                        <div class="progress-bar"><div class="progress-fill ok" style="width:64%"></div></div>
+                        <div class="goal-footer">
+                            <span>64% complete</span>
+                            <span>$1,800 to go</span>
+                        </div>
+                    </div>
+                    <div class="goal-card blue-goal">
+                        <div class="goal-top">
+                            <div class="goal-icon-wrap blue-wrap">🛡️</div>
+                            <span class="goal-date">Dec 2026</span>
+                        </div>
+                        <p class="goal-name">Emergency Fund</p>
+                        <p class="goal-progress">$8,500 <span>/ $10,000</span></p>
+                        <div class="progress-bar"><div class="progress-fill blue-fill" style="width:85%"></div></div>
+                        <div class="goal-footer">
+                            <span>85% complete</span>
+                            <span>$1,500 to go</span>
+                        </div>
+                    </div>
+                    <div class="goal-card orange-goal">
+                        <div class="goal-top">
+                            <div class="goal-icon-wrap orange-wrap">🚗</div>
+                            <span class="goal-date">Jun 2027</span>
+                        </div>
+                        <p class="goal-name">New Car</p>
+                        <p class="goal-progress">$12,000 <span>/ $35,000</span></p>
+                        <div class="progress-bar"><div class="progress-fill warning" style="width:34%"></div></div>
+                        <div class="goal-footer">
+                            <span>34% complete</span>
+                            <span>$23,000 to go</span>
+                        </div>
+                    </div>
+                    <div class="goal-card purple-goal">
+                        <div class="goal-top">
+                            <div class="goal-icon-wrap purple-wrap">🏠</div>
+                            <span class="goal-date">Dec 2028</span>
+                        </div>
+                        <p class="goal-name">Home Down Payment</p>
+                        <p class="goal-progress">$25,000 <span>/ $80,000</span></p>
+                        <div class="progress-bar"><div class="progress-fill purple-fill" style="width:31%"></div></div>
+                        <div class="goal-footer">
+                            <span>31% complete</span>
+                            <span>$55,000 to go</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end page-dashboard -->
+
+        <!-- ── TRANSACTIONS PAGE ── -->
+        <div class="page" id="page-transactions">
+
+            <div class="card" style="padding:0; overflow:hidden;">
+
+                <!-- Table Header -->
+                <div class="table-topbar">
+                    <div class="table-title-row">
+                        <h2 class="table-page-title">
+                            <span class="table-title-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+                            </span>
+                            All Transactions
+                        </h2>
+                        <div class="table-actions">
+                            <button class="btn-export" id="exportTransactionsBtn" type="button">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Export
+                            </button>
+
+                            <button class="btn-export" id="deleteAllTransactionsBtn" type="button" style="color:var(--red); border-color:rgba(239,68,68,.22);">
+                                Delete All
+                            </button>
+
+                            <button class="btn-primary" id="addTransactionBtn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Add Transaction
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="table-filters premium-filter-bar">
+                        <div class="table-search premium-filter-search">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <input type="text" id="txSearch" placeholder="Search transactions, categories, accounts..." />
+                        </div>
+
+                        <select class="filter-select premium-filter-select" id="txTypeFilter">
+                            <option value="">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+
+                        <input type="hidden" id="txCategoryFilter" />
+
+                        <button type="button" class="premium-filter-chip-btn" id="openTxCategoryFilterBtn">
+                            <span class="premium-filter-chip-icon" id="txCategoryFilterIcon">🏷️</span>
+                            <span class="premium-filter-chip-text" id="txCategoryFilterDisplay">All Categories</span>
+                        </button>
+
+                        <button type="button" class="btn-export" id="clearAllTransactionFiltersBtn">
+                            Clear Filters
+                        </button>
+
+                        <button class="filter-icon-btn premium-filter-icon-btn" id="advancedFiltersBtn" title="More filters">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="transactions-filter-feedback" id="transactionsFilterFeedback">
+                        <div class="transactions-filter-summary" id="transactionsFilterSummary"></div>
+                        <div class="transactions-filter-chips" id="transactionsFilterChips"></div>
+                    </div>
+
+                    <!-- Transactions Category Filter Modal -->
+                    <div class="modal-overlay" id="txCategoryFilterModal" style="display:none">
+                        <div class="modal premium-icon-modal" style="max-width:560px">
+                            <div class="modal-header">
+                                <h3>Filter by Category</h3>
+                                <button class="modal-close" id="txCategoryFilterModalClose">✕</button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p class="modal-desc">Choose a category to filter your transactions.</p>
+
+                                <div class="table-search premium-icon-search">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        id="txCategoryFilterSearch"
+                                        placeholder="Search categories..."
+                                        autocomplete="off"
+                                    >
+                                </div>
+
+                                <div class="premium-icon-section" style="margin-top:18px;">
+                                    <div id="txCategoryFilterGrid" class="category-picker-grid premium-icon-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" id="advancedFiltersPanel" style="display:none; margin:0 24px 20px 24px; padding:16px 18px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                            <h3 style="margin:0; font-size:15px; font-weight:700;">Advanced Filters</h3>
+                            <button type="button" class="btn-export" id="clearAdvancedFiltersBtn">Clear All</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="txAccountFilter">Account</label>
+                                <select id="txAccountFilter" class="form-input">
+                                    <option value="">All Accounts</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txSortFilter">Sort By</label>
+                                <select id="txSortFilter" class="form-input">
+                                    <option value="date_desc">Newest First</option>
+                                    <option value="date_asc">Oldest First</option>
+                                    <option value="amount_desc">Highest Amount</option>
+                                    <option value="amount_asc">Lowest Amount</option>
+                                    <option value="name_asc">Name A–Z</option>
+                                    <option value="name_desc">Name Z–A</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row advanced-date-range-row">
+                            <div class="form-group">
+                                <label for="txDateFromFilter">From Date</label>
+                                <input type="date" id="txDateFromFilter" class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txDateToFilter">To Date</label>
+                                <input type="date" id="txDateToFilter" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="tx-table-wrap">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Account</th>
+                                <th>Date</th>
+                                <th style="text-align:right">Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="txTableBody">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="table-pagination">
+                    <span class="pagination-info" id="paginationInfo">Showing 1–10 of 24 transactions</span>
+                    <div class="pagination-btns">
+                        <button class="page-btn" id="prevPage" disabled>← Previous</button>
+                        <button class="page-btn active" data-pg="1">1</button>
+                        <button class="page-btn" data-pg="2">2</button>
+                        <button class="page-btn" data-pg="3">3</button>
+                        <button class="page-btn" id="nextPage">Next →</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- end page-transactions -->
+
+        <!-- ══════════════════════════════════════
+             BUDGETS PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-budgets">
+            <!-- Stats -->
+            <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Budget</p><p class="stat-value">$4,600</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Spent</p><p class="stat-value">$3,340</p></div><div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Remaining</p><p class="stat-value" style="color:var(--green)">$1,260</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div></div></div>
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Overspent Categories</p>
+                            <p class="stat-change negative">Spent above category budgets</p>
+                            <p class="stat-value" id="budget-over-total" style="color:var(--red)">$0.00</p>
+                        </div>
+                        <div class="stat-icon red">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 8v5"></path>
+                                <path d="M12 17h.01"></path>
+                                <circle cx="12" cy="12" r="9"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Budgets -->
+            <div class="section-header">
+                <h2 class="section-title">Flexible Budgets</h2>
+                <button class="btn-primary" id="addBudgetBtn">+ Create Budget</button>
+            </div>
+            <div class="budget-cards-grid">
+                <div class="budget-full-card" style="--accent:#10b981">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#dcfce7">🛒</div><div><p class="bfc-name">Groceries</p><p class="bfc-sub">12 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$420</span><span class="bfc-total"> of $500</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill warning" style="width:84%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left warning">$80 left</span><span class="bfc-change positive">↘ 5% vs last month</span></div>
+                </div>
+                <div class="budget-full-card" style="--accent:#f97316">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#ffedd5">🍽️</div><div><p class="bfc-name">Dining Out</p><p class="bfc-sub">8 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$280</span><span class="bfc-total"> of $300</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill danger" style="width:93%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left danger">$20 left</span><span class="bfc-change negative">↗ 15% vs last month</span></div>
+                </div>
+                <div class="budget-full-card" style="--accent:#3b82f6">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#dbeafe">🚗</div><div><p class="bfc-name">Transportation</p><p class="bfc-sub">6 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$150</span><span class="bfc-total"> of $400</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill ok" style="width:38%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left ok">$250 left</span><span class="bfc-change positive">↘ 12% vs last month</span></div>
+                </div>
+                <div class="budget-full-card" style="--accent:#8b5cf6">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#ede9fe">🏠</div><div><p class="bfc-name">Housing</p><p class="bfc-sub">4 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$1,800</span><span class="bfc-total"> of $2,000</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill warning" style="width:90%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left warning">$200 left</span><span class="bfc-change neutral">No change</span></div>
+                </div>
+                <div class="budget-full-card" style="--accent:#ec4899">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#fce7f3">🎬</div><div><p class="bfc-name">Entertainment</p><p class="bfc-sub">5 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$95</span><span class="bfc-total"> of $200</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill ok" style="width:48%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left ok">$105 left</span><span class="bfc-change positive">↘ 8% vs last month</span></div>
+                </div>
+                <div class="budget-full-card" style="--accent:#14b8a6">
+                    <div class="bfc-top"><div style="display:flex;align-items:center;gap:10px"><div class="bfc-icon" style="background:#ccfbf1">💊</div><div><p class="bfc-name">Health</p><p class="bfc-sub">3 transactions</p></div></div><button class="dots-btn">···</button></div>
+                    <div class="bfc-amounts"><span class="bfc-spent">$73</span><span class="bfc-total"> of $150</span></div>
+                    <div class="progress-bar" style="margin:10px 0"><div class="progress-fill ok" style="width:49%"></div></div>
+                    <div class="bfc-footer"><span class="bfc-left ok">$77 left</span><span class="bfc-change positive">↘ 3% vs last month</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             GOALS PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-goals">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Saved</p><p class="stat-value">$69,500</p><p class="stat-change positive"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+$2,500 this month</p></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Target Total</p><p class="stat-value">$167,500</p><p class="stat-label" style="margin-top:4px">Across 7 goals</p></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Remaining</p><p class="stat-value">$98,000</p><p class="stat-label" style="margin-top:4px">41% complete</p></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Goals Completed</p><p class="stat-value">1/7</p><p class="stat-change positive" style="margin-top:4px">Keep it up!</p></div></div></div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Your Goals</h2>
+                <button class="btn-primary" id="addGoalBtn">+ Create Goal</button>
+            </div>
+
+            <div class="goals-page-grid">
+                <div class="goal-page-card">
+                    <div class="gpc-color-bar" style="background:#10b981"></div>
+                    <div class="gpc-body">
+                        <div class="gpc-top">
+                            <div style="display:flex;align-items:center;gap:10px"><div class="goal-icon-wrap green-wrap" style="width:42px;height:42px;font-size:20px">✈️</div><div><p class="gpc-name">Dream Vacation</p><p class="gpc-date">📅 Aug 2026</p></div></div>
+                            <div style="display:flex;align-items:center;gap:8px"><span class="status-badge on-track">On Track</span><button class="dots-btn">···</button></div>
+                        </div>
+                        <div class="gpc-amounts"><span class="gpc-saved">$3,200</span><span class="gpc-target"> of $5,000</span></div>
+                        <div class="progress-bar" style="margin:10px 0;height:8px"><div class="progress-fill ok" style="width:64%"></div></div>
+                        <div class="gpc-footer"><span>64% complete · $1,800 to go</span></div>
+                        <div class="gpc-contrib"><span>Monthly contribution</span><strong>$400</strong></div>
+                    </div>
+                </div>
+                <div class="goal-page-card">
+                    <div class="gpc-color-bar" style="background:#3b82f6"></div>
+                    <div class="gpc-body">
+                        <div class="gpc-top">
+                            <div style="display:flex;align-items:center;gap:10px"><div class="goal-icon-wrap blue-wrap" style="width:42px;height:42px;font-size:20px">🛡️</div><div><p class="gpc-name">Emergency Fund</p><p class="gpc-date">📅 Dec 2026</p></div></div>
+                            <div style="display:flex;align-items:center;gap:8px"><span class="status-badge on-track">On Track</span><button class="dots-btn">···</button></div>
+                        </div>
+                        <div class="gpc-amounts"><span class="gpc-saved">$8,500</span><span class="gpc-target"> of $10,000</span></div>
+                        <div class="progress-bar" style="margin:10px 0;height:8px"><div class="progress-fill blue-fill" style="width:85%"></div></div>
+                        <div class="gpc-footer"><span>85% complete · $1,500 to go</span></div>
+                        <div class="gpc-contrib"><span>Monthly contribution</span><strong>$500</strong></div>
+                    </div>
+                </div>
+                <div class="goal-page-card">
+                    <div class="gpc-color-bar" style="background:#f97316"></div>
+                    <div class="gpc-body">
+                        <div class="gpc-top">
+                            <div style="display:flex;align-items:center;gap:10px"><div class="goal-icon-wrap orange-wrap" style="width:42px;height:42px;font-size:20px">🚗</div><div><p class="gpc-name">New Car</p><p class="gpc-date">📅 Jun 2027</p></div></div>
+                            <div style="display:flex;align-items:center;gap:8px"><span class="status-badge behind">Behind</span><button class="dots-btn">···</button></div>
+                        </div>
+                        <div class="gpc-amounts"><span class="gpc-saved">$12,000</span><span class="gpc-target"> of $35,000</span></div>
+                        <div class="progress-bar" style="margin:10px 0;height:8px"><div class="progress-fill warning" style="width:34%"></div></div>
+                        <div class="gpc-footer"><span>34% complete · $23,000 to go</span></div>
+                        <div class="gpc-contrib"><span>Monthly contribution</span><strong>$1,500</strong></div>
+                    </div>
+                </div>
+                <div class="goal-page-card">
+                    <div class="gpc-color-bar" style="background:#8b5cf6"></div>
+                    <div class="gpc-body">
+                        <div class="gpc-top">
+                            <div style="display:flex;align-items:center;gap:10px"><div class="goal-icon-wrap purple-wrap" style="width:42px;height:42px;font-size:20px">🏠</div><div><p class="gpc-name">Home Down Payment</p><p class="gpc-date">📅 Dec 2028</p></div></div>
+                            <div style="display:flex;align-items:center;gap:8px"><span class="status-badge on-track">On Track</span><button class="dots-btn">···</button></div>
+                        </div>
+                        <div class="gpc-amounts"><span class="gpc-saved">$25,000</span><span class="gpc-target"> of $80,000</span></div>
+                        <div class="progress-bar" style="margin:10px 0;height:8px"><div class="progress-fill purple-fill" style="width:31%"></div></div>
+                        <div class="gpc-footer"><span>31% complete · $55,000 to go</span></div>
+                        <div class="gpc-contrib"><span>Monthly contribution</span><strong>$2,000</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             INVESTMENTS PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-investments">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Portfolio Value</p><p class="stat-value" id="inv-total-value">$10,200.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Today's Change</p><p class="stat-value" style="color:var(--green)" id="inv-today-change">+$168.30</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Return</p><p class="stat-value" style="color:var(--green)" id="inv-total-return">+$1,850.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Invested</p><p class="stat-value" id="inv-total-invested">$8,350.00</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div></div>
+            </div>
+
+            <!-- Chart + Allocation -->
+            <div class="grid-2">
+                <div class="card chart-card">
+                    <div class="chart-header">
+                        <h3 class="card-title">📈 Portfolio Performance</h3>
+                        <div class="chart-tabs">
+                            <button class="chart-tab">1M</button>
+                            <button class="chart-tab">3M</button>
+                            <button class="chart-tab active">YTD</button>
+                            <button class="chart-tab">1Y</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Allocation
+                    </h3>
+                    <div class="alloc-list">
+                        <div class="alloc-item"><div><p class="alloc-name">AAPL</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:41.7%"></div></div></div><span class="alloc-pct">41.7%</span></div>
+                        <div class="alloc-item"><div><p class="alloc-name">VOO</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:34.3%"></div></div></div><span class="alloc-pct">34.3%</span></div>
+                        <div class="alloc-item"><div><p class="alloc-name">MSFT</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:24%"></div></div></div><span class="alloc-pct">24%</span></div>
+                    </div>
+                    <button class="btn-primary" style="width:100%;margin-top:16px;justify-content:center">+ Add Investment</button>
+                </div>
+            </div>
+
+            <!-- Holdings Table -->
+            <div class="card" style="padding:0;overflow:hidden">
+                <div class="table-topbar" style="padding:20px 24px">
+                    <div class="table-title-row">
+                        <h3 class="card-title" style="margin:0">Holdings</h3>
+                        <div class="chart-tabs">
+                            <button class="chart-tab active">All</button>
+                            <button class="chart-tab">Stocks</button>
+                            <button class="chart-tab">ETFs</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tx-table-wrap">
+                    <table class="tx-table">
+                        <thead><tr><th>Asset</th><th>Price</th><th>Shares</th><th>Avg. Cost</th><th>Total Value</th><th>Change</th></tr></thead>
+                        <tbody id="holdingsTableBody">
+                            <tr>
+                                <td><div class="tx-cell-name"><div class="invest-avatar" style="background:#dcfce7;color:#16a34a;border-radius:8px">AA</div><div><p class="tx-cell-title">Apple Inc.</p><p class="tx-meta" style="font-size:11px">AAPL <span class="cat-badge" style="font-size:10px;padding:1px 6px">STOCK</span></p></div></div></td>
+                                <td>$170.00</td><td>25</td><td>$165.00</td>
+                                <td><strong>$4,250.00</strong></td>
+                                <td><span class="change-badge positive">↗ +3.04%</span></td>
+                            </tr>
+                            <tr>
+                                <td><div class="tx-cell-name"><div class="invest-avatar" style="background:#dbeafe;color:#1d4ed8;border-radius:8px">VO</div><div><p class="tx-cell-title">S&P 500 ETF</p><p class="tx-meta" style="font-size:11px">VOO <span class="cat-badge" style="font-size:10px;padding:1px 6px">ETF</span></p></div></div></td>
+                                <td>$437.50</td><td>8</td><td>$420.00</td>
+                                <td><strong>$3,500.00</strong></td>
+                                <td><span class="change-badge negative">↘ -1.27%</span></td>
+                            </tr>
+                            <tr>
+                                <td><div class="tx-cell-name"><div class="invest-avatar" style="background:#f3e8ff;color:#7c3aed;border-radius:8px">MS</div><div><p class="tx-cell-title">Microsoft Corp.</p><p class="tx-meta" style="font-size:11px">MSFT <span class="cat-badge" style="font-size:10px;padding:1px 6px">STOCK</span></p></div></div></td>
+                                <td>$408.33</td><td>6</td><td>$380.00</td>
+                                <td><strong>$2,450.00</strong></td>
+                                <td><span class="change-badge positive">↗ +3.72%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             RECURRING PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-recurring">
+            <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Monthly Income</p><p class="stat-value" style="color:var(--green)">$9,270.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Monthly Expenses</p><p class="stat-value">$1,865.96</p></div><div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Net Monthly</p><p class="stat-value" style="color:var(--green)">$7,404.04</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div></div>
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Due This Week</p>
+                            <p class="stat-value" id="recurring-due-week">$0.00</p>
+                            <p class="stat-change negative" id="recurring-due-week-count">0 payments due</p>
+                        </div>
+                        <div class="stat-icon orange">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 2v4"></path>
+                                <path d="M16 2v4"></path>
+                                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                                <path d="M3 10h18"></path>
+                                <path d="M12 14v4"></path>
+                                <path d="M10 16h4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Recurring Transactions</h2>
+                <button class="btn-primary" id="addRecurringBtn" type="button">+ Add Recurring</button>
+            </div>
+
+            <div class="card" style="padding:0;overflow:hidden">
+                <table class="tx-table">
+                    <thead><tr><th>Transaction</th><th>Frequency</th><th>Next Date</th><th>Amount</th><th>Status</th><th>Action</th><th></th></tr></thead>
+                    <tbody>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon gray-icon">💳</div><p class="tx-cell-title">Salary</p></div></td><td><span class="freq-badge">Biweekly</span></td><td class="tx-date-cell">📅 Apr 28, 2026</td><td class="tx-amount-cell positive">+$4,210.00</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn received">Mark Received</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon gray-icon">🏠</div><p class="tx-cell-title">Rent Payment</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 1, 2026</td><td class="tx-amount-cell negative">-$1,500.00</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn paid">Mark Paid</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon red-icon">🎬</div><p class="tx-cell-title">Netflix</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 5, 2026</td><td class="tx-amount-cell negative">-$15.99</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn paid">Mark Paid</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon green-icon">🎵</div><p class="tx-cell-title">Spotify</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 8, 2026</td><td class="tx-amount-cell negative">-$9.99</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn paid">Mark Paid</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon yellow-icon">⚡</div><p class="tx-cell-title">Electric Bill</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 12, 2026</td><td class="tx-amount-cell negative">-$145.00</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn paid">Mark Paid</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon blue-icon">💪</div><p class="tx-cell-title">Gym Membership</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 15, 2026</td><td class="tx-amount-cell negative">-$49.99</td><td><label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn paid">Mark Paid</button></td><td><button class="dots-btn">···</button></td></tr>
+                        <tr><td><div class="tx-cell-name"><div class="tx-cell-icon green-icon">💰</div><p class="tx-cell-title">Freelance Income</p></div></td><td><span class="freq-badge">Monthly</span></td><td class="tx-date-cell">📅 May 20, 2026</td><td class="tx-amount-cell positive">+$850.00</td><td><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></td><td><button class="recurring-action-btn received">Mark Received</button></td><td><button class="dots-btn">···</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             CATEGORIES PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-categories">
+            <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Money Checkup</p>
+                            <p class="stat-value">Good</p>
+                            <p class="stat-change positive">Based on your current activity</p>
+                        </div>
+                        <div class="stat-icon green">💡</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Main Focus</p>
+                            <p class="stat-value">Budgets</p>
+                            <p class="stat-label" style="margin-top:4px">Watch flexible budgets closely</p>
+                        </div>
+                        <div class="stat-icon orange">📊</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-body">
+                        <div>
+                            <p class="stat-label">Suggested Action</p>
+                            <p class="stat-value">Review</p>
+                            <p class="stat-label" style="margin-top:4px">Check spending before adding more</p>
+                        </div>
+                        <div class="stat-icon blue">✅</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Money Coach Summary</h3>
+                    </div>
+
+                    <div class="coach-summary-card">
+                        <div class="coach-summary-icon">✨</div>
+                        <div>
+                            <h3>Your financial snapshot</h3>
+                            <p>
+                                FinTrack will use your transactions, budgets, goals, and recurring payments to explain what needs attention and what you can improve next.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="coach-insight-list">
+                        <div class="coach-insight-item">
+                            <span class="coach-dot green"></span>
+                            <div>
+                                <strong>Budget awareness</strong>
+                                <p>See which budgets are safe, near the limit, or over budget.</p>
+                            </div>
+                        </div>
+
+                        <div class="coach-insight-item">
+                            <span class="coach-dot orange"></span>
+                            <div>
+                                <strong>Spending explanation</strong>
+                                <p>Understand why your spending increased and where the money went.</p>
+                            </div>
+                        </div>
+
+                        <div class="coach-insight-item">
+                            <span class="coach-dot blue"></span>
+                            <div>
+                                <strong>Next best step</strong>
+                                <p>Get simple suggestions like reducing dining, checking bills, or adjusting a budget.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Ask Money Coach</h3>
+                    </div>
+
+                    <p class="settings-desc">
+                        Ask practical questions about your spending, budgets, bills, and goals.
+                    </p>
+
+                    <div class="coach-question-box">
+                        <textarea
+                            id="moneyCoachInput"
+                            class="form-input coach-textarea"
+                            rows="5"
+                            placeholder="Ask something like: Can I afford to spend $100 this week?"
+                        ></textarea>
+
+                        <button
+                            type="button"
+                            class="btn-primary"
+                            id="moneyCoachAskBtn"
+                            style="width:100%; justify-content:center; margin-top:12px;"
+                        >
+                            Ask Money Coach
+                        </button>
+
+                        <div class="coach-inline-response" id="moneyCoachResponseCard" style="display:none;">
+                            <div class="coach-response-top">
+                                <span class="coach-response-badge">Money Coach</span>
+                                <span class="coach-response-status" id="moneyCoachStatus">Ready</span>
+                            </div>
+
+                            <div id="moneyCoachResponseText" class="coach-response-text"></div>
+                        </div>
+                    </div>
+
+                    <div class="coach-starters">
+                        <div class="coach-starter-card">Why did I spend more this week?</div>
+                        <div class="coach-starter-card">Which budget needs attention?</div>
+                        <div class="coach-starter-card">How can I save more this month?</div>
+                        <div class="coach-starter-card">What should I check today?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             SETTINGS PAGE
+        ══════════════════════════════════════ -->
+        <div class="page" id="page-settings">
+            <!-- Profile -->
+            <div class="card settings-card">
+                <div class="settings-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profile
+                </div>
+                <p class="settings-desc">Manage your personal information</p>
+                <div class="profile-header">
+                    <div class="profile-avatar-wrap">
+                        <div class="user-avatar" style="width:64px;height:64px;font-size:20px">JD</div>
+                        <button class="avatar-edit">📷</button>
+                    </div>
+                    <div>
+                        <p style="font-weight:700;font-size:16px">John Doe</p>
+                        <p style="color:var(--text-2);font-size:13px">john.doe@email.com</p>
+                        <p style="color:var(--text-3);font-size:12px;margin-top:2px">Premium Member since Jan 2024</p>
+                    </div>
+                </div>
+                <hr class="settings-divider">
+                <div class="form-row">
+                    <div class="form-group"><label>First Name</label><input class="form-input" value="John"></div>
+                    <div class="form-group"><label>Last Name</label><input class="form-input" value="Doe"></div>
+                    <div class="form-group"><label>Email</label><input class="form-input" value="john.doe@email.com"></div>
+                    <div class="form-group"><label>Phone</label><input class="form-input" value="+1 (555) 123-4567"></div>
+                </div>
+                <button class="btn-primary" style="margin-top:8px">Save Changes</button>
+            </div>
+
+            <!-- Preferences -->
+            <div class="card settings-card">
+                <div class="settings-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Preferences
+                </div>
+                <p class="settings-desc">Customize your app experience</p>
+                <div class="form-row" style="margin-top:16px">
+                    <div class="form-group"><label>Currency</label><select class="form-input"><option>USD ($)</option><option>CAD ($)</option><option>CNY (¥)</option><option>MAD (د.م.)</option><option>EUR (€)</option></select></div>
+                    <div class="form-group"><label>Language</label><select class="form-input"><option>English</option><option>中文</option><option>Français</option><option>العربية</option></select></div>
+                    <div class="form-group"><label>Date Format</label><select class="form-input"><option>MM/DD/YYYY</option><option>DD/MM/YYYY</option><option>YYYY-MM-DD</option></select></div>
+                    <div class="form-group"><label>First Day of Week</label><select class="form-input"><option>Sunday</option><option>Monday</option></select></div>
+                </div>
+                <button class="btn-primary" style="margin-top:8px">Save Preferences</button>
+            </div>
+
+            <!-- Security -->
+            <div class="card settings-card">
+                <div class="settings-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Security
+                </div>
+                <p class="settings-desc">Manage your account security settings</p>
+                <div class="security-row"><div><p class="security-label">Two-Factor Authentication</p><p class="security-sub">Add an extra layer of security to your account</p></div><button class="btn-export">Enable</button></div>
+                <hr class="settings-divider">
+                <div class="security-row"><div><p class="security-label">Change Password</p><p class="security-sub">Update your password regularly for better security</p></div><button class="btn-export">Change</button></div>
+            </div>
+        </div>
+
+    </div>
+    <!-- end content -->
+
+</main>
+
+<!-- CSV Upload Modal -->
+<div class="modal-overlay" id="csvModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Import CSV</h3>
+            <button class="modal-close" id="csvModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Upload your bank statement CSV from WeChat Pay, Alipay, or any bank.</p>
+            <div class="upload-zone" id="uploadZone">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p>Drag & drop your CSV here</p>
+                <p class="upload-sub">or <label for="csvFileInput" class="upload-link">browse files</label></p>
+                <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="csvModalCancel">Cancel</button>
+                <button class="btn-primary">Upload & Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay" id="transactionModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="transactionModalTitle">Add Transaction</h3>
+            <button class="modal-close" id="transactionModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Add a new income or expense manually.</p>
+
+            <form id="transactionForm">
+                <input type="hidden" id="transactionId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="transactionName">Name</label>
+                        <input
+                            type="text"
+                            id="transactionName"
+                            class="form-input"
+                            placeholder="e.g. Salary, Uber, Grocery Store"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transactionAmount">Amount</label>
+                        <input
+                            type="number"
+                            id="transactionAmount"
+                            class="form-input"
+                            placeholder="e.g. 120.50"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label>Type</label>
+                        <div class="premium-type-toggle" id="transactionTypeToggle">
+                            <button type="button" class="premium-type-btn active" data-type="expense" id="transactionTypeExpenseBtn">
+                                Expense
+                            </button>
+                            <button type="button" class="premium-type-btn" data-type="income" id="transactionTypeIncomeBtn">
+                                Income
+                            </button>
+                        </div>
+                        <input type="hidden" id="transactionType" value="expense">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="transactionCategoryDisplay">Category</label>
+
+                        <input type="hidden" id="transactionCategory" required>
+
+                        <div class="premium-category-row">
+                            <button type="button" class="premium-category-picker-btn" id="openCategoryPickerBtn">
+                                <span class="premium-category-picker-icon" id="transactionCategoryIcon">🏷️</span>
+                                <span class="premium-category-picker-text" id="transactionCategoryDisplay">Select category</span>
+                            </button>
+
+                            <button type="button" class="premium-category-add-btn" id="quickAddCategoryBtn">
+                                <span>+</span>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transactionAccount">Account</label>
+                        <select id="transactionAccount" class="form-input" required>
+                            <option value="">Select account</option>
+                            <option value="Checking">Checking</option>
+                            <option value="Main Checking">Main Checking</option>
+                            <option value="Savings">Savings</option>
+                            <option value="High-Yield Savings">High-Yield Savings</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Rewards Card">Rewards Card</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Investment">Investment</option>
+                            <option value="Investment Account">Investment Account</option>
+                            <option value="Bank Import">Bank Import</option>
+                            <option value="WeChat Pay">WeChat Pay</option>
+                            <option value="Alipay">Alipay</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="transactionDate">Date</label>
+                        <input
+                            type="date"
+                            id="transactionDate"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="transactionModalCancel">Cancel</button>
+                    <button type="submit" class="btn-primary" id="transactionSubmitBtn">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add Category Modal -->
+<div class="modal-overlay" id="categoryQuickModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Add Category</h3>
+            <button class="modal-close" id="categoryQuickModalClose">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-desc">
+                Create a new category without leaving your transaction form.
+            </p>
+
+            <form id="categoryQuickForm">
+                <input type="hidden" id="quickCategoryIcon" value="🏷️">
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label for="quickCategoryName">Category Name</label>
+
+                        <input
+                            type="text"
+                            id="quickCategoryName"
+                            class="form-input"
+                            placeholder="e.g. Coffee, Petrol, Gifts"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label>Category Icon</label>
+
+                        <div class="premium-category-row">
+                            <button type="button" class="premium-category-picker-btn" id="openCategoryIconPickerBtn">
+                                <span class="premium-category-picker-icon" id="quickCategoryIconPreview">🏷️</span>
+                                <span class="premium-category-picker-text" id="quickCategoryIconLabel">Choose icon</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        id="categoryQuickModalCancel"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                    >
+                        Save Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Category Icon Picker Modal -->
+<div class="modal-overlay" id="categoryIconPickerModal" style="display:none">
+    <div class="modal premium-icon-modal">
+        <div class="modal-header">
+            <h3>Choose Category Icon</h3>
+            <button class="modal-close" id="categoryIconPickerModalClose">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-desc">Pick an icon for this category or use your own emoji.</p>
+
+            <div class="premium-icon-preview-card">
+                <span class="premium-icon-preview-emoji" id="quickCategoryIconPreviewLarge">🏷️</span>
+                <div>
+                    <p class="premium-icon-preview-label">Selected icon</p>
+                    <p class="premium-icon-preview-name" id="quickCategoryIconPreviewName">Choose icon</p>
+                </div>
+            </div>
+
+            <div class="table-search premium-icon-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                    type="text"
+                    id="categoryIconPickerSearch"
+                    placeholder="Search icons..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="form-row" style="margin-top:14px;">
+                <div class="form-group" style="width:100%;">
+                    <label for="customCategoryEmoji">Use your own emoji</label>
+                    <div class="premium-custom-emoji-row">
+                        <input
+                            type="text"
+                            id="customCategoryEmoji"
+                            class="form-input premium-custom-emoji-input"
+                            placeholder="Paste any emoji"
+                            maxlength="4"
+                        >
+                        <button type="button" class="premium-category-add-btn" id="applyCustomEmojiBtn">
+                            <span>✓</span>
+                            <span>Use</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-icon-section">
+                <div class="premium-icon-section-header">
+                    <h4>Popular</h4>
+                </div>
+                <div id="categoryIconPickerPopularGrid" class="category-picker-grid premium-icon-grid"></div>
+            </div>
+
+            <div class="premium-icon-section">
+                <div class="premium-icon-section-header">
+                    <h4>All Icons</h4>
+                </div>
+                <div id="categoryIconPickerGrid" class="category-picker-grid premium-icon-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Category Picker Modal -->
+<div class="modal-overlay" id="categoryPickerModal" style="display:none">
+    <div class="modal" style="max-width:560px">
+        <div class="modal-header">
+            <h3>Choose Category</h3>
+            <button class="modal-close" id="categoryPickerModalClose">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-desc">Select a category for this transaction.</p>
+
+            <div class="table-search" style="margin-bottom:16px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input
+                    type="text"
+                    id="categoryPickerSearch"
+                    placeholder="Search categories..."
+                    autocomplete="off"
+                />
+            </div>
+
+            <div id="categoryPickerGrid" class="category-picker-grid"></div>
+        </div>
+    </div>
+</div>
+<!-- Add Budget Modal -->
+<div class="modal-overlay" id="budgetModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="budgetModalTitle">Create Budget</h3>
+            <button class="modal-close" id="budgetModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Create a monthly budget for one category.</p>
+
+            <form id="budgetForm">
+                <input type="hidden" id="budgetId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="budgetCategoryDisplay">Category</label>
+
+                        <input type="hidden" id="budgetCategory" required>
+
+                        <div class="premium-category-row">
+                            <button type="button" class="premium-category-picker-btn" id="openBudgetCategoryPickerBtn">
+                                <span class="premium-category-picker-icon" id="budgetCategoryIcon">🏷️</span>
+                                <span class="premium-category-picker-text" id="budgetCategoryDisplay">Select category</span>
+                            </button>
+
+                            <button type="button" class="premium-category-add-btn" id="quickAddBudgetCategoryBtn">
+                                <span>+</span>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budgetAmount">Amount</label>
+                        <input
+                            type="number"
+                            id="budgetAmount"
+                            class="form-input"
+                            placeholder="e.g. 500"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="budgetStartDate">Start Date</label>
+                        <input
+                            type="date"
+                            id="budgetStartDate"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budgetDays">Budget Length</label>
+                        <input
+                            type="number"
+                            id="budgetDays"
+                            class="form-input"
+                            placeholder="e.g. 7"
+                            min="1"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label>Quick Duration</label>
+                        <p class="form-hint">Choose a preset or type any number of days above.</p>
+
+                        <div class="budget-duration-presets">
+                            <button type="button" class="budget-duration-btn" data-days="7">Weekly</button>
+                            <button type="button" class="budget-duration-btn" data-days="14">2 Weeks</button>
+                            <button type="button" class="budget-duration-btn" data-days="30">Monthly</button>
+                            <button type="button" class="budget-duration-btn" data-days="90">Quarterly</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label>Tracking Rule</label>
+
+                        <div class="premium-type-toggle" id="budgetTrackingRuleToggle">
+                            <button
+                                type="button"
+                                class="premium-type-btn active"
+                                data-rule="category"
+                                id="budgetRuleCategoryBtn"
+                            >
+                                Category only
+                            </button>
+
+                            <button
+                                type="button"
+                                class="premium-type-btn"
+                                data-rule="keyword"
+                                id="budgetRuleKeywordBtn"
+                            >
+                                Category + keyword
+                            </button>
+                        </div>
+
+                        <input type="hidden" id="budgetTrackingRule" value="category">
+                    </div>
+                </div>
+
+                <div class="form-row" id="budgetKeywordRow" style="display:none">
+                    <div class="form-group" style="width:100%">
+                        <label for="budgetMatchKeyword">Keyword</label>
+                        <input
+                            type="text"
+                            id="budgetMatchKeyword"
+                            class="form-input"
+                            placeholder="e.g. thailand, laptop, wedding"
+                        >
+                        <p class="form-hint">
+                            Use this when a budget should also count transactions whose name contains this word.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn-export"
+                        id="deleteBudgetBtn"
+                        style="display:none; color:var(--red); border-color:rgba(239,68,68,.22); margin-right:auto;"
+                    >
+                        Delete Budget
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-export"
+                        id="viewBudgetTransactionsBtn"
+                        style="display:none; margin-right:auto;"
+                    >
+                        View Matched Transactions
+                    </button>
+
+                    <button type="button" class="btn-secondary" id="budgetModalCancel">Cancel</button>
+                    <button type="submit" class="btn-primary" id="budgetSubmitBtn">Save Budget</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Goal Modal -->
+<div class="modal-overlay" id="goalModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Create Goal</h3>
+            <button class="modal-close" id="goalModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Create a new savings goal and track your progress.</p>
+
+            <form id="goalForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalName">Goal Name</label>
+                        <input
+                            type="text"
+                            id="goalName"
+                            class="form-input"
+                            placeholder="e.g. Vacation Fund"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goalIcon">Icon</label>
+                        <input
+                            type="text"
+                            id="goalIcon"
+                            class="form-input"
+                            placeholder="e.g. ✈️"
+                            maxlength="4"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalTargetAmount">Target Amount</label>
+                        <input
+                            type="number"
+                            id="goalTargetAmount"
+                            class="form-input"
+                            placeholder="e.g. 5000"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goalSavedAmount">Saved Amount</label>
+                        <input
+                            type="number"
+                            id="goalSavedAmount"
+                            class="form-input"
+                            placeholder="e.g. 1200"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalDeadline">Deadline</label>
+                        <input
+                            type="date"
+                            id="goalDeadline"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="goalModalCancel">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Transaction Confirm Modal -->
+<div class="modal-overlay" id="deleteTransactionModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Delete Transaction</h3>
+            <button class="modal-close" id="deleteTransactionModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">
+                Are you sure you want to delete this transaction? This action cannot be undone.
+            </p>
+
+            <input type="hidden" id="deleteTransactionId">
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="deleteTransactionCancel">Cancel</button>
+                <button type="button" class="btn-primary" id="deleteTransactionConfirm" style="background:var(--red); border-color:var(--red);">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete All Transactions Modal -->
+<div class="modal-overlay" id="deleteAllTransactionsModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Delete All Transactions</h3>
+            <button class="modal-close" id="deleteAllTransactionsModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">
+                Are you sure you want to delete all transactions? This action cannot be undone.
+            </p>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="deleteAllTransactionsCancel">Cancel</button>
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="deleteAllTransactionsConfirm"
+                    style="background:var(--red); border-color:var(--red);"
+                >
+                    Delete All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete Budget Confirm Modal -->
+<div class="modal-overlay" id="deleteBudgetModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Delete Budget</h3>
+            <button class="modal-close" id="deleteBudgetModalClose">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-desc">
+                Are you sure you want to delete this budget? This action cannot be undone.
+            </p>
+
+            <input type="hidden" id="deleteBudgetId">
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="deleteBudgetCancel">Cancel</button>
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="deleteBudgetConfirm"
+                    style="background:var(--red); border-color:var(--red);"
+                >
+                    Delete Budget
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Recurring Payment Modal -->
+<div class="modal-overlay" id="recurringModal" style="display:none">
+    <div class="modal" style="max-width:640px">
+        <div class="modal-header">
+            <h3 id="recurringModalTitle">Add Recurring Payment</h3>
+            <button class="modal-close" id="recurringModalClose">✕</button>
+        </div>
+
+        <form id="recurringForm">
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringName">Name</label>
+                        <input
+                            type="text"
+                            id="recurringName"
+                            class="form-input"
+                            placeholder="e.g. Rent, Netflix, Salary"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recurringAmount">Amount</label>
+                        <input
+                            type="number"
+                            id="recurringAmount"
+                            class="form-input"
+                            placeholder="e.g. 1500"
+                            step="0.01"
+                            min="0.01"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label>Type</label>
+                        <div class="premium-type-toggle" id="recurringTypeToggle">
+                            <button type="button" class="premium-type-btn active" data-type="expense" id="recurringTypeExpenseBtn">
+                                Expense
+                            </button>
+                            <button type="button" class="premium-type-btn" data-type="income" id="recurringTypeIncomeBtn">
+                                Income
+                            </button>
+                        </div>
+                        <input type="hidden" id="recurringType" value="expense">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringCategory">Category</label>
+                        <input type="hidden" id="recurringCategory" required>
+
+                        <div class="premium-category-row">
+                            <button type="button" class="premium-category-picker-btn" id="openRecurringCategoryPickerBtn">
+                                <span class="premium-category-picker-icon" id="recurringCategoryIcon">🏷️</span>
+                                <span class="premium-category-picker-text" id="recurringCategoryDisplay">Select category</span>
+                            </button>
+
+                            <button type="button" class="premium-category-add-btn" id="quickAddRecurringCategoryBtn">
+                                <span>+</span>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recurringAccount">Account</label>
+                        <input
+                            type="text"
+                            id="recurringAccount"
+                            class="form-input"
+                            placeholder="e.g. Main Checking, Alipay"
+                            value="Recurring"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringFrequency">Frequency</label>
+                        <select id="recurringFrequency" class="form-input" required>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Biweekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recurringNextDate">Next Date</label>
+                        <input
+                            type="date"
+                            id="recurringNextDate"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="recurringModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary">Save Recurring</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
