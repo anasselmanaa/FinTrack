@@ -3,6 +3,10 @@
 const API = 'http://127.0.0.1:5000/api';
 let allCategories = [];
 let transactionsLoadedFromBackend = false;
+let allRecurringPayments = [];
+let allGoals = [];
+let recentGoalSavingsAnimation = null;
+document.body.dataset.activePage = 'dashboard';
 
 // ── THEME ──
 const html = document.documentElement;
@@ -66,6 +70,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
         const target = item.dataset.page;
+        document.body.dataset.activePage = target;
         document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
         item.classList.add('active');
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -96,6 +101,15 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item => {
 
         if (topSearchBar) {
             topSearchBar.style.display = target === 'transactions' ? 'none' : '';
+        }
+
+        const addNewBtn = document.getElementById('addNewBtn');
+        const addNewBtnLabel = document.getElementById('addNewBtnLabel');
+        if (addNewBtnLabel) {
+            addNewBtnLabel.textContent =
+                target === 'recurring' ? 'Add Recurring' :
+                target === 'goals' ? 'Add Goal' :
+                'Add New';
         }
 
         // Load data for each page when clicked
@@ -764,42 +778,531 @@ async function loadGoals() {
     try {
         const res  = await fetch(API + '/goals');
         const data = await res.json();
-        if (data.length === 0) return;
-        renderGoals(data);
+        allGoals = Array.isArray(data) ? data : [];
+        renderGoals(allGoals);
+        updateGoalStats(allGoals);
     } catch (err) {
         console.log('Using demo goals');
     }
 }
 
+function getGoalStatus(goal, pct) {
+    const target = parseFloat(goal.target_amount || 0);
+    const savedRaw = goal.effective_saved_amount !== undefined ? goal.effective_saved_amount : goal.saved_amount;
+    const saved = parseFloat(savedRaw || 0);
+    const remaining = Math.max(target - saved, 0);
+    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+
+    if (pct >= 100) {
+        return { label: 'Completed', detail: 'Target reached', className: 'completed' };
+    }
+
+    if (!deadline || Number.isNaN(deadline.getTime())) {
+        return { label: 'No timeline', detail: 'Add a target date', className: 'neutral' };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    deadline.setHours(0, 0, 0, 0);
+    const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+    const deadlineLabel = deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const remainingRatio = target > 0 ? remaining / target : 0;
+
+    if (daysLeft < 0 && remaining > 0) {
+        return {
+            label: 'Missed target',
+            detail: `${fmt(remaining)} left after ${deadlineLabel}`,
+            className: 'behind'
+        };
+    }
+
+    if (
+        remaining > 0 &&
+        (
+            daysLeft <= 7 ||
+            (daysLeft <= 14 && remainingRatio >= 0.25) ||
+            (daysLeft <= 30 && remainingRatio >= 0.5)
+        )
+    ) {
+        return {
+            label: 'Needs attention',
+            detail: `${fmt(remaining)} left by ${deadlineLabel}`,
+            className: 'attention'
+        };
+    }
+
+    const created = goal.created_at ? new Date(goal.created_at) : null;
+    if (!created || Number.isNaN(created.getTime())) {
+        return pct >= 50
+            ? { label: 'On track', detail: `${fmt(remaining)} left`, className: 'on-track' }
+            : { label: 'Behind', detail: `${fmt(remaining)} left`, className: 'behind' };
+    }
+
+    created.setHours(0, 0, 0, 0);
+
+    const totalDays = Math.max(1, Math.ceil((deadline - created) / (1000 * 60 * 60 * 24)));
+    const elapsedDays = Math.max(0, Math.ceil((today - created) / (1000 * 60 * 60 * 24)));
+    const expectedPct = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
+
+    if (pct >= expectedPct * 1.1) {
+        return { label: 'Ahead', detail: `${fmt(remaining)} left`, className: 'ahead' };
+    }
+
+    if (pct >= expectedPct * 0.9) {
+        return { label: 'On track', detail: `${fmt(remaining)} left`, className: 'on-track' };
+    }
+
+    return { label: 'Behind', detail: `${fmt(remaining)} left by ${deadlineLabel}`, className: 'behind' };
+}
+
+function getGoalMonthlyNeed(goal) {
+    const target = parseFloat(goal.target_amount || 0);
+    const savedRaw = goal.effective_saved_amount !== undefined ? goal.effective_saved_amount : goal.saved_amount;
+    const saved = parseFloat(savedRaw || 0);
+    const left = Math.max(target - saved, 0);
+    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+
+    if (!deadline || Number.isNaN(deadline.getTime()) || left <= 0) {
+        return 0;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const monthsLeft = Math.max(
+        1,
+        Math.ceil((deadline - today) / (1000 * 60 * 60 * 24 * 30))
+    );
+
+    return left / monthsLeft;
+}
+
+function getGoalReminder(goal) {
+    const activityDate = goal.last_goal_activity_date || goal.created_at;
+    if (!activityDate) return '';
+
+    const activity = new Date(activityDate);
+    if (Number.isNaN(activity.getTime())) return '';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    activity.setHours(0, 0, 0, 0);
+
+    const daysSince = Math.floor((today - activity) / (1000 * 60 * 60 * 24));
+
+    if (daysSince < 7) return '';
+
+    if (!goal.last_goal_activity_date) {
+        return `You have not added savings to this goal in ${daysSince} days`;
+    }
+
+    return `You have not added to this goal in ${daysSince} days`;
+}
+
+function getGoalTargetLabel(deadlineValue) {
+    if (!deadlineValue) return 'No target date';
+
+    const deadline = new Date(deadlineValue);
+    if (Number.isNaN(deadline.getTime())) return 'No target date';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    deadline.setHours(0, 0, 0, 0);
+
+    const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+    const dateLabel = deadline.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
+    let relativeLabel = '';
+
+    if (daysLeft < 0) {
+        const daysAgo = Math.abs(daysLeft);
+        relativeLabel = daysAgo === 1 ? '1 day overdue' : `${daysAgo} days overdue`;
+    } else if (daysLeft === 0) {
+        relativeLabel = 'due today';
+    } else if (daysLeft === 1) {
+        relativeLabel = '1 day left';
+    } else {
+        relativeLabel = `${daysLeft} days left`;
+    }
+
+    return `Target ${dateLabel} • ${relativeLabel}`;
+}
+
+function updateGoalStats(goals) {
+    const goalRows = Array.isArray(goals) ? goals : [];
+    const totalSaved = goalRows.reduce((sum, goal) => {
+        const saved = goal.effective_saved_amount !== undefined ? goal.effective_saved_amount : goal.saved_amount;
+        return sum + parseFloat(saved || 0);
+    }, 0);
+    const targetTotal = goalRows.reduce((sum, goal) => sum + parseFloat(goal.target_amount || 0), 0);
+    const remaining = Math.max(targetTotal - totalSaved, 0);
+    const completed = goalRows.filter(goal => {
+        const saved = goal.effective_saved_amount !== undefined ? goal.effective_saved_amount : goal.saved_amount;
+        return parseFloat(saved || 0) >= parseFloat(goal.target_amount || 0);
+    }).length;
+    const pct = targetTotal > 0 ? Math.min(Math.round((totalSaved / targetTotal) * 100), 100) : 0;
+
+    const totalSavedEl = document.getElementById('goals-total-saved');
+    const targetTotalEl = document.getElementById('goals-target-total');
+    const remainingEl = document.getElementById('goals-remaining-total');
+    const completedEl = document.getElementById('goals-completed-count');
+    const progressNoteEl = document.getElementById('goals-progress-note');
+    const countNoteEl = document.getElementById('goals-count-note');
+    const completeNoteEl = document.getElementById('goals-complete-note');
+    const completedNoteEl = document.getElementById('goals-completed-note');
+
+    if (totalSavedEl) totalSavedEl.textContent = fmt(totalSaved);
+    if (targetTotalEl) targetTotalEl.textContent = fmt(targetTotal);
+    if (remainingEl) remainingEl.textContent = fmt(remaining);
+    if (completedEl) completedEl.textContent = `${completed}/${goalRows.length}`;
+    if (progressNoteEl) progressNoteEl.textContent = goalRows.length ? 'Across active goals' : 'Build your plan';
+    if (countNoteEl) countNoteEl.textContent = `Across ${goalRows.length} ${goalRows.length === 1 ? 'goal' : 'goals'}`;
+    if (completeNoteEl) completeNoteEl.textContent = `${pct}% complete`;
+    if (completedNoteEl) completedNoteEl.textContent = completed ? 'Nice progress' : 'Keep going';
+}
+
+function escapeGoalText(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+async function loadGoalContributionHistory(goalId) {
+    const historyEl = document.querySelector(`[data-goal-history-id="${goalId}"]`);
+    if (!historyEl || historyEl.dataset.loaded === "true") return;
+
+    historyEl.innerHTML = `<p class="goal-muted-text">Loading history...</p>`;
+
+    try {
+        const response = await fetch(API + `/goals/${goalId}/contributions`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load goal history");
+        }
+
+        const rows = await response.json();
+        historyEl.dataset.loaded = "true";
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+            historyEl.innerHTML = `<p class="goal-muted-text">No manual savings added yet.</p>`;
+            return;
+        }
+
+        historyEl.innerHTML = rows.map(item => `
+            <div class="goal-history-item">
+                <div>
+                    <strong>${fmt(parseFloat(item.amount || 0))}</strong>
+                    <span>${item.note ? escapeGoalText(item.note) : 'Added savings'}</span>
+                    <em class="goal-history-source ${item.history_type === 'transaction' ? 'transaction' : 'manual'}">
+                        ${item.history_type === 'transaction' ? 'From transaction' : 'Manual'}
+                    </em>
+                </div>
+                <time>${formatDate(item.date)}</time>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Error loading goal history:", error);
+        historyEl.innerHTML = `<p class="goal-muted-text">Could not load history.</p>`;
+    }
+}
+
+function fallbackGoalSuggestions(goal) {
+    if (!goal) {
+        return [{
+            title: 'Add context',
+            action: 'Add a few recent transactions so Money Coach can spot real savings opportunities.',
+            why: 'Better data turns this from generic advice into a personal plan.'
+        }];
+    }
+
+    const target = parseFloat(goal.target_amount || 0);
+    const savedRaw = goal.effective_saved_amount !== undefined ? goal.effective_saved_amount : goal.saved_amount;
+    const saved = parseFloat(savedRaw || 0);
+    const left = Math.max(target - saved, 0);
+    const monthlyNeed = getGoalMonthlyNeed(goal);
+    const weeklyNeed = monthlyNeed / 4.35;
+
+    if (left <= 0) {
+        return [{
+            title: 'Goal complete',
+            action: 'Move new savings toward your next priority instead of letting extra money sit unassigned.',
+            why: 'Finished goals should automatically turn into momentum for the next one.'
+        }];
+    }
+
+    return [
+        {
+            title: 'This week',
+            action: `Move ${fmt(weeklyNeed)} into this goal this week instead of waiting until month-end.`,
+            why: 'Smaller weekly moves make the target feel easier and reduce last-minute pressure.'
+        },
+        {
+            title: 'Tradeoff to try',
+            action: `Choose one flexible purchase in ${goal.category || 'this category'} and redirect it into the goal.`,
+            why: `Even one skipped expense can make ${goal.name || 'this goal'} feel active instead of distant.`
+        },
+        {
+            title: 'Make it automatic',
+            action: goal.auto_link_savings
+                ? 'Check the automatically added amount after your next savings transaction and remove it if it matched the wrong category.'
+                : 'Turn on Auto savings for this goal so matching savings are added without extra work.',
+            why: 'Automation helps the goal keep moving even when you forget to update it manually.'
+        }
+    ];
+}
+
+function renderGoalSuggestions(targetEl, suggestions) {
+    const cleanSuggestions = Array.isArray(suggestions) ? suggestions.filter(Boolean).slice(0, 3) : [];
+
+    if (!targetEl) return;
+
+    if (cleanSuggestions.length === 0) {
+        targetEl.innerHTML = `<p class="goal-muted-text">No suggestions available yet.</p>`;
+        return;
+    }
+
+    targetEl.innerHTML = cleanSuggestions.map(item => {
+        if (typeof item === "string") {
+            return `<div class="goal-suggestion-card"><p>${escapeGoalText(item)}</p></div>`;
+        }
+
+        return `
+            <div class="goal-suggestion-card">
+                <h5>${escapeGoalText(item.title || 'Smart move')}</h5>
+                <p>${escapeGoalText(item.action || '')}</p>
+                ${item.why ? `<small>${escapeGoalText(item.why)}</small>` : ''}
+            </div>
+        `;
+    }).join("");
+}
+
+async function loadGoalCoachSuggestions(goalId, goal) {
+    const suggestionsEl = document.querySelector(`[data-goal-suggestions-id="${goalId}"]`);
+    if (!suggestionsEl || suggestionsEl.dataset.loaded === "true") return;
+
+    suggestionsEl.innerHTML = `<p class="goal-muted-text">Money Coach is reviewing this goal...</p>`;
+
+    try {
+        const response = await fetch(API + `/goals/${goalId}/suggestions`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load Money Coach suggestions");
+        }
+
+        const data = await response.json();
+        suggestionsEl.dataset.loaded = "true";
+        renderGoalSuggestions(suggestionsEl, data.suggestions);
+    } catch (error) {
+        console.error("Error loading goal suggestions:", error);
+        suggestionsEl.dataset.loaded = "true";
+        renderGoalSuggestions(suggestionsEl, fallbackGoalSuggestions(goal));
+    }
+}
+
+function animateGoalProgressBars(scope = document) {
+    const fills = scope.querySelectorAll('.goal-progress-bar .progress-fill[data-progress]');
+
+    fills.forEach(fill => {
+        const progress = fill.dataset.progress || '0';
+        fill.style.width = '0%';
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                fill.style.width = `${progress}%`;
+            });
+        });
+    });
+}
+
+function clearGoalSavingsAnimation(scope = document) {
+    setTimeout(() => {
+        scope.querySelectorAll('.goal-added-pop').forEach(item => item.remove());
+        recentGoalSavingsAnimation = null;
+    }, 1800);
+}
+
 function renderGoals(goals) {
     const grid = document.querySelector('.goals-page-grid');
     if (!grid) return;
-    const colors = ['#10b981','#3b82f6','#f97316','#8b5cf6'];
+
+    if (!goals || goals.length === 0) {
+        grid.innerHTML = `
+            <div class="premium-empty-state goals-empty-state">
+                <div class="premium-empty-state-icon">🎯</div>
+                <h3 class="premium-empty-state-title">No goals yet</h3>
+                <p class="premium-empty-state-text">Create your first goal and FinTrack will track your progress here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const colors = ['#10b981','#3b82f6','#f97316','#8b5cf6', '#ec4899', '#14b8a6'];
     grid.innerHTML = goals.map((g, i) => {
-        const pct    = Math.min(Math.round((g.saved_amount / g.target_amount) * 100), 100);
-        const left   = parseFloat(g.target_amount) - parseFloat(g.saved_amount);
+        const target = parseFloat(g.target_amount || 0);
+        const manualSavedRaw = g.manual_saved_amount !== undefined ? g.manual_saved_amount : g.saved_amount;
+        const effectiveSavedRaw = g.effective_saved_amount !== undefined ? g.effective_saved_amount : g.saved_amount;
+        const manualSaved = parseFloat(manualSavedRaw || 0);
+        const linkedSavings = parseFloat(g.linked_savings_amount || 0);
+        const saved = parseFloat(effectiveSavedRaw || 0);
+        const pct    = target > 0 ? Math.min(Math.round((saved / target) * 100), 100) : 0;
+        const left   = Math.max(target - saved, 0);
         const color  = colors[i % colors.length];
-        const date   = g.deadline ? new Date(g.deadline).toLocaleDateString('en-US', { month:'short', year:'numeric' }) : '';
+        const targetLabel = getGoalTargetLabel(g.deadline);
+        const status = getGoalStatus(g, pct);
+        const monthlyNeed = getGoalMonthlyNeed(g);
+        const reminderText = getGoalReminder(g);
+        const categoryName = g.category || 'Savings';
+        const categoryIcon = getCategoryIcon(categoryName);
+        const displayIcon = g.icon || categoryIcon || '🎯';
+        const safeCategoryName = escapeGoalText(categoryName);
+        const showAddedPop = recentGoalSavingsAnimation && String(recentGoalSavingsAnimation.goalId) === String(g.id);
         return `
-        <div class="goal-page-card">
+        <div class="goal-page-card premium-goal-card">
             <div class="gpc-color-bar" style="background:${color}"></div>
             <div class="gpc-body">
                 <div class="gpc-top">
-                    <div style="display:flex;align-items:center;gap:10px">
-                        <div class="goal-icon-wrap" style="background:${color}22;width:42px;height:42px;font-size:20px">${g.icon || '🎯'}</div>
-                        <div><p class="gpc-name">${g.name}</p><p class="gpc-date">📅 ${date}</p></div>
+                    <div class="goal-title-group">
+                        <div class="goal-icon-wrap premium-goal-icon" style="background:${color}22;color:${color};">${displayIcon}</div>
+                        <div>
+                            <p class="gpc-name">${g.name}</p>
+                            <p class="gpc-date">${targetLabel}</p>
+                            <span class="goal-category-chip">${categoryIcon} ${categoryName}</span>
+                        </div>
                     </div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <span class="status-badge ${pct >= 100 ? 'achieved' : pct >= 50 ? 'on-track' : 'behind'}">${pct >= 100 ? 'Done!' : pct >= 50 ? 'On Track' : 'Behind'}</span>
-                        <button class="dots-btn">···</button>
+                    <div class="goal-card-actions">
+                        <div class="goal-status-stack">
+                            <span class="status-badge ${status.className}">${status.label}</span>
+                        </div>
+                        <button class="dots-btn edit-goal-btn" data-id="${g.id}" title="Edit goal">✎</button>
+                        <button class="dots-btn delete-goal-btn" data-id="${g.id}" title="Delete goal">✕</button>
                     </div>
                 </div>
-                <div class="gpc-amounts"><span class="gpc-saved">${fmt(g.saved_amount)}</span><span class="gpc-target"> of ${fmt(g.target_amount)}</span></div>
-                <div class="progress-bar" style="margin:10px 0;height:8px"><div class="progress-fill ok" style="width:${pct}%;background:${color}"></div></div>
-                <div class="gpc-footer"><span>${pct}% complete · ${fmt(left)} to go</span></div>
+                <div class="gpc-amounts">
+                    <span class="gpc-saved">Saved: ${fmt(saved)}</span><span class="gpc-target"> / ${fmt(target)}</span>
+                    ${showAddedPop ? `<span class="goal-added-pop">+${fmt(recentGoalSavingsAnimation.amount)} added</span>` : ''}
+                </div>
+                <div class="progress-bar goal-progress-bar"><div class="progress-fill ok" data-progress="${pct}" style="width:0%;background:${color}"></div></div>
+                <div class="gpc-footer"><span>${pct}% complete</span><span>${fmt(left)} to go</span></div>
+                ${g.auto_link_savings && linkedSavings > 0 ? '<p class="goal-auto-hint">Includes automatic savings</p>' : ''}
+                <div class="gpc-contrib"><span>Save ${fmt(monthlyNeed)}/month to reach goal</span></div>
+                ${reminderText ? `<p class="goal-reminder">${reminderText}</p>` : ''}
+                <button type="button" class="goal-breakdown-toggle" data-id="${g.id}">View details</button>
+                <div class="goal-savings-breakdown" data-breakdown-id="${g.id}" hidden>
+                    <section class="goal-detail-section">
+                        <h4>Savings details</h4>
+                        <div class="goal-detail-row"><span>You added</span><strong>${fmt(manualSaved)}</strong></div>
+                        <div class="goal-detail-row"><span>Automatically added</span><strong>${fmt(linkedSavings)}</strong></div>
+                        <div class="goal-detail-row goal-auto-control-row">
+                            <span>Auto savings for ${safeCategoryName}</span>
+                            <strong>${g.auto_link_savings ? 'ON' : 'OFF'}</strong>
+                        </div>
+                        ${g.auto_link_savings ? '<p class="goal-detail-note">FinTrack automatically adds matching savings to this goal.</p>' : ''}
+                    </section>
+                    <section class="goal-detail-section">
+                        <h4>History</h4>
+                        <div class="goal-history-list" data-goal-history-id="${g.id}">
+                            <p class="goal-muted-text">Open details to load history.</p>
+                        </div>
+                    </section>
+                    <section class="goal-detail-section">
+                        <h4>Money Coach Suggestions</h4>
+                        <div class="goal-suggestion-list" data-goal-suggestions-id="${g.id}">
+                            <p class="goal-muted-text">Open details to load Money Coach suggestions.</p>
+                        </div>
+                    </section>
+                </div>
+                <div class="goal-card-cta-row">
+                    <button type="button" class="goal-contribute-btn" data-id="${g.id}">+ Add Savings</button>
+                    <div class="goal-link-actions">
+                        <span class="goal-link-badge ${g.auto_link_savings ? 'on' : 'off'}">
+                            Auto savings: ${g.auto_link_savings ? 'ON' : 'OFF'}
+                        </span>
+                        <button
+                            type="button"
+                            class="goal-auto-toggle-btn ${g.auto_link_savings ? 'on' : ''}"
+                            data-id="${g.id}"
+                        >
+                            ${g.auto_link_savings ? 'Turn off' : 'Turn on'}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>`;
     }).join('');
+
+    animateGoalProgressBars(grid);
+    if (recentGoalSavingsAnimation) {
+        clearGoalSavingsAnimation(grid);
+    }
+
+    grid.querySelectorAll('.edit-goal-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const goal = allGoals.find(item => String(item.id) === String(button.dataset.id));
+            if (goal) openGoalModal(goal);
+        });
+    });
+
+    grid.querySelectorAll('.delete-goal-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            openDeleteGoalModal(button.dataset.id);
+        });
+    });
+
+    grid.querySelectorAll('.goal-contribute-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const goal = allGoals.find(item => String(item.id) === String(button.dataset.id));
+            if (goal) openGoalContributionModal(goal);
+        });
+    });
+
+    grid.querySelectorAll('.goal-breakdown-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const breakdown = grid.querySelector(`[data-breakdown-id="${button.dataset.id}"]`);
+            if (!breakdown) return;
+
+            const isHidden = breakdown.hasAttribute('hidden');
+            if (isHidden) {
+                breakdown.removeAttribute('hidden');
+                button.textContent = 'Hide details';
+                const goal = allGoals.find(item => String(item.id) === String(button.dataset.id));
+                loadGoalContributionHistory(button.dataset.id);
+                loadGoalCoachSuggestions(button.dataset.id, goal);
+            } else {
+                breakdown.setAttribute('hidden', '');
+                button.textContent = 'View details';
+            }
+        });
+    });
+
+    grid.querySelectorAll('.goal-auto-toggle-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const goal = allGoals.find(item => String(item.id) === String(button.dataset.id));
+            if (!goal) return;
+
+            const enabled = !goal.auto_link_savings;
+            button.disabled = true;
+            button.textContent = enabled ? "Turning on..." : "Turning off...";
+
+            try {
+                await updateGoalAutoLink(goal, enabled);
+                showToast(enabled
+                    ? `Auto savings turned on for ${goal.category || "this goal"}`
+                    : `Auto savings turned off for ${goal.category || "this goal"}`
+                );
+            } catch (error) {
+                console.error("Error updating auto savings:", error);
+                showToast("Could not update auto savings");
+                button.disabled = false;
+                button.textContent = enabled ? "Turn on" : "Turn off";
+            }
+        });
+    });
 }
 
 // ══════════════════════════════════════
@@ -855,61 +1358,2344 @@ document.querySelectorAll('.chart-tab').forEach(tab => {
         const card = tab.closest('.chart-card') || tab.closest('.card');
         if (card) card.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
+
+        if (card && card.classList.contains('investment-chart-card')) {
+            buildPortfolioChart();
+        }
+
+        if (card && card.querySelector('#holdingsTableBody')) {
+            currentInvestmentHoldingFilter = tab.textContent.trim();
+            renderHoldingsTable(allInvestmentHoldings, investmentCurrentTotalValue);
+        }
     });
 });
 
 // ══════════════════════════════════════
 //  INVESTMENTS — Real stock prices
 // ══════════════════════════════════════
+function signedMoney(value) {
+    const amount = parseFloat(value || 0);
+    const sign = amount >= 0 ? '+' : '-';
+    return `${sign}${fmt(amount)}`;
+}
+
+function pctText(value) {
+    const pct = parseFloat(value);
+    if (!Number.isFinite(pct)) return '';
+
+    const sign = pct >= 0 ? '+' : '';
+    return `${sign}${pct.toFixed(1)}%`;
+}
+
+let investmentSimulatorPortfolioValue = 0;
+let investmentSimulatorReady = false;
+let allInvestmentHoldings = [];
+let investmentCurrentTotalValue = 0;
+let currentInvestmentHoldingFilter = 'All';
+let dividendTrackerReady = false;
+let dividendTrackerState = { annualTotal: 0, portfolioValue: 0, portfolioYield: 0 };
+let investmentAlertsState = [];
+let investmentAlertsExpanded = false;
+const investmentTargetAllocations = {
+    AAPL: 35,
+    MSFT: 25,
+    VOO: 40
+};
+
 async function loadInvestments() {
     try {
         const res  = await fetch(API + '/investments');
         const data = await res.json();
+        const holdings = Array.isArray(data.holdings) ? data.holdings : [];
+        const totalValue = parseFloat(data.total_value || 0);
+        const todayChange = parseFloat(data.today_change || 0);
+        const totalReturn = parseFloat(data.total_return || 0);
+        const totalInvested = parseFloat(data.total_invested || 0);
+        const returnPct = Number.isFinite(parseFloat(data.total_return_pct))
+            ? parseFloat(data.total_return_pct)
+            : totalInvested > 0 ? (totalReturn / totalInvested) * 100 : null;
+        allInvestmentHoldings = holdings;
+        investmentCurrentTotalValue = totalValue;
 
         // Update stat cards
-        document.querySelector('#inv-total-value').textContent   = fmt(data.total_value);
-        document.querySelector('#inv-today-change').textContent  = '+' + fmt(data.today_change);
-        document.querySelector('#inv-total-return').textContent  = '+' + fmt(data.total_return);
-        document.querySelector('#inv-total-invested').textContent = fmt(data.total_invested);
+        document.querySelector('#inv-total-value').textContent   = fmt(totalValue);
 
-        // Update holdings table
-        const tbody = document.querySelector('#holdingsTableBody');
-        if (!tbody) return;
+        const todayChangeEl = document.querySelector('#inv-today-change');
+        const todayPct = Number.isFinite(parseFloat(data.today_change_pct)) ? parseFloat(data.today_change_pct) : null;
+        if (todayChangeEl) {
+            todayChangeEl.textContent = `${signedMoney(todayChange)}${todayPct === null ? '' : ` (${pctText(todayPct)})`}`;
+            todayChangeEl.style.color = todayChange >= 0 ? 'var(--green)' : 'var(--red)';
+        }
 
-        tbody.innerHTML = data.holdings.map(h => {
-            const changeClass = h.day_change_pct >= 0 ? 'positive' : 'negative';
-            const changeArrow = h.day_change_pct >= 0 ? '↗' : '↘';
-            const gainClass   = h.gain >= 0 ? 'positive' : 'negative';
-            const initials    = h.symbol.slice(0, 2);
-            const colors      = { AAPL:'#dcfce7;color:#16a34a', VOO:'#dbeafe;color:#1d4ed8', MSFT:'#f3e8ff;color:#7c3aed' };
-            const col         = colors[h.symbol] || '#f3f4f6;color:#374151';
+        const totalReturnEl = document.querySelector('#inv-total-return');
+        if (totalReturnEl) {
+            totalReturnEl.textContent = `${signedMoney(totalReturn)}${returnPct === null ? '' : ` (${pctText(returnPct)})`}`;
+            totalReturnEl.style.color = totalReturn >= 0 ? 'var(--green)' : 'var(--red)';
+        }
 
-            return `<tr>
-                <td><div class="tx-cell-name">
-                    <div class="invest-avatar" style="background:${col.split(';')[0].replace('background:','')};color:${col.split('color:')[1]};border-radius:8px">${initials}</div>
-                    <div>
-                        <p class="tx-cell-title">${h.name}</p>
-                        <p class="tx-meta" style="font-size:11px">${h.symbol}
-                            <span class="cat-badge" style="font-size:10px;padding:1px 6px">${h.type}</span>
-                        </p>
-                    </div>
-                </div></td>
-                <td>$${h.price.toFixed(2)}</td>
-                <td>${h.shares}</td>
-                <td>$${h.avg_cost.toFixed(2)}</td>
-                <td><strong>$${h.total_value.toLocaleString()}</strong></td>
-                <td><span class="change-badge ${changeClass}">${changeArrow} ${h.day_change_pct > 0 ? '+' : ''}${h.day_change_pct}%</span></td>
-            </tr>`;
-        }).join('');
+        document.querySelector('#inv-total-invested').textContent = fmt(totalInvested);
+        const investedNote = document.querySelector('#inv-invested-note');
+        if (investedNote) investedNote.textContent = `You invested ${fmt(totalInvested)}`;
+
+        updateAllocationCard(holdings);
+        updateHoldingsInsightStrip(holdings);
+        updateInvestmentDecisionLayer(holdings, totalValue, totalReturn);
+        setupInvestmentSimulator();
+        updateInvestmentSimulator(totalValue);
+        loadInvestmentGoalsCoverage(totalValue, holdings);
+        updateInvestmentRiskPanel(holdings, totalValue);
+        updateSectorBreakdown(holdings, totalValue);
+        updateDividendTracker(holdings, totalValue);
+        loadPortfolioNews(holdings);
+        updateRebalancingTool(holdings, totalValue);
+        updateTaxInsights(holdings);
+        updatePerformanceAttribution(holdings);
+        updateBenchmarkComparison(holdings, totalValue, totalInvested);
+        updateInvestmentCopilotLayer(holdings, totalValue, totalReturn);
+        setupInvestmentReportActions();
+
+        renderHoldingsTable(holdings, totalValue);
 
     } catch(err) {
         console.log('Using demo investment data');
     }
 }
 
+function getFilteredInvestmentHoldings(holdings) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const filter = currentInvestmentHoldingFilter;
+
+    if (filter === 'Stocks') {
+        return rows.filter(holding => String(holding.type || '').toLowerCase() === 'stock');
+    }
+
+    if (filter === 'ETFs') {
+        return rows.filter(holding => String(holding.type || '').toLowerCase() === 'etf');
+    }
+
+    return rows;
+}
+
+function renderHoldingsTable(holdings, totalValue) {
+    const tbody = document.querySelector('#holdingsTableBody');
+    if (!tbody) return;
+
+    const visibleHoldings = getFilteredInvestmentHoldings(holdings);
+    updateHoldingsInsightStrip(visibleHoldings);
+
+    if (!visibleHoldings.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10">
+                    <div class="premium-empty-state" style="padding:40px 20px">
+                        <div class="premium-empty-state-icon">📈</div>
+                        <h3 class="premium-empty-state-title">No holdings found</h3>
+                        <p class="premium-empty-state-text">Try switching the holdings filter.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = visibleHoldings.map(h => {
+            const changeClass = h.day_change_pct >= 0 ? 'positive' : 'negative';
+            const gainClass   = h.gain >= 0 ? 'positive' : 'negative';
+            const initials    = h.symbol.slice(0, 2);
+            const colors      = { AAPL:'#dcfce7;color:#16a34a', VOO:'#dbeafe;color:#1d4ed8', MSFT:'#f3e8ff;color:#7c3aed' };
+            const col         = colors[h.symbol] || '#f3f4f6;color:#374151';
+            const allocationPct = totalValue > 0 ? (parseFloat(h.total_value || 0) / totalValue) * 100 : 0;
+            const fundamentals = getHoldingFundamentals(h.symbol);
+            const trend = getHoldingSparkline(h.symbol, h.day_change_pct);
+            const sparkline = renderSparkline(trend, changeClass);
+            const marketBenchmark = 18;
+            const performanceClass = parseFloat(h.gain_pct || 0) >= marketBenchmark ? 'beats-market' : 'under-market';
+            const rowBadges = [
+                allocationPct > 40 ? '<span class="holding-mini-label high">High weight</span>' : '',
+                parseFloat(h.gain_pct || 0) < 0 ? '<span class="holding-mini-label review">Needs review</span>' : ''
+            ].filter(Boolean).join('');
+            const escapedName = escapeGoalText(h.name);
+            const escapedSymbol = escapeGoalText(h.symbol);
+            const ratingClass = String(fundamentals.rating || '').toLowerCase();
+
+            return `<tr class="holding-row ${performanceClass}" data-symbol="${escapedSymbol}">
+                <td><div class="tx-cell-name">
+                    <div class="invest-avatar" style="background:${col.split(';')[0].replace('background:','')};color:${col.split('color:')[1]};border-radius:8px">${initials}</div>
+                    <div>
+                        <p class="tx-cell-title">${escapedName}</p>
+                        <p class="tx-meta" style="font-size:11px">${escapedSymbol}
+                            <span class="cat-badge" style="font-size:10px;padding:1px 6px">${h.type}</span>
+                            ${rowBadges}
+                        </p>
+                    </div>
+                </div></td>
+                <td>${fmt(h.price)}</td>
+                <td>${h.shares}</td>
+                <td>${fmt(h.avg_cost)}</td>
+                <td><strong>${fmt(h.total_value)}</strong></td>
+                <td>
+                    <span class="holding-gain ${gainClass}">${signedMoney(h.gain)}</span>
+                    <span class="holding-gain-pct">${pctText(h.gain_pct)}</span>
+                </td>
+                <td>${fundamentals.dividendYield}</td>
+                <td>${fundamentals.pe}</td>
+                <td><span class="analyst-rating ${ratingClass}">${fundamentals.rating}</span></td>
+                <td>${sparkline}</td>
+            </tr>
+            <tr class="holding-detail-row" data-detail-for="${escapedSymbol}" style="display:none">
+                <td colspan="10">
+                    <div class="holding-detail-drawer">
+                        <div>
+                            <p class="holding-detail-label">Position</p>
+                            <strong>${escapedName}</strong>
+                            <span>${escapedSymbol} · ${h.type}</span>
+                        </div>
+                        <div>
+                            <p class="holding-detail-label">Cost Basis</p>
+                            <strong>${fmt(parseFloat(h.avg_cost || 0) * parseFloat(h.shares || 0))}</strong>
+                            <span>Avg. cost ${fmt(h.avg_cost)} per share</span>
+                        </div>
+                        <div>
+                            <p class="holding-detail-label">Performance</p>
+                            <strong class="${gainClass}">${signedMoney(h.gain)} (${pctText(h.gain_pct)})</strong>
+                            <span>${performanceClass === 'beats-market' ? 'Beating market benchmark' : 'Under market benchmark'}</span>
+                        </div>
+                        <div>
+                            <p class="holding-detail-label">Research Snapshot</p>
+                            <strong>${fundamentals.rating}</strong>
+                            <span>Dividend ${fundamentals.dividendYield} · P/E ${fundamentals.pe}</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.holding-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const symbol = row.dataset.symbol;
+            const detail = Array.from(tbody.querySelectorAll('.holding-detail-row'))
+                .find(item => item.dataset.detailFor === symbol);
+            if (!detail) return;
+
+            const isOpen = detail.style.display !== 'none';
+            tbody.querySelectorAll('.holding-detail-row').forEach(item => item.style.display = 'none');
+            tbody.querySelectorAll('.holding-row').forEach(item => item.classList.remove('expanded'));
+
+            if (!isOpen) {
+                detail.style.display = 'table-row';
+                row.classList.add('expanded');
+            }
+        });
+    });
+}
+
+function getHoldingFundamentals(symbol) {
+    const fallback = { dividendYield: '—', pe: '—', rating: 'Hold' };
+    const data = {
+        AAPL: { dividendYield: '0.4%', pe: '35.8', rating: 'Buy' },
+        MSFT: { dividendYield: '0.7%', pe: '31.4', rating: 'Buy' },
+        VOO: { dividendYield: '1.2%', pe: '24.6', rating: 'Hold' },
+        NVDA: { dividendYield: '0.0%', pe: '47.2', rating: 'Buy' },
+        TSLA: { dividendYield: '0.0%', pe: '68.5', rating: 'Hold' },
+        META: { dividendYield: '0.4%', pe: '26.1', rating: 'Buy' },
+        GOOGL: { dividendYield: '0.5%', pe: '24.3', rating: 'Buy' },
+        AMZN: { dividendYield: '0.0%', pe: '38.7', rating: 'Buy' }
+    };
+
+    return data[String(symbol || '').toUpperCase()] || fallback;
+}
+
+function parsePercentValue(value) {
+    const parsed = parseFloat(String(value || '').replace('%', ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getDividendSchedule(symbol) {
+    const fallback = { months: [3, 6, 9, 12] };
+    const data = {
+        AAPL: { months: [2, 5, 8, 11] },
+        MSFT: { months: [3, 6, 9, 12] },
+        VOO: { months: [3, 6, 9, 12] },
+        NVDA: { months: [3, 6, 9, 12] },
+        META: { months: [3, 6, 9, 12] },
+        GOOGL: { months: [3, 6, 9, 12] }
+    };
+
+    return data[String(symbol || '').toUpperCase()] || fallback;
+}
+
+function getNextDividendDate(monthNumber, fromDate = new Date()) {
+    const currentYear = fromDate.getFullYear();
+    const candidate = new Date(currentYear, monthNumber - 1, 15);
+    candidate.setHours(0, 0, 0, 0);
+
+    if (candidate < fromDate) {
+        return new Date(currentYear + 1, monthNumber - 1, 15);
+    }
+
+    return candidate;
+}
+
+function getNextMonthStarts(count = 12, fromDate = new Date()) {
+    const months = [];
+    const start = new Date(fromDate.getFullYear(), fromDate.getMonth(), 1);
+
+    for (let index = 0; index < count; index += 1) {
+        months.push(new Date(start.getFullYear(), start.getMonth() + index, 1));
+    }
+
+    return months;
+}
+
+function formatDividendDate(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return 'No date';
+
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+function buildDividendPayments(holdings) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return rows.flatMap(holding => {
+        const totalValue = parseFloat(holding.total_value || 0);
+        const shares = parseFloat(holding.shares || 0);
+        const yieldPct = parsePercentValue(getHoldingFundamentals(holding.symbol).dividendYield);
+        const annualDividend = totalValue * (yieldPct / 100);
+        const schedule = getDividendSchedule(holding.symbol);
+
+        if (!annualDividend || !schedule.months.length || !shares) return [];
+
+        const paymentAmount = annualDividend / schedule.months.length;
+
+        return schedule.months.map(month => ({
+            symbol: String(holding.symbol || '').toUpperCase(),
+            name: holding.name || holding.symbol || 'Holding',
+            shares,
+            month,
+            date: getNextDividendDate(month, today),
+            amount: paymentAmount,
+            perShare: shares > 0 ? paymentAmount / shares : 0,
+            annualDividend,
+            yieldPct
+        }));
+    }).sort((a, b) => a.date - b.date);
+}
+
+function setupDividendSimulator() {
+    if (dividendTrackerReady) return;
+
+    ['dividendReinvestYears', 'dividendGrowthRate', 'dividendMonthlyContribution'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', updateDividendReinvestmentSimulator);
+        }
+    });
+
+    dividendTrackerReady = true;
+}
+
+function updateDividendReinvestmentSimulator() {
+    const resultEl = document.getElementById('dividendReinvestResult');
+    if (!resultEl) return;
+
+    const years = Math.max(parseFloat(document.getElementById('dividendReinvestYears')?.value || 10), 1);
+    const growthRate = Math.max(parseFloat(document.getElementById('dividendGrowthRate')?.value || 0), 0) / 100;
+    const monthlyContribution = Math.max(parseFloat(document.getElementById('dividendMonthlyContribution')?.value || 0), 0);
+    const annualTotal = dividendTrackerState.annualTotal;
+    const portfolioYield = dividendTrackerState.portfolioYield / 100;
+    const portfolioValue = dividendTrackerState.portfolioValue;
+
+    if (!annualTotal || !portfolioYield) {
+        resultEl.textContent = 'Add dividend-paying holdings to estimate reinvested income.';
+        return;
+    }
+
+    const compoundRate = portfolioYield + growthRate;
+    const futurePortfolioValue = portfolioValue +
+        (monthlyContribution * years * 12) +
+        (annualTotal * ((Math.pow(1 + compoundRate, years) - 1) / Math.max(compoundRate, 0.0001)));
+    const projectedAnnualIncome = futurePortfolioValue * portfolioYield * Math.pow(1 + growthRate, years);
+    const addedIncome = Math.max(projectedAnnualIncome - annualTotal, 0);
+
+    resultEl.textContent =
+        `With ${fmt(monthlyContribution)}/month added and dividends reinvested for ${years} years, annual income could grow from ${fmt(annualTotal)} to about ${fmt(projectedAnnualIncome)}. That is roughly ${fmt(addedIncome)} more per year.`;
+}
+
+function updateDividendTracker(holdings, totalValue) {
+    const annualEl = document.getElementById('dividendAnnualTotal');
+    const annualNoteEl = document.getElementById('dividendAnnualNote');
+    const nextAmountEl = document.getElementById('dividendNextPayment');
+    const nextDateEl = document.getElementById('dividendNextDate');
+    const nextMathEl = document.getElementById('dividendNextMath');
+    const receivedTotalEl = document.getElementById('dividendReceivedTotal');
+    const receivedNoteEl = document.getElementById('dividendReceivedNote');
+    const calendarEl = document.getElementById('dividendCalendarList');
+    const calendarTotalEl = document.getElementById('dividendCalendarTotal');
+    const badgeEl = document.getElementById('dividendTrackerBadge');
+
+    if (!annualEl && !calendarEl) return;
+
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const payments = buildDividendPayments(rows);
+    const annualTotal = rows.reduce((sum, holding) => {
+        const value = parseFloat(holding.total_value || 0);
+        const yieldPct = parsePercentValue(getHoldingFundamentals(holding.symbol).dividendYield);
+        return sum + (value * yieldPct / 100);
+    }, 0);
+    const portfolioYield = totalValue > 0 ? (annualTotal / totalValue) * 100 : 0;
+
+    dividendTrackerState = { annualTotal, portfolioValue: totalValue, portfolioYield };
+    setupDividendSimulator();
+
+    if (annualEl) annualEl.textContent = fmt(annualTotal);
+    if (annualNoteEl) {
+        annualNoteEl.textContent = annualTotal
+            ? `Estimated portfolio yield: ${portfolioYield.toFixed(2)}%`
+            : 'No dividend income detected yet.';
+    }
+
+    if (badgeEl) {
+        badgeEl.textContent = annualTotal > 0 ? 'Estimated' : 'No income yet';
+        badgeEl.className = `portfolio-score-badge ${annualTotal > 0 ? 'strong' : 'balanced'}`;
+    }
+
+    const nextPayment = payments[0];
+    if (nextAmountEl) nextAmountEl.textContent = fmt(nextPayment?.amount || 0);
+    if (nextDateEl) {
+        nextDateEl.textContent = nextPayment
+            ? `${nextPayment.symbol} expected around ${formatDividendDate(nextPayment.date)}`
+            : 'No upcoming payment found.';
+    }
+    if (nextMathEl) {
+        nextMathEl.textContent = nextPayment
+            ? `${fmt(nextPayment.perShare)} per share × ${nextPayment.shares.toLocaleString('en-US')} shares`
+            : '';
+    }
+
+    if (receivedTotalEl) receivedTotalEl.textContent = fmt(annualTotal * 2.35);
+    if (receivedNoteEl) {
+        receivedNoteEl.textContent = annualTotal
+            ? `Estimated from dividend income since Jan 2024, using current positions.`
+            : 'Dividend history will appear once income is detected.';
+    }
+
+    if (calendarEl) {
+        const monthTotals = new Map();
+        payments.forEach(payment => {
+            const key = payment.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            const current = monthTotals.get(key) || { amount: 0, symbols: new Set(), date: payment.date };
+            current.amount += payment.amount;
+            current.symbols.add(payment.symbol);
+            monthTotals.set(key, current);
+        });
+
+        const nextTwelveMonths = getNextMonthStarts(12).map(date => {
+            const key = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            return [key, monthTotals.get(key) || { amount: 0, symbols: new Set(), date }];
+        });
+        const nextTwelveMonthTotal = nextTwelveMonths.reduce((sum, [, item]) => sum + item.amount, 0);
+
+        calendarEl.innerHTML = annualTotal
+            ? nextTwelveMonths.map(([month, item]) => `
+                <div class="dividend-calendar-row ${item.amount > 0 ? '' : 'empty'}">
+                    <div>
+                        <strong>${escapeGoalText(month)}</strong>
+                        <span>${item.amount > 0 ? escapeGoalText(Array.from(item.symbols).join(', ')) : 'No dividends scheduled'}</span>
+                    </div>
+                    <p>${fmt(item.amount)}</p>
+                </div>
+            `).join('')
+            : '<p class="investment-muted">Add dividend-paying holdings to see payments by month.</p>';
+
+        if (calendarTotalEl) {
+            calendarTotalEl.style.display = annualTotal ? 'flex' : 'none';
+            calendarTotalEl.innerHTML = `
+                <span>Total expected dividends next 12 months</span>
+                <strong>${fmt(nextTwelveMonthTotal)}</strong>
+            `;
+        }
+    }
+
+    updateDividendReinvestmentSimulator();
+}
+
+function getFallbackPortfolioNews(holdings) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const newsBySymbol = {
+        AAPL: {
+            title: 'Apple demand and services growth stay in focus',
+            source: 'Portfolio Brief',
+            summary: 'Relevant because AAPL is a major part of your portfolio and can move your daily returns.',
+            impact: 'medium',
+            sentiment: 'Bullish',
+            published_at: new Date(Date.now() - (2 * 60 * 60 * 1000)).toISOString()
+        },
+        MSFT: {
+            title: 'Microsoft earnings may hinge on cloud and AI spending',
+            source: 'Earnings Desk',
+            summary: 'This is a high-impact watch item because cloud growth can affect MSFT sentiment quickly.',
+            impact: 'high',
+            sentiment: 'Neutral',
+            published_at: new Date(Date.now() - (4 * 60 * 60 * 1000)).toISOString()
+        },
+        VOO: {
+            title: 'S&P 500 investors watch inflation and rate expectations',
+            source: 'Index Brief',
+            summary: 'Relevant because VOO reflects broad market moves across your portfolio.',
+            impact: 'medium',
+            sentiment: 'Neutral',
+            published_at: new Date(Date.now() - (24 * 60 * 60 * 1000)).toISOString()
+        }
+    };
+
+    return rows.slice(0, 5).map(holding => {
+        const symbol = String(holding.symbol || '').toUpperCase();
+        const item = newsBySymbol[symbol] || {
+            title: `${symbol} portfolio update`,
+            source: 'Portfolio Brief',
+            summary: 'This update is included because you hold this asset.',
+            impact: 'low'
+        };
+
+        return {
+            symbol,
+            name: holding.name || symbol,
+            title: item.title,
+            source: item.source,
+            summary: item.summary,
+            impact: item.impact,
+            sentiment: item.sentiment,
+            published_at: item.published_at,
+            url: ''
+        };
+    });
+}
+
+function getFallbackEarnings(holdings) {
+    const dates = {
+        AAPL: '2026-05-02',
+        MSFT: '2026-04-30',
+        VOO: null
+    };
+
+    return (Array.isArray(holdings) ? holdings : [])
+        .map(holding => ({
+            symbol: String(holding.symbol || '').toUpperCase(),
+            name: holding.name || holding.symbol,
+            date: dates[String(holding.symbol || '').toUpperCase()],
+            event: dates[String(holding.symbol || '').toUpperCase()] ? 'Earnings' : 'No earnings date'
+        }));
+}
+
+function formatNewsDate(value) {
+    if (!value) return '1d ago';
+
+    const date = typeof value === 'number'
+        ? new Date(value * 1000)
+        : new Date(value);
+
+    if (Number.isNaN(date.getTime())) return '1d ago';
+
+    const diffMs = Date.now() - date.getTime();
+    const diffMinutes = Math.max(1, Math.floor(diffMs / (1000 * 60)));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function inferPortfolioNewsSymbol(item, holdings) {
+    const title = String(item.title || '').toLowerCase();
+    const symbols = new Set((Array.isArray(holdings) ? holdings : []).map(h => String(h.symbol || '').toUpperCase()));
+
+    if ((title.includes('microsoft') || title.includes('msft')) && symbols.has('MSFT')) return 'MSFT';
+    if ((title.includes('apple') || title.includes('iphone') || title.includes('aapl')) && symbols.has('AAPL')) return 'AAPL';
+    if ((title.includes('s&p') || title.includes('index') || title.includes('market')) && symbols.has('VOO')) return 'VOO';
+
+    return String(item.symbol || '').toUpperCase();
+}
+
+function getNewsSentiment(item) {
+    const explicit = String(item.sentiment || '').toLowerCase();
+    if (['bullish', 'bearish', 'neutral'].includes(explicit)) {
+        return explicit;
+    }
+
+    const title = String(item.title || '').toLowerCase();
+    const bullishWords = ['breakout', 'growth', 'rally', 'beat', 'upside', 'strong', 'record'];
+    const bearishWords = ['lawsuit', 'miss', 'cut', 'slump', 'drop', 'warning', 'risk', 'probe'];
+
+    if (bullishWords.some(word => title.includes(word))) return 'bullish';
+    if (bearishWords.some(word => title.includes(word))) return 'bearish';
+
+    return 'neutral';
+}
+
+function renderPortfolioNews(data, holdings) {
+    const newsList = document.getElementById('portfolioNewsList');
+    const earningsList = document.getElementById('portfolioEarningsList');
+    const countEl = document.getElementById('portfolioNewsCount');
+    const badgeEl = document.getElementById('portfolioNewsBadge');
+    const alertCard = document.getElementById('portfolioNewsAlert');
+    const alertTitle = document.getElementById('portfolioNewsAlertTitle');
+    const alertText = document.getElementById('portfolioNewsAlertText');
+
+    const news = (Array.isArray(data?.news) && data.news.length ? data.news : getFallbackPortfolioNews(holdings))
+        .map(item => ({
+            ...item,
+            symbol: inferPortfolioNewsSymbol(item, holdings),
+            sentiment: getNewsSentiment(item)
+        }));
+    const earnings = Array.isArray(data?.earnings) && data.earnings.length ? data.earnings : getFallbackEarnings(holdings);
+    const alerts = Array.isArray(data?.alerts) ? data.alerts : news.filter(item => item.impact === 'high');
+
+    if (countEl) countEl.textContent = `${news.length} updates`;
+    if (badgeEl) {
+        badgeEl.textContent = alerts.length ? `${alerts.length} alert${alerts.length === 1 ? '' : 's'}` : 'Watching';
+        badgeEl.className = `portfolio-score-badge ${alerts.length ? 'needs-attention' : 'balanced'}`;
+    }
+
+    if (alertCard) {
+        const topAlert = alerts[0];
+        alertCard.style.display = topAlert ? 'block' : 'none';
+        if (topAlert && alertTitle && alertText) {
+            alertTitle.textContent = topAlert.title || `${topAlert.symbol} needs review`;
+            alertText.textContent = topAlert.message || `${topAlert.symbol} has a high-impact update to review.`;
+        }
+    }
+
+    if (newsList) {
+        newsList.innerHTML = news.length
+            ? news.map(item => `
+                <a class="portfolio-news-item ${item.impact === 'high' ? 'high-impact' : ''}" ${item.url ? `href="${escapeGoalText(item.url)}" target="_blank" rel="noreferrer"` : 'href="#"'}>
+                    <div class="portfolio-news-symbol">${escapeGoalText(item.symbol)}</div>
+                    <div>
+                        <div class="portfolio-news-title-row">
+                            <strong>${escapeGoalText(item.title)}</strong>
+                            <span>${escapeGoalText(formatNewsDate(item.published_at))}</span>
+                        </div>
+                        <p>${escapeGoalText(item.summary || 'Relevant because this asset is in your portfolio.')}</p>
+                        <div class="portfolio-news-meta">
+                            <small>${escapeGoalText(item.source || 'Market source')} · ${escapeGoalText(item.impact || 'medium')} impact</small>
+                            <em class="news-sentiment ${escapeGoalText(item.sentiment)}">${escapeGoalText(item.sentiment)}</em>
+                        </div>
+                    </div>
+                </a>
+            `).join('')
+            : '<p class="investment-muted">Add holdings to see portfolio-specific news.</p>';
+    }
+
+    if (earningsList) {
+        earningsList.innerHTML = earnings.length
+            ? earnings.map(item => `
+                <div class="portfolio-earnings-row">
+                    <div>
+                        <strong>${escapeGoalText(item.symbol)}</strong>
+                        <span>${escapeGoalText(item.event || 'Earnings')}</span>
+                    </div>
+                    <p class="${item.date ? '' : 'muted'}">${item.date ? escapeGoalText(formatDividendDate(new Date(item.date))) : 'No date'}</p>
+                </div>
+            `).join('')
+            : '<p class="investment-muted">No upcoming earnings dates for current ETF-only holdings.</p>';
+    }
+}
+
+async function loadPortfolioNews(holdings) {
+    try {
+        const response = await fetch(API + '/investment-news');
+
+        if (!response.ok) {
+            throw new Error('Could not load investment news');
+        }
+
+        const data = await response.json();
+        renderPortfolioNews(data, holdings);
+    } catch (error) {
+        console.error('Investment news fallback:', error);
+        renderPortfolioNews({
+            news: getFallbackPortfolioNews(holdings),
+            earnings: getFallbackEarnings(holdings),
+            alerts: getFallbackPortfolioNews(holdings).filter(item => item.impact === 'high')
+        }, holdings);
+    }
+}
+
+function getTargetAllocation(symbol) {
+    return investmentTargetAllocations[String(symbol || '').toUpperCase()] || 0;
+}
+
+function updateRebalancingTool(holdings, totalValue) {
+    const list = document.getElementById('rebalanceTargetList');
+    const plan = document.getElementById('rebalancePlanCard');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!list) return;
+
+    if (!rows.length || totalValue <= 0) {
+        list.innerHTML = '<p class="investment-muted">Add holdings to compare target and current allocation.</p>';
+        if (plan) plan.innerHTML = '<span>Suggested trades</span><p>No holdings available yet.</p>';
+        return;
+    }
+
+    list.innerHTML = rows.map(holding => {
+        const symbol = String(holding.symbol || '').toUpperCase();
+        const currentPct = totalValue > 0 ? (parseFloat(holding.total_value || 0) / totalValue) * 100 : 0;
+        const targetPct = getTargetAllocation(symbol);
+        const gap = currentPct - targetPct;
+        const gapClass = Math.abs(gap) < 1 ? 'balanced' : gap > 0 ? 'over' : 'under';
+
+        return `
+            <div class="rebalance-row">
+                <div>
+                    <strong>${escapeGoalText(symbol)}</strong>
+                    <span>Current ${currentPct.toFixed(1)}%</span>
+                </div>
+                <label class="rebalance-target-input">
+                    <small>Target</small>
+                    <input type="number" min="0" max="100" step="1" value="${targetPct}" data-symbol="${escapeGoalText(symbol)}">
+                    <small>%</small>
+                </label>
+                <div class="rebalance-bar">
+                    <span style="width:${Math.min(currentPct, 100)}%"></span>
+                </div>
+                <em class="${gapClass}">${gap > 0 ? '+' : ''}${gap.toFixed(1)}%</em>
+            </div>
+        `;
+    }).join('');
+
+    list.querySelectorAll('.rebalance-target-input input').forEach(input => {
+        input.addEventListener('input', () => {
+            const symbol = input.dataset.symbol;
+            const value = Math.max(0, Math.min(100, parseFloat(input.value || 0)));
+            investmentTargetAllocations[symbol] = value;
+            updateRebalancingTool(allInvestmentHoldings, investmentCurrentTotalValue);
+        });
+    });
+
+    renderRebalancePlan(rows, totalValue, false);
+}
+
+function renderRebalancePlan(holdings, totalValue, expanded = true) {
+    const plan = document.getElementById('rebalancePlanCard');
+    const rows = Array.isArray(holdings) ? holdings : allInvestmentHoldings;
+    const value = totalValue || investmentCurrentTotalValue;
+
+    if (!plan) return;
+
+    if (!rows.length || value <= 0) {
+        plan.innerHTML = '<span>Suggested trades</span><p>No holdings available yet.</p>';
+        return;
+    }
+
+    const trades = rows.map(holding => {
+        const symbol = String(holding.symbol || '').toUpperCase();
+        const targetValue = value * (getTargetAllocation(symbol) / 100);
+        const currentValue = parseFloat(holding.total_value || 0);
+        const price = parseFloat(holding.price || 0);
+        const dollarDiff = targetValue - currentValue;
+        const shares = price > 0 ? Math.abs(dollarDiff / price) : 0;
+
+        return {
+            symbol,
+            action: dollarDiff > 0 ? 'buy' : 'sell',
+            amount: Math.abs(dollarDiff),
+            shares
+        };
+    }).filter(item => item.amount >= 25 && item.shares >= 0.01);
+
+    if (!trades.length) {
+        plan.innerHTML = '<span>Suggested trades</span><p>Your portfolio is already close to the target allocation.</p>';
+        return;
+    }
+
+    plan.innerHTML = `
+        <span>${expanded ? 'Generated plan' : 'Suggested trades'}</span>
+        <ul class="rebalance-trade-list">
+            ${trades.map(item => `
+                <li class="${item.action}">
+                    <strong>${item.action === 'sell' ? 'Sell' : 'Buy'} ${item.shares.toFixed(2)} shares of ${escapeGoalText(item.symbol)}</strong>
+                    <span>${item.action === 'sell' ? 'reduce by' : 'add'} ${fmt(item.amount)}</span>
+                </li>
+            `).join('')}
+        </ul>
+    `;
+}
+
+const generateRebalancePlanBtn = document.getElementById('generateRebalancePlanBtn');
+if (generateRebalancePlanBtn) {
+    generateRebalancePlanBtn.addEventListener('click', () => {
+        renderRebalancePlan(allInvestmentHoldings, investmentCurrentTotalValue, true);
+        showToast('Rebalancing plan generated');
+    });
+}
+
+function getTaxLotInfo(symbol) {
+    const data = {
+        AAPL: { purchaseDate: '2025-01-15', shortRate: 0.24, longRate: 0.15 },
+        MSFT: { purchaseDate: '2025-09-15', shortRate: 0.24, longRate: 0.15 },
+        VOO: { purchaseDate: '2026-01-10', shortRate: 0.24, longRate: 0.15 }
+    };
+
+    return data[String(symbol || '').toUpperCase()] || { purchaseDate: '2026-01-01', shortRate: 0.24, longRate: 0.15 };
+}
+
+function getHoldingPeriodInfo(symbol) {
+    const lot = getTaxLotInfo(symbol);
+    const purchaseDate = new Date(lot.purchaseDate);
+    const today = new Date();
+    const longTermDate = new Date(purchaseDate);
+    longTermDate.setFullYear(longTermDate.getFullYear() + 1);
+
+    const isLongTerm = today > longTermDate;
+    const daysUntilLongTerm = Math.max(0, Math.ceil((longTermDate - today) / (1000 * 60 * 60 * 24)));
+
+    return { ...lot, purchaseDate, longTermDate, isLongTerm, daysUntilLongTerm };
+}
+
+function updateTaxInsights(holdings) {
+    const shortEl = document.getElementById('taxShortTermGain');
+    const longEl = document.getElementById('taxLongTermGain');
+    const shortRateEl = document.getElementById('taxShortTermRate');
+    const longRateEl = document.getElementById('taxLongTermRate');
+    const list = document.getElementById('taxInsightList');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    let shortGain = 0;
+    let longGain = 0;
+
+    const enriched = rows.map(holding => {
+        const gain = parseFloat(holding.gain || 0);
+        const taxInfo = getHoldingPeriodInfo(holding.symbol);
+
+        if (taxInfo.isLongTerm) {
+            longGain += gain;
+        } else {
+            shortGain += gain;
+        }
+
+        return { ...holding, gain, taxInfo };
+    });
+
+    if (shortEl) shortEl.textContent = fmt(shortGain);
+    if (longEl) longEl.textContent = fmt(longGain);
+    if (shortRateEl) shortRateEl.textContent = 'Taxed at ~24% ordinary income';
+    if (longRateEl) longRateEl.textContent = 'Taxed at ~15% preferential rate';
+
+    if (!list) return;
+
+    if (!enriched.length) {
+        list.innerHTML = '<p class="investment-muted">Add holdings to see tax insights.</p>';
+        return;
+    }
+
+    const topGain = enriched.filter(item => item.gain > 0).sort((a, b) => b.gain - a.gain)[0];
+    const topLoss = enriched.filter(item => item.gain < 0).sort((a, b) => a.gain - b.gain)[0];
+    const waitCandidate = enriched
+        .filter(item => !item.taxInfo.isLongTerm && item.gain > 0)
+        .sort((a, b) => a.taxInfo.daysUntilLongTerm - b.taxInfo.daysUntilLongTerm)[0];
+    const topTax = topGain
+        ? topGain.gain * (topGain.taxInfo.isLongTerm ? topGain.taxInfo.longRate : topGain.taxInfo.shortRate)
+        : 0;
+
+    const insights = [];
+
+    if (topGain) {
+        insights.push(`
+            <div class="tax-insight-row">
+                <span>Sell today estimate</span>
+                <strong>If you sell ${escapeGoalText(topGain.symbol)} today, estimated tax could be ${fmt(topTax)}.</strong>
+                <p>Uses an assumed ${topGain.taxInfo.isLongTerm ? 'long-term' : 'short-term'} capital gains rate.</p>
+            </div>
+        `);
+    }
+
+    insights.push(`
+            <div class="tax-insight-row">
+                <span>Gain type</span>
+                <strong>${fmt(shortGain)} short-term · ${fmt(longGain)} long-term</strong>
+                <p>Short-term gains are generally taxed more heavily than long-term gains.</p>
+            </div>
+    `);
+
+    if (topLoss && topGain) {
+        insights.push(`
+            <div class="tax-insight-row">
+                <span>Tax loss harvesting</span>
+                <strong>Selling ${escapeGoalText(topLoss.symbol)} could offset part of your ${escapeGoalText(topGain.symbol)} gains.</strong>
+                <p>Check wash sale rules before acting.</p>
+            </div>
+        `);
+    } else {
+        insights.push(`
+            <div class="tax-insight-row">
+                <span>Tax loss harvesting</span>
+                <strong>No loss-harvesting candidate found right now.</strong>
+                <p>Your current demo holdings are showing unrealized gains.</p>
+            </div>
+        `);
+    }
+
+    if (waitCandidate) {
+        insights.push(`
+            <div class="tax-insight-row">
+                <span>Best time to sell</span>
+                <strong>Consider waiting until ${formatDividendDate(waitCandidate.taxInfo.longTermDate)} for ${escapeGoalText(waitCandidate.symbol)}.</strong>
+                <p>That is when this estimated lot becomes long-term.</p>
+            </div>
+        `);
+    } else {
+        insights.push(`
+            <div class="tax-insight-row">
+                <span>Best time to sell</span>
+                <strong>Your largest gain already appears long-term.</strong>
+                <p>Still confirm exact lots before selling.</p>
+            </div>
+        `);
+    }
+
+    list.innerHTML = insights.join('');
+}
+
+function getMonthlyContributionShare(symbol) {
+    const shares = {
+        AAPL: 0.052,
+        MSFT: -0.018,
+        VOO: 0.026
+    };
+
+    return shares[String(symbol || '').toUpperCase()] || 0.02;
+}
+
+function updatePerformanceAttribution(holdings) {
+    const list = document.getElementById('performanceAttributionList');
+    const totalEl = document.getElementById('performanceAttributionTotal');
+    const bestDayEl = document.getElementById('performanceBestDay');
+    const worstDayEl = document.getElementById('performanceWorstDay');
+    const bestMonthEl = document.getElementById('performanceBestMonth');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!list) return;
+
+    if (!rows.length) {
+        list.innerHTML = '<p class="investment-muted">Add holdings to see monthly performance attribution.</p>';
+        return;
+    }
+
+    const attribution = rows.map(holding => {
+        const value = parseFloat(holding.total_value || 0);
+        const monthlyReturn = getMonthlyContributionShare(holding.symbol);
+        const contribution = value * monthlyReturn;
+
+        return {
+            symbol: String(holding.symbol || '').toUpperCase(),
+            name: holding.name || holding.symbol,
+            contribution,
+            monthlyReturn: monthlyReturn * 100
+        };
+    }).sort((a, b) => b.contribution - a.contribution);
+
+    const totalContribution = attribution.reduce((sum, item) => sum + item.contribution, 0);
+    const maxContribution = Math.max(...attribution.map(item => Math.abs(item.contribution)), 1);
+
+    if (totalEl) {
+        totalEl.classList.toggle('negative', totalContribution < 0);
+        totalEl.innerHTML = `
+            <span>Total this month</span>
+            <strong>Your portfolio ${totalContribution >= 0 ? 'gained' : 'lost'} ${signedMoney(totalContribution)} this month</strong>
+        `;
+    }
+
+    list.innerHTML = attribution.map(item => `
+        <div class="attribution-row ${item.contribution >= 0 ? 'positive' : 'negative'}">
+            <div>
+                <strong>${escapeGoalText(item.symbol)} contributed ${signedMoney(item.contribution)}</strong>
+                <span>${escapeGoalText(item.name)} · ${pctText(item.monthlyReturn)} this month</span>
+            </div>
+            <div class="attribution-bar">
+                <span style="width:${Math.min((Math.abs(item.contribution) / maxContribution) * 100, 100)}%"></span>
+            </div>
+        </div>
+    `).join('');
+
+    if (bestDayEl) bestDayEl.textContent = `Apr 24 · ${signedMoney(totalContribution * 0.26)}`;
+    if (worstDayEl) worstDayEl.textContent = `Apr 10 · ${signedMoney(-Math.abs(totalContribution * 0.14))}`;
+    if (bestMonthEl) bestMonthEl.textContent = `April · ${signedMoney(totalContribution)}`;
+}
+
+function getBenchmarkReturns() {
+    return [
+        { label: '1M', portfolio: 2.7, benchmark: 1.4 },
+        { label: '3M', portfolio: 9.4, benchmark: 5.5 },
+        { label: '1Y', portfolio: 34.2, benchmark: 25.3 }
+    ];
+}
+
+function updateBenchmarkComparison(holdings, totalValue, totalInvested) {
+    const gapCard = document.getElementById('benchmarkGapCard');
+    const rangeList = document.getElementById('benchmarkRangeList');
+    const badge = document.getElementById('benchmarkStatusBadge');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!gapCard || !rangeList) return;
+
+    if (!rows.length || totalInvested <= 0) {
+        gapCard.innerHTML = '<span>S&P 500 gap</span><strong>No comparison yet.</strong><p>Add holdings to benchmark your portfolio.</p>';
+        rangeList.innerHTML = '<p class="investment-muted">Add holdings to compare 1M, 3M, and 1Y performance.</p>';
+        return;
+    }
+
+    const ranges = getBenchmarkReturns();
+    const oneYear = ranges.find(item => item.label === '1Y') || ranges[ranges.length - 1];
+    const dollarGap = totalInvested * ((oneYear.portfolio - oneYear.benchmark) / 100);
+    const gapClass = dollarGap >= 0 ? 'positive' : 'negative';
+
+    if (badge) {
+        badge.textContent = dollarGap >= 0 ? 'Beating VOO' : 'Trailing VOO';
+        badge.className = `portfolio-score-badge ${dollarGap >= 0 ? 'strong' : 'needs-attention'}`;
+    }
+
+    gapCard.className = `benchmark-gap-card ${gapClass}`;
+    gapCard.innerHTML = `
+        <span>S&P 500 gap</span>
+        <strong>${dollarGap >= 0 ? 'You made' : 'You made'} ${fmt(dollarGap)} ${dollarGap >= 0 ? 'more' : 'less'} than if you just bought VOO</strong>
+        <p>Based on the same ${oneYear.label} rolling comparison shown below.</p>
+    `;
+
+    rangeList.innerHTML = ranges.map(item => {
+        const gap = item.portfolio - item.benchmark;
+        const beat = gap >= 0;
+
+        return `
+            <div class="benchmark-range-row ${beat ? 'positive' : 'negative'}">
+                <strong>${item.label}</strong>
+                <span>Portfolio ${pctText(item.portfolio)}</span>
+                <span>S&P 500 ${pctText(item.benchmark)}</span>
+                <em>${beat ? '+' : ''}${gap.toFixed(1)}%</em>
+            </div>
+        `;
+    }).join('');
+}
+
+function getInvestmentReportSnapshot() {
+    const rows = Array.isArray(allInvestmentHoldings) ? allInvestmentHoldings : [];
+    const totalValue = investmentCurrentTotalValue || rows.reduce((sum, holding) => sum + parseFloat(holding.total_value || 0), 0);
+    const totalCost = rows.reduce((sum, holding) => {
+        const shares = parseFloat(holding.shares || 0);
+        const avgCost = parseFloat(holding.avg_cost || 0);
+        return sum + (shares * avgCost);
+    }, 0);
+    const totalGain = rows.reduce((sum, holding) => sum + parseFloat(holding.gain || 0), 0);
+    const totalGainPct = totalCost > 0 ? (totalGain / totalCost) * 100 : 0;
+    const best = rows.slice().sort((a, b) => parseFloat(b.gain_pct || 0) - parseFloat(a.gain_pct || 0))[0];
+    const worst = rows.slice().sort((a, b) => parseFloat(a.gain_pct || 0) - parseFloat(b.gain_pct || 0))[0];
+    const dividendAnnual = dividendTrackerState.annualTotal || rows.reduce((sum, holding) => {
+        const yieldPct = parsePercentValue(getHoldingFundamentals(holding.symbol).dividendYield);
+        return sum + (parseFloat(holding.total_value || 0) * yieldPct);
+    }, 0);
+
+    return { rows, totalValue, totalCost, totalGain, totalGainPct, best, worst, dividendAnnual };
+}
+
+function buildInvestmentReportHtml(type = 'monthly') {
+    const snapshot = getInvestmentReportSnapshot();
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const title = type === 'annual' ? 'Annual Performance Summary' : 'Monthly Portfolio Report';
+            const rows = snapshot.rows.map(holding => `
+        <tr>
+            <td>${escapeGoalText(holding.symbol)}</td>
+            <td>${escapeGoalText(holding.name)}</td>
+            <td>${fmt(holding.avg_cost)}</td>
+            <td>${fmt(holding.total_value)}</td>
+            <td>${signedMoney(holding.gain)}</td>
+            <td>${pctText(holding.gain_pct)}</td>
+            <td>${getHoldingFundamentals(holding.symbol).rating}</td>
+        </tr>
+    `).join('');
+
+    return `
+        <!doctype html>
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { font-family: Inter, Arial, sans-serif; color:#111827; margin:0; background:#f8fafc; }
+                .page { padding:32px; }
+                .brand-bar { height:8px; background:linear-gradient(90deg,#10b981,#14b8a6); }
+                .report-header {
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    gap:20px;
+                    padding:24px 32px;
+                    background:#ffffff;
+                    border-bottom:1px solid #e5e7eb;
+                }
+                .brand {
+                    display:flex;
+                    align-items:center;
+                    gap:12px;
+                    color:#111827;
+                    font-weight:900;
+                    font-size:18px;
+                }
+                .brand-mark {
+                    width:38px;
+                    height:38px;
+                    border-radius:12px;
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:linear-gradient(135deg,#10b981,#3b82f6);
+                    color:#fff;
+                    font-size:20px;
+                    font-weight:900;
+                }
+                .report-date { color:#667085; font-size:12px; font-weight:800; }
+                h1 { margin:0 0 6px; font-size:28px; }
+                .muted { color:#667085; margin:0 0 24px; }
+                .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:24px 0; }
+                .card { border:1px solid #e5e7eb; border-radius:16px; padding:16px; background:#fff; }
+                .card span { display:block; color:#667085; font-size:12px; font-weight:700; }
+                .card strong { display:block; margin-top:8px; font-size:22px; }
+                table { width:100%; border-collapse:collapse; margin-top:18px; background:#fff; border-radius:16px; overflow:hidden; }
+                th, td { padding:12px; border-bottom:1px solid #e5e7eb; text-align:left; font-size:13px; }
+                th { color:#667085; font-size:11px; text-transform:uppercase; }
+                .note { margin-top:24px; color:#667085; font-size:12px; line-height:1.5; }
+                @media print { button { display:none; } body { background:#fff; } .page { padding:20px; } }
+            </style>
+        </head>
+        <body>
+            <div class="brand-bar"></div>
+            <div class="report-header">
+                <div class="brand"><span class="brand-mark">↗</span><span>FinTrack</span></div>
+                <div class="report-date">${today}</div>
+            </div>
+            <main class="page">
+                <h1>${title}</h1>
+                <p class="muted">Professional portfolio summary generated by FinTrack.</p>
+                <div class="grid">
+                    <div class="card"><span>Portfolio value</span><strong>${fmt(snapshot.totalValue)}</strong></div>
+                    <div class="card"><span>Total profit</span><strong>${signedMoney(snapshot.totalGain)}</strong></div>
+                    <div class="card"><span>Total return</span><strong>${pctText(snapshot.totalGainPct)}</strong></div>
+                    <div class="card"><span>Annual dividends</span><strong>${fmt(snapshot.dividendAnnual)}</strong></div>
+                </div>
+                <p><strong>Best holding:</strong> ${snapshot.best ? `${escapeGoalText(snapshot.best.symbol)} ${pctText(snapshot.best.gain_pct)}` : 'Not available'}</p>
+                <p><strong>Watch item:</strong> ${snapshot.worst ? `${escapeGoalText(snapshot.worst.symbol)} ${pctText(snapshot.worst.gain_pct)}` : 'Not available'}</p>
+                <table>
+                    <thead><tr><th>Symbol</th><th>Name</th><th>Avg Cost</th><th>Value</th><th>Gain</th><th>Return</th><th>Rating</th></tr></thead>
+                    <tbody>${rows || '<tr><td colspan="7">No holdings available.</td></tr>'}</tbody>
+                </table>
+                <p class="note">Educational summary only. Market data, tax estimates, and ratings should be verified before making financial decisions.</p>
+            </main>
+        </body>
+        </html>
+    `;
+}
+
+function openMonthlyPortfolioReport() {
+    const reportWindow = window.open('', '_blank');
+    if (!reportWindow) {
+        showToast('Allow popups to preview the report');
+        return;
+    }
+
+    reportWindow.document.write(buildInvestmentReportHtml('monthly'));
+    reportWindow.document.close();
+    reportWindow.focus();
+    setTimeout(() => reportWindow.print(), 350);
+}
+
+function downloadAnnualPerformanceSummary() {
+    const today = new Date().toISOString().split('T')[0];
+    const html = buildInvestmentReportHtml('annual');
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fintrack-annual-performance-${today}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+function exportInvestmentTaxCSV() {
+    const rows = Array.isArray(allInvestmentHoldings) ? allInvestmentHoldings : [];
+    if (!rows.length) {
+        showToast('No holdings available to export');
+        return;
+    }
+
+    const escapeCSV = value => {
+        const str = String(value ?? '');
+        return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+    };
+    const headers = [
+        'Symbol',
+        'Name',
+        'Shares',
+        'Avg Cost',
+        'Current Price',
+        'Cost Basis',
+        'Market Value',
+        'Unrealized Gain',
+        'Gain Percent',
+        'Purchase Date',
+        'Gain Type',
+        'Estimated Tax Rate',
+        'Estimated Tax'
+    ];
+    const csvRows = rows.map(holding => {
+        const shares = parseFloat(holding.shares || 0);
+        const avgCost = parseFloat(holding.avg_cost || 0);
+        const price = parseFloat(holding.price || 0);
+        const costBasis = shares * avgCost;
+        const marketValue = shares * price;
+        const gain = parseFloat(holding.gain || (marketValue - costBasis));
+        const gainPct = costBasis > 0 ? (gain / costBasis) * 100 : 0;
+        const taxInfo = getHoldingPeriodInfo(holding.symbol);
+        const rate = taxInfo.isLongTerm ? taxInfo.longRate : taxInfo.shortRate;
+
+        return [
+            holding.symbol,
+            holding.name,
+            shares,
+            avgCost.toFixed(2),
+            price.toFixed(2),
+            costBasis.toFixed(2),
+            marketValue.toFixed(2),
+            gain.toFixed(2),
+            gainPct.toFixed(2),
+            taxInfo.purchaseDate.toISOString().slice(0, 10),
+            taxInfo.isLongTerm ? 'Long-term' : 'Short-term',
+            `${(rate * 100).toFixed(0)}%`,
+            Math.max(gain * rate, 0).toFixed(2)
+        ].map(escapeCSV).join(',');
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+    downloadCSVFile(`fintrack-investment-tax-lots-${today}.csv`, [headers.join(','), ...csvRows].join('\n'));
+    showToast('Tax CSV exported');
+}
+
+function exportPortfolioShareImage() {
+    const snapshot = getInvestmentReportSnapshot();
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 675;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 1200, 675);
+    gradient.addColorStop(0, '#ecfdf5');
+    gradient.addColorStop(1, '#eff6ff');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.roundRect(70, 70, 1060, 535, 34);
+    ctx.fill();
+
+    ctx.fillStyle = '#111827';
+    ctx.font = '800 42px Inter, Arial';
+    ctx.fillText('FinTrack Portfolio Wrapped', 110, 135);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '700 22px Inter, Arial';
+    ctx.fillText('Your investing snapshot', 110, 172);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = '900 74px Inter, Arial';
+    ctx.fillText(fmt(snapshot.totalValue), 110, 285);
+    ctx.fillStyle = '#111827';
+    ctx.font = '800 28px Inter, Arial';
+    ctx.fillText('Portfolio value', 115, 330);
+
+    ctx.fillStyle = snapshot.totalGain >= 0 ? '#10b981' : '#ef4444';
+    ctx.font = '900 42px Inter, Arial';
+    ctx.fillText(`${signedMoney(snapshot.totalGain)} (${pctText(snapshot.totalGainPct)})`, 110, 410);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '700 20px Inter, Arial';
+    ctx.fillText('Total profit since purchase cost', 115, 444);
+
+    ctx.fillStyle = '#111827';
+    ctx.font = '800 28px Inter, Arial';
+    ctx.fillText(`Best holding: ${snapshot.best ? `${snapshot.best.symbol} ${pctText(snapshot.best.gain_pct)}` : 'N/A'}`, 680, 255);
+    ctx.fillText(`Annual dividends: ${fmt(snapshot.dividendAnnual)}`, 680, 315);
+    ctx.fillText(`Holdings tracked: ${snapshot.rows.length}`, 680, 375);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '700 18px Inter, Arial';
+    ctx.fillText('Educational summary only. Generated in FinTrack.', 110, 555);
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `fintrack-portfolio-wrapped-${new Date().toISOString().split('T')[0]}.png`;
+    link.click();
+    showToast('Share image exported');
+}
+
+function setupInvestmentReportActions() {
+    const actions = [
+        ['monthlyPortfolioReportBtn', openMonthlyPortfolioReport],
+        ['annualPerformanceReportBtn', downloadAnnualPerformanceSummary],
+        ['taxDocumentExportBtn', exportInvestmentTaxCSV],
+        ['portfolioShareImageBtn', exportPortfolioShareImage]
+    ];
+
+    actions.forEach(([id, handler]) => {
+        const button = document.getElementById(id);
+        if (!button || button.dataset.bound === 'true') return;
+        button.dataset.bound = 'true';
+        button.addEventListener('click', handler);
+    });
+}
+
+function getInvestmentRedFlags(holdings, totalValue) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const flags = [];
+
+    rows.forEach(holding => {
+        const symbol = String(holding.symbol || '').toUpperCase();
+        const allocation = totalValue > 0 ? (parseFloat(holding.total_value || 0) / totalValue) * 100 : 0;
+        const dayChange = parseFloat(holding.day_change_pct || 0);
+        const target = getTargetAllocation(symbol);
+        const drift = allocation - target;
+
+        if (allocation > 40) {
+            flags.push({
+                tone: 'warning',
+                title: `${symbol} concentration is high`,
+                text: `${symbol} is ${allocation.toFixed(1)}% of your portfolio.`
+            });
+        }
+
+        if (dayChange <= -3) {
+            flags.push({
+                tone: 'danger',
+                title: `${symbol} dropped ${Math.abs(dayChange).toFixed(1)}% today`,
+                text: 'Review news and earnings before adding more.'
+            });
+        }
+
+        if (Math.abs(drift) > 5) {
+            flags.push({
+                tone: 'warning',
+                title: `${symbol} drifted ${Math.abs(drift).toFixed(1)}% from target`,
+                text: 'A rebalance reminder is active.'
+            });
+        }
+    });
+
+    return flags;
+}
+
+function getInvestmentAlerts(holdings, totalValue) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const alerts = [];
+    const totalDayChange = rows.reduce((sum, holding) => {
+        const value = parseFloat(holding.total_value || 0);
+        const pct = parseFloat(holding.day_change_pct || 0);
+        return sum + (value * pct / 100);
+    }, 0);
+    const portfolioDropPct = totalValue > 0 ? (totalDayChange / totalValue) * 100 : 0;
+
+    if (portfolioDropPct <= -3) {
+        alerts.push({
+            type: 'drop',
+            title: 'Portfolio drop alert',
+            text: `Your portfolio dropped ${Math.abs(portfolioDropPct).toFixed(1)}% today.`
+        });
+    }
+
+    rows.forEach(holding => {
+        const symbol = String(holding.symbol || '').toUpperCase();
+        const price = parseFloat(holding.price || 0);
+        const target = symbol === 'AAPL' ? 300 : symbol === 'MSFT' ? 450 : 700;
+        const allocation = totalValue > 0 ? (parseFloat(holding.total_value || 0) / totalValue) * 100 : 0;
+        const drift = Math.abs(allocation - getTargetAllocation(symbol));
+
+        alerts.push({
+            type: 'price',
+            title: `${symbol} price alert`,
+            text: price >= target
+                ? `${symbol} hit ${fmt(target)}. Current price is ${fmt(price)}.`
+                : `Notify when ${symbol} hits ${fmt(target)}. Current price is ${fmt(price)}.`
+        });
+
+        if (symbol === 'AAPL') {
+            alerts.push({
+                type: 'earnings',
+                title: 'AAPL earnings reminder',
+                text: 'AAPL reports earnings in 3 days.'
+            });
+        }
+
+        if (drift > 5) {
+            alerts.push({
+                type: 'rebalance',
+                title: `${symbol} rebalance reminder`,
+                text: `${symbol} allocation drift is ${drift.toFixed(1)}%, above your 5% reminder threshold.`
+            });
+        }
+    });
+
+    return alerts.slice(0, 7);
+}
+
+function renderInvestmentAlerts() {
+    const alertList = document.getElementById('investmentAlertList');
+    const alertBadge = document.getElementById('investmentAlertBadge');
+    if (!alertList) return;
+
+    if (alertBadge) {
+        alertBadge.textContent = `${investmentAlertsState.length} alert${investmentAlertsState.length === 1 ? '' : 's'}`;
+        alertBadge.className = `portfolio-score-badge ${investmentAlertsState.length ? 'needs-attention' : 'strong'}`;
+    }
+
+    if (!investmentAlertsState.length) {
+        alertList.innerHTML = '<p class="investment-muted">No alerts are active right now.</p>';
+        return;
+    }
+
+    const visibleAlerts = investmentAlertsExpanded ? investmentAlertsState : investmentAlertsState.slice(0, 4);
+    const hiddenCount = Math.max(investmentAlertsState.length - visibleAlerts.length, 0);
+
+    alertList.innerHTML = `
+        <div class="investment-alert-scroll ${investmentAlertsExpanded ? 'expanded' : ''}">
+            ${visibleAlerts.map((alert, index) => `
+                <div class="investment-alert-row ${escapeGoalText(alert.type)}">
+                    <button
+                        type="button"
+                        class="investment-alert-dismiss"
+                        data-alert-index="${index}"
+                        aria-label="Dismiss alert"
+                    >×</button>
+                    <strong>${escapeGoalText(alert.title)}</strong>
+                    <span>${escapeGoalText(alert.text)}</span>
+                </div>
+            `).join('')}
+        </div>
+        ${hiddenCount ? `
+            <button type="button" class="investment-alert-view-all" id="investmentAlertViewAll">
+                View all ${investmentAlertsState.length} alerts
+            </button>
+        ` : investmentAlertsExpanded && investmentAlertsState.length > 4 ? `
+            <button type="button" class="investment-alert-view-all" id="investmentAlertViewAll">
+                Show fewer alerts
+            </button>
+        ` : ''}
+    `;
+}
+
+function updateInvestmentCopilotLayer(holdings, totalValue, totalReturn) {
+    const reportEl = document.getElementById('weeklyPortfolioReport');
+    const flagsEl = document.getElementById('investmentRedFlags');
+    const alertList = document.getElementById('investmentAlertList');
+    const alertBadge = document.getElementById('investmentAlertBadge');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!rows.length) return;
+
+    const flags = getInvestmentRedFlags(rows, totalValue);
+    const alerts = getInvestmentAlerts(rows, totalValue);
+    investmentAlertsState = alerts;
+
+    const largest = rows
+        .map(holding => ({
+            symbol: String(holding.symbol || '').toUpperCase(),
+            value: parseFloat(holding.total_value || 0),
+            pct: totalValue > 0 ? (parseFloat(holding.total_value || 0) / totalValue) * 100 : 0
+        }))
+        .sort((a, b) => b.pct - a.pct)[0];
+
+    if (reportEl) {
+        reportEl.textContent =
+            `This week your portfolio is ${totalReturn >= 0 ? 'up overall' : 'down overall'}, led by ${largest.symbol} at ${largest.pct.toFixed(1)}% of total value. ${flags.length ? 'Main focus: review concentration and rebalance drift.' : 'No major red flags detected.'}`;
+    }
+
+    if (flagsEl) {
+        flagsEl.classList.toggle('clean', flags.length === 0);
+        flagsEl.innerHTML = flags.length
+            ? `
+                <span>Red flags detected</span>
+                ${flags.slice(0, 3).map(flag => `<p><strong>${escapeGoalText(flag.title)}</strong> ${escapeGoalText(flag.text)}</p>`).join('')}
+            `
+            : '<span>No red flags</span><p>Your portfolio looks stable based on current demo checks.</p>';
+    }
+
+    if (alertList || alertBadge) renderInvestmentAlerts();
+}
+
+function formatInvestmentCopilotAnswer(answer) {
+    if (!answer) return '';
+
+    return answer
+        .replace(/\* /g, '• ')
+        .replace(/Short answer:/gi, '<h4>Short answer</h4><p>')
+        .replace(/Why:/gi, '</p><h4>Why</h4><p>')
+        .replace(/Next move:/gi, '</p><h4>Next move</h4><p>')
+        .replace(/\n- /g, '<br>• ')
+        .replace(/\n• /g, '<br>• ')
+        .replace(/\n/g, '<br>') + '</p>';
+}
+
+const investmentCopilotAskBtn = document.getElementById('investmentCopilotAskBtn');
+if (investmentCopilotAskBtn) {
+    investmentCopilotAskBtn.addEventListener('click', async () => {
+        const input = document.getElementById('investmentCopilotInput');
+        const answerEl = document.getElementById('investmentCopilotAnswer');
+        const question = input ? input.value.trim() : '';
+
+        if (!question) {
+            showToast('Ask the Copilot a portfolio question first');
+            return;
+        }
+
+        investmentCopilotAskBtn.disabled = true;
+        investmentCopilotAskBtn.textContent = 'Thinking...';
+
+        try {
+            const response = await fetch(API + '/investment-copilot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question,
+                    holdings: allInvestmentHoldings,
+                    goals: allGoals,
+                    alerts: investmentAlertsState
+                })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Copilot failed');
+            }
+
+            if (answerEl) {
+                answerEl.innerHTML = `<span>Copilot</span>${formatInvestmentCopilotAnswer(data.answer)}`;
+            }
+        } catch (error) {
+            console.error('Investment Copilot error:', error);
+            if (answerEl) {
+                answerEl.innerHTML = `
+                    <span>Copilot</span>
+                    <h4>Short answer</h4>
+                    <p>Review before acting.</p>
+                    <h4>Why</h4>
+                    <p>• The Copilot could not connect right now.<br>• Use allocation, risk, tax, and earnings context before selling.</p>
+                    <h4>Next move</h4>
+                    <p>Check MSFT concentration, tax impact, and upcoming earnings before trading.</p>
+                `;
+            }
+        } finally {
+            investmentCopilotAskBtn.disabled = false;
+            investmentCopilotAskBtn.textContent = 'Ask';
+        }
+    });
+}
+
+document.querySelectorAll('.copilot-suggestion-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const input = document.getElementById('investmentCopilotInput');
+        if (!input) return;
+
+        input.value = button.textContent.trim();
+        input.focus();
+    });
+});
+
+document.addEventListener('click', event => {
+    const dismissBtn = event.target.closest('.investment-alert-dismiss');
+    if (dismissBtn) {
+        const index = Number(dismissBtn.dataset.alertIndex);
+        if (!Number.isNaN(index)) {
+            investmentAlertsState.splice(index, 1);
+            renderInvestmentAlerts();
+            showToast('Alert dismissed');
+        }
+        return;
+    }
+
+    const viewAllBtn = event.target.closest('#investmentAlertViewAll');
+    if (viewAllBtn) {
+        investmentAlertsExpanded = !investmentAlertsExpanded;
+        renderInvestmentAlerts();
+    }
+});
+
+const addPriceAlertBtn = document.getElementById('addPriceAlertBtn');
+if (addPriceAlertBtn) {
+    addPriceAlertBtn.addEventListener('click', () => {
+        const symbol = document.getElementById('priceAlertSymbol')?.value || 'AAPL';
+        const target = parseFloat(document.getElementById('priceAlertTarget')?.value || 0);
+
+        if (!target || target <= 0) {
+            showToast('Enter a valid alert price');
+            return;
+        }
+
+        investmentAlertsState.unshift({
+            type: 'price',
+            title: `${symbol} price alert`,
+            text: `Notify when ${symbol} hits ${fmt(target)}.`
+        });
+
+        renderInvestmentAlerts();
+        showToast(`${symbol} price alert added`);
+    });
+}
+
+function getHoldingRiskMetrics(symbol) {
+    const fallback = { beta: 1.0, volatility: 18, maxDrawdown: -12, sharpe: 0.8 };
+    const data = {
+        AAPL: { beta: 1.18, volatility: 23, maxDrawdown: -16, sharpe: 1.05 },
+        MSFT: { beta: 0.92, volatility: 19, maxDrawdown: -13, sharpe: 1.12 },
+        VOO: { beta: 1.00, volatility: 14, maxDrawdown: -9, sharpe: 0.94 },
+        NVDA: { beta: 1.78, volatility: 38, maxDrawdown: -28, sharpe: 1.22 },
+        TSLA: { beta: 2.05, volatility: 46, maxDrawdown: -35, sharpe: 0.62 },
+        META: { beta: 1.24, volatility: 29, maxDrawdown: -21, sharpe: 1.02 },
+        GOOGL: { beta: 1.05, volatility: 24, maxDrawdown: -18, sharpe: 0.96 },
+        AMZN: { beta: 1.31, volatility: 30, maxDrawdown: -23, sharpe: 0.88 }
+    };
+
+    return data[String(symbol || '').toUpperCase()] || fallback;
+}
+
+function getHoldingSector(symbol) {
+    const sectors = {
+        AAPL: 'Technology',
+        MSFT: 'Technology',
+        NVDA: 'Technology',
+        TSLA: 'Consumer',
+        META: 'Communication',
+        GOOGL: 'Communication',
+        AMZN: 'Consumer',
+        VOO: 'Broad Market'
+    };
+
+    return sectors[String(symbol || '').toUpperCase()] || 'Other';
+}
+
+function getSectorExposureForHolding(holding, value) {
+    const symbol = String(holding.symbol || '').toUpperCase();
+
+    if (symbol === 'VOO') {
+        return {
+            Technology: value * 0.29,
+            Finance: value * 0.13,
+            Healthcare: value * 0.12,
+            Consumer: value * 0.10,
+            Energy: value * 0.04,
+            'Broad Market': value * 0.32
+        };
+    }
+
+    return {
+        [getHoldingSector(symbol)]: value
+    };
+}
+
+function getSectorColor(sector) {
+    const colors = {
+        Technology: '#10b981',
+        Finance: '#3b82f6',
+        Healthcare: '#8b5cf6',
+        Consumer: '#f97316',
+        Communication: '#14b8a6',
+        Industrials: '#64748b',
+        Energy: '#f59e0b',
+        'Broad Market': '#94a3b8',
+        Other: '#cbd5e1'
+    };
+
+    return colors[sector] || colors.Other;
+}
+
+function updateSectorBreakdown(holdings, totalValue) {
+    const canvas = document.getElementById('sectorBreakdownChart');
+    const compareList = document.getElementById('sectorCompareList');
+    const insightText = document.getElementById('sectorInsightText');
+    const insightBadge = document.getElementById('sectorInsightBadge');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!canvas || !compareList || !insightText || !insightBadge) return;
+
+    const benchmark = {
+        Technology: 29,
+        Finance: 13,
+        Healthcare: 12,
+        Consumer: 10,
+        Communication: 8,
+        Industrials: 8,
+        Energy: 4,
+        Other: 16
+    };
+
+    if (!rows.length || totalValue <= 0) {
+        if (window.sectorChart) window.sectorChart.destroy();
+        compareList.innerHTML = '';
+        insightText.textContent = 'Add investments to see sector exposure.';
+        insightBadge.textContent = 'No data';
+        return;
+    }
+
+    const sectorTotals = {};
+    rows.forEach(holding => {
+        const value = parseFloat(holding.total_value || 0);
+        const exposure = getSectorExposureForHolding(holding, value);
+
+        Object.entries(exposure).forEach(([sector, sectorValue]) => {
+            sectorTotals[sector] = (sectorTotals[sector] || 0) + sectorValue;
+        });
+    });
+
+    const sectors = Object.entries(sectorTotals)
+        .map(([sector, value]) => ({
+            sector,
+            pct: totalValue > 0 ? (value / totalValue) * 100 : 0,
+            benchmark: benchmark[sector] || benchmark.Other
+        }))
+        .sort((a, b) => b.pct - a.pct);
+
+    const largestGap = sectors.reduce((top, item) => {
+        const gap = item.pct - item.benchmark;
+        return Math.abs(gap) > Math.abs(top.gap)
+            ? { sector: item.sector, gap, pct: item.pct, benchmark: item.benchmark }
+            : top;
+    }, { sector: '', gap: 0, pct: 0, benchmark: 0 });
+
+    const gapText = Math.abs(largestGap.gap).toFixed(1);
+    const direction = largestGap.gap >= 0 ? 'overweight' : 'underweight';
+
+    insightBadge.textContent = `${direction === 'overweight' ? 'Overweight' : 'Underweight'}`;
+    insightBadge.className = `portfolio-score-badge ${Math.abs(largestGap.gap) > 20 ? 'needs-attention' : 'balanced'}`;
+    const suggestion = largestGap.gap > 20
+        ? 'Consider adding Healthcare or Consumer ETFs to balance your exposure.'
+        : 'Your sector mix is close to the benchmark. Recheck before adding concentrated positions.';
+    insightText.innerHTML = `
+        <strong>You are ${gapText}% ${direction} in ${largestGap.sector} compared to the market.</strong>
+        <span>${suggestion}</span>
+    `;
+
+    compareList.innerHTML = sectors.map(item => {
+        const gap = item.pct - item.benchmark;
+        const gapClass = gap >= 0 ? 'over' : 'under';
+        return `
+            <div class="sector-compare-row">
+                <div>
+                    <span class="sector-color-dot" style="background:${getSectorColor(item.sector)}"></span>
+                    <strong>${item.sector}</strong>
+                </div>
+                <span>Your ${item.pct.toFixed(1)}%</span>
+                <span>S&amp;P ${item.benchmark.toFixed(1)}%</span>
+                <em class="${gapClass} ${Math.abs(gap) > 20 ? 'major' : ''}">
+                    ${Math.abs(gap) > 20 ? '<b>!</b>' : ''}${gap >= 0 ? '+' : ''}${gap.toFixed(1)}%
+                </em>
+            </div>
+        `;
+    }).join('');
+
+    if (window.sectorChart) window.sectorChart.destroy();
+
+    window.sectorChart = new Chart(canvas.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: sectors.map(item => item.sector),
+            datasets: [{
+                data: sectors.map(item => item.pct),
+                backgroundColor: sectors.map(item => getSectorColor(item.sector)),
+                borderWidth: 0,
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.label}: ${Number(ctx.raw || 0).toFixed(1)}%`
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateInvestmentRiskPanel(holdings, totalValue) {
+    const metricsEl = document.getElementById('investmentRiskMetrics');
+    const tableEl = document.getElementById('investmentRiskTable');
+    const labelEl = document.getElementById('investmentRiskLabel');
+    const rows = Array.isArray(holdings) ? holdings : [];
+
+    if (!metricsEl || !tableEl || !labelEl) return;
+
+    if (!rows.length || totalValue <= 0) {
+        labelEl.textContent = 'No data';
+        metricsEl.innerHTML = `
+            <div class="risk-metric-card">
+                <span>Risk Analysis</span>
+                <strong>--</strong>
+                <p>Add investments to see beta, volatility, drawdown, and Sharpe ratio.</p>
+            </div>
+        `;
+        tableEl.innerHTML = '';
+        return;
+    }
+
+    const enriched = rows.map(holding => {
+        const weight = totalValue > 0 ? parseFloat(holding.total_value || 0) / totalValue : 0;
+        return {
+            symbol: holding.symbol || 'Asset',
+            weight,
+            ...getHoldingRiskMetrics(holding.symbol)
+        };
+    });
+
+    const portfolioBeta = enriched.reduce((sum, item) => sum + item.beta * item.weight, 0);
+    const portfolioVolatility = enriched.reduce((sum, item) => sum + item.volatility * item.weight, 0);
+    const portfolioDrawdown = enriched.reduce((sum, item) => sum + item.maxDrawdown * item.weight, 0);
+    const portfolioSharpe = enriched.reduce((sum, item) => sum + item.sharpe * item.weight, 0);
+    const riskLabel =
+        portfolioBeta > 1.3 || portfolioVolatility > 30 ? 'High risk' :
+        portfolioBeta > 1.05 || portfolioVolatility > 20 ? 'Moderate risk' :
+        'Lower risk';
+
+    labelEl.textContent = riskLabel;
+    labelEl.className = `portfolio-score-badge ${
+        riskLabel === 'High risk' ? 'high-risk' :
+        riskLabel === 'Moderate risk' ? 'needs-attention' :
+        'strong'
+    }`;
+
+    metricsEl.innerHTML = `
+        <div class="risk-metric-card">
+            <span>Beta</span>
+            <strong>${portfolioBeta.toFixed(2)}</strong>
+            <p>${portfolioBeta > 1 ? 'Moves more than the market.' : 'Moves less than the market.'} A beta near 1 means market-like movement.</p>
+        </div>
+        <div class="risk-metric-card">
+            <span>Volatility</span>
+            <strong>${portfolioVolatility.toFixed(1)}%</strong>
+            <p>Higher volatility means bigger ups and downs along the way.</p>
+        </div>
+        <div class="risk-metric-card">
+            <span>Max Drawdown</span>
+            <strong>${portfolioDrawdown.toFixed(1)}%</strong>
+            <p>This estimates the kind of recent peak-to-low drop the portfolio could experience.</p>
+        </div>
+        <div class="risk-metric-card">
+            <span>Sharpe Ratio</span>
+            <strong>${portfolioSharpe.toFixed(2)}</strong>
+            <p>Above 1 is generally healthier: more return for each unit of risk.</p>
+        </div>
+    `;
+
+    tableEl.innerHTML = `
+        <div class="risk-row risk-row-head">
+            <span>Asset</span>
+            <span>Beta</span>
+            <span>Volatility</span>
+            <span>Max Drawdown</span>
+            <span>Sharpe</span>
+        </div>
+        ${enriched.map(item => `
+            <div class="risk-row">
+                <strong>${escapeGoalText(item.symbol)}</strong>
+                <span>${item.beta.toFixed(2)}</span>
+                <span>${item.volatility.toFixed(1)}%</span>
+                <span>${item.maxDrawdown.toFixed(1)}%</span>
+                <span>${item.sharpe.toFixed(2)}</span>
+            </div>
+        `).join('')}
+    `;
+}
+
+function getHoldingSparkline(symbol, dayChangePct = 0) {
+    const trends = {
+        AAPL: [22, 24, 23, 28, 31, 34, 38, 41],
+        VOO: [20, 21, 22, 24, 25, 27, 28, 30],
+        MSFT: [34, 33, 31, 30, 29, 31, 32, 33]
+    };
+    const key = String(symbol || '').toUpperCase();
+
+    if (trends[key]) return trends[key];
+
+    return parseFloat(dayChangePct || 0) >= 0
+        ? [20, 21, 22, 24, 23, 25, 27, 29]
+        : [30, 29, 28, 27, 26, 27, 25, 24];
+}
+
+function renderSparkline(points, tone = 'positive') {
+    const values = Array.isArray(points) && points.length ? points : [20, 22, 21, 24, 26];
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min || 1;
+    const coords = values.map((value, index) => {
+        const x = (index / (values.length - 1)) * 72;
+        const y = 28 - ((value - min) / range) * 24;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+
+    return `
+        <svg class="holding-sparkline ${tone}" viewBox="0 0 72 32" aria-hidden="true">
+            <polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+        </svg>
+    `;
+}
+
+function getInvestmentAnalysis(holdings, totalValue, totalReturn = 0) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const allocations = rows
+        .map(holding => {
+            const value = parseFloat(holding.total_value || 0);
+            return {
+                symbol: holding.symbol || holding.name || 'Asset',
+                name: holding.name || holding.symbol || 'Asset',
+                pct: totalValue > 0 ? (value / totalValue) * 100 : 0,
+                gainPct: parseFloat(holding.gain_pct),
+                dayChangePct: parseFloat(holding.day_change_pct)
+            };
+        })
+        .sort((a, b) => b.pct - a.pct);
+
+    const techSymbols = new Set(['AAPL', 'MSFT', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN']);
+    const techExposure = allocations.reduce((sum, item) => {
+        return techSymbols.has(String(item.symbol || '').toUpperCase()) ? sum + item.pct : sum;
+    }, 0);
+    const hasNegativeHolding = allocations.some(item => {
+        const gain = Number.isFinite(item.gainPct) ? item.gainPct : item.dayChangePct;
+        return Number.isFinite(gain) && gain < 0;
+    });
+    const largest = allocations[0] || null;
+
+    let score = 100;
+    const reasons = [];
+
+    if (largest && largest.pct > 50) {
+        score -= 20;
+        reasons.push(`${largest.symbol} is more than half of the portfolio`);
+    } else if (largest && largest.pct > 40) {
+        score -= 12;
+        reasons.push(`${largest.symbol} is the largest position`);
+    } else if (largest && largest.pct > 30) {
+        score -= 8;
+        reasons.push(`${largest.symbol} has elevated weight`);
+    }
+
+    if (techExposure > 70) {
+        score -= 15;
+        reasons.push('technology exposure is very high');
+    } else if (techExposure > 60) {
+        score -= 10;
+        reasons.push('technology exposure is high');
+    }
+
+    if (rows.length < 3) {
+        score -= 8;
+        reasons.push('there are fewer than three holdings');
+    }
+
+    if (hasNegativeHolding) {
+        score -= 5;
+        reasons.push('one holding needs review');
+    }
+
+    if (parseFloat(totalReturn || 0) < 0) {
+        score -= 5;
+        reasons.push('total profit is negative');
+    }
+
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    const label =
+        score >= 85 ? 'Strong' :
+        score >= 70 ? 'Balanced' :
+        score >= 50 ? 'Needs attention' :
+        'High risk';
+
+    return {
+        allocations,
+        largest,
+        largestPct: largest ? largest.pct : 0,
+        techExposure,
+        hasNegativeHolding,
+        score,
+        label,
+        reasons
+    };
+}
+
+function updateInvestmentDecisionLayer(holdings, totalValue, totalReturn) {
+    const analysis = getInvestmentAnalysis(holdings, totalValue, totalReturn);
+    const scoreEl = document.getElementById('portfolioHealthScore');
+    const labelEl = document.getElementById('portfolioHealthLabel');
+    const reasonEl = document.getElementById('portfolioHealthReason');
+    const aiEl = document.getElementById('investmentAiInsight');
+    const actionList = document.getElementById('investmentActionList');
+
+    if (scoreEl) scoreEl.textContent = `${analysis.score} / 100`;
+    if (labelEl) {
+        labelEl.textContent = analysis.label;
+        labelEl.className = `portfolio-score-badge ${analysis.label.toLowerCase().replace(/\s+/g, '-')}`;
+    }
+
+    const largestText = analysis.largest
+        ? `${analysis.largest.symbol} at ${analysis.largestPct.toFixed(1)}%`
+        : 'your largest holding';
+    const techText = `${analysis.techExposure.toFixed(1)}%`;
+
+    if (reasonEl) {
+        reasonEl.textContent = analysis.reasons.length
+            ? `Watch ${analysis.reasons.slice(0, 2).join(' and ')}.`
+            : 'Your portfolio looks well spread for the current holdings.';
+    }
+
+    if (aiEl) {
+        if (!analysis.allocations.length) {
+            aiEl.textContent = 'Add investments to unlock portfolio guidance and risk context.';
+        } else if (analysis.techExposure > 60) {
+            aiEl.textContent = `Your portfolio is growing, but technology exposure is high at ${techText}. Diversifying across sectors may reduce risk.`;
+        } else if (analysis.largestPct > 40) {
+            aiEl.textContent = `${largestText} is driving much of the portfolio. Consider balancing before adding more to the same asset.`;
+        } else {
+            aiEl.textContent = `Your portfolio looks reasonably balanced. Keep reviewing allocation before making new contributions.`;
+        }
+    }
+
+    if (actionList) {
+        const actions = [];
+
+        if (analysis.largest && analysis.largestPct > 40) {
+            actions.push(`Reduce ${escapeGoalText(analysis.largest.symbol)} concentration before adding more.`);
+        }
+
+        if (analysis.techExposure > 60) {
+            actions.push('Consider adding non-tech assets to improve diversification.');
+        }
+
+        if (analysis.hasNegativeHolding) {
+            actions.push('Review holdings with negative performance before increasing them.');
+        }
+
+        if (analysis.allocations.length < 3) {
+            actions.push('Add another holding to reduce single-asset dependency.');
+        }
+
+        if (!actions.length) {
+            actions.push('Your portfolio looks balanced. Continue regular contributions.');
+            actions.push('Review allocation monthly before adding new money.');
+        }
+
+        actionList.innerHTML = actions.slice(0, 4).map(action => `<li>${action}</li>`).join('');
+    }
+}
+
+function setupInvestmentSimulator() {
+    if (investmentSimulatorReady) return;
+
+    ['investmentSimMonthly', 'investmentSimYears', 'investmentSimReturn'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', () => updateInvestmentSimulator(investmentSimulatorPortfolioValue));
+        }
+    });
+
+    investmentSimulatorReady = true;
+}
+
+function updateInvestmentSimulator(currentValue) {
+    investmentSimulatorPortfolioValue = parseFloat(currentValue || 0);
+
+    const monthlyInput = document.getElementById('investmentSimMonthly');
+    const yearsInput = document.getElementById('investmentSimYears');
+    const returnInput = document.getElementById('investmentSimReturn');
+    const resultEl = document.getElementById('investmentSimResult');
+
+    if (!monthlyInput || !yearsInput || !returnInput || !resultEl) return;
+
+    const monthlyContribution = Math.max(0, parseFloat(monthlyInput.value || 0));
+    const years = Math.max(0, parseFloat(yearsInput.value || 0));
+    const annualReturn = Math.max(0, parseFloat(returnInput.value || 0)) / 100;
+    const months = Math.round(years * 12);
+    const monthlyRate = annualReturn / 12;
+
+    let futureValue = investmentSimulatorPortfolioValue;
+
+    if (months > 0) {
+        if (monthlyRate === 0) {
+            futureValue = investmentSimulatorPortfolioValue + (monthlyContribution * months);
+        } else {
+            futureValue =
+                investmentSimulatorPortfolioValue * Math.pow(1 + monthlyRate, months) +
+                monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+        }
+    }
+
+    const totalContributed = monthlyContribution * months;
+    const estimatedGain = Math.max(futureValue - investmentSimulatorPortfolioValue - totalContributed, 0);
+
+    resultEl.textContent = `If you invest ${fmt(monthlyContribution)}/month for ${years || 0} years, your portfolio could reach about ${fmt(futureValue)}. Estimated growth: ${fmt(estimatedGain)}.`;
+}
+
+function getGoalLinkedHoldings(goal, holdings) {
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const goalText = `${goal.name || ''} ${goal.category || ''}`.toLowerCase();
+    const category = String(goal.category || '').toLowerCase();
+
+    const travelSymbols = ['AAPL', 'VOO', 'MSFT'];
+    const emergencySymbols = ['VOO'];
+    const homeSymbols = ['VOO', 'MSFT'];
+
+    let symbols = [];
+
+    if (goalText.includes('travel') || goalText.includes('trip') || goalText.includes('thailand') || category.includes('travel')) {
+        symbols = travelSymbols;
+    } else if (goalText.includes('emergency')) {
+        symbols = emergencySymbols;
+    } else if (goalText.includes('home') || goalText.includes('house')) {
+        symbols = homeSymbols;
+    } else {
+        symbols = rows.slice(0, 2).map(holding => String(holding.symbol || '').toUpperCase());
+    }
+
+    return rows.filter(holding => symbols.includes(String(holding.symbol || '').toUpperCase()));
+}
+
+function estimateGoalInvestmentTiming(goal, linkedValue, linkedHoldings) {
+    const target = parseFloat(goal.target_amount || 0);
+    const saved = parseFloat(goal.effective_saved_amount ?? goal.saved_amount ?? 0);
+    const remaining = Math.max(target - saved - linkedValue, 0);
+    const deadline = goal.deadline ? new Date(goal.deadline) : null;
+    const rows = Array.isArray(linkedHoldings) ? linkedHoldings : [];
+
+    if (!deadline || Number.isNaN(deadline.getTime())) {
+        return 'Add a target date to estimate timing.';
+    }
+
+    if (remaining <= 0) {
+        return 'Your linked investments could cover this goal today.';
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    deadline.setHours(0, 0, 0, 0);
+
+    const monthsToDeadline = Math.max(1, Math.ceil((deadline - today) / (1000 * 60 * 60 * 24 * 30)));
+    const weightedGrowth = rows.reduce((sum, holding) => {
+        const value = parseFloat(holding.total_value || 0);
+        const gainPct = parseFloat(holding.gain_pct || 0) / 100;
+        return sum + (value * Math.max(gainPct, 0));
+    }, 0);
+    const growthRate = linkedValue > 0 ? Math.max(weightedGrowth / linkedValue, 0.04) : 0.06;
+    const monthlyGrowth = Math.pow(1 + growthRate, 1 / 12) - 1;
+
+    if (linkedValue <= 0 || monthlyGrowth <= 0) {
+        return `Add linked investments to see if you can reach this goal before ${deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.`;
+    }
+
+    const projectedAtDeadline = linkedValue * Math.pow(1 + monthlyGrowth, monthsToDeadline);
+    const gapAtDeadline = remaining - (projectedAtDeadline - linkedValue);
+
+    if (gapAtDeadline <= 0) {
+        const monthsNeeded = Math.max(1, Math.ceil(Math.log((linkedValue + remaining) / linkedValue) / Math.log(1 + monthlyGrowth)));
+        const monthsEarly = Math.max(monthsToDeadline - monthsNeeded, 0);
+        return monthsEarly >= 1
+            ? `At current growth, you could hit this goal about ${monthsEarly} ${monthsEarly === 1 ? 'month' : 'months'} early.`
+            : 'At current growth, you are tracking close to the target date.';
+    }
+
+    return `At current growth, you may need about ${fmt(gapAtDeadline)} more by the target date.`;
+}
+
+async function loadInvestmentGoalsCoverage(portfolioValue, holdings = allInvestmentHoldings) {
+    const container = document.getElementById('investmentGoalsCoverage');
+    if (!container) return;
+
+    try {
+        let goals = Array.isArray(allGoals) && allGoals.length ? allGoals : [];
+
+        if (!goals.length) {
+            const response = await fetch(API + '/goals');
+            if (!response.ok) throw new Error('Goals unavailable');
+            goals = await response.json();
+            if (Array.isArray(goals)) allGoals = goals;
+        }
+
+        if (!Array.isArray(goals) || !goals.length) {
+            container.innerHTML = `<p class="investment-muted">Create goals to see how investments support your plans.</p>`;
+            return;
+        }
+
+        container.innerHTML = goals.slice(0, 3).map(goal => {
+            const target = parseFloat(goal.target_amount || 0);
+            const linkedHoldings = getGoalLinkedHoldings(goal, holdings);
+            const linkedValue = linkedHoldings.reduce((sum, holding) => sum + parseFloat(holding.total_value || 0), 0);
+            const fallbackValue = linkedValue || portfolioValue;
+            const coverage = target > 0 ? Math.min((fallbackValue / target) * 100, 999) : 0;
+            const coverageText = coverage >= 100 ? '100%+' : `${coverage.toFixed(0)}%`;
+            const name = escapeGoalText(goal.name || 'Goal');
+            const symbols = linkedHoldings.map(holding => escapeGoalText(holding.symbol)).join(', ') || 'portfolio';
+            const timing = estimateGoalInvestmentTiming(goal, linkedValue, linkedHoldings);
+            const fundingLine = linkedHoldings.length
+                ? `These ${linkedHoldings.length} ${linkedHoldings.length === 1 ? 'holding is' : 'holdings are'} funding this goal: ${symbols}.`
+                : 'Your full portfolio can be compared against this goal.';
+
+            return `
+                <div class="investment-goal-row upgraded">
+                    <div class="investment-goal-main">
+                        <span>${name}</span>
+                        <strong>${coverageText} covered</strong>
+                    </div>
+                    <div class="investment-goal-progress">
+                        <span style="width:${Math.min(coverage, 100)}%"></span>
+                    </div>
+                    <p>${fundingLine}</p>
+                    <em>${escapeGoalText(timing)}</em>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        container.innerHTML = `<p class="investment-muted">Connect goals to see how investments support your plans.</p>`;
+    }
+}
+
+function updateHoldingsInsightStrip(holdings) {
+    const strip = document.getElementById('holdingsInsightStrip');
+    if (!strip) return;
+
+    const rows = Array.isArray(holdings)
+        ? holdings
+            .map(holding => ({
+                symbol: holding.symbol || holding.name || 'Asset',
+                score: Number.isFinite(parseFloat(holding.gain_pct))
+                    ? parseFloat(holding.gain_pct)
+                    : parseFloat(holding.day_change_pct)
+            }))
+            .filter(holding => Number.isFinite(holding.score))
+        : [];
+
+    if (!rows.length) {
+        strip.style.display = 'none';
+        strip.innerHTML = '';
+        return;
+    }
+
+    const best = rows.reduce((top, item) => item.score > top.score ? item : top, rows[0]);
+    const worst = rows.reduce((low, item) => item.score < low.score ? item : low, rows[0]);
+
+    strip.style.display = 'flex';
+    strip.innerHTML = `
+        <div class="holding-summary-chip best">
+            <span>Best</span>
+            <strong>${escapeGoalText(best.symbol)} ${pctText(best.score)}</strong>
+        </div>
+        <div class="holding-summary-chip worst">
+            <span>Worst</span>
+            <strong>${escapeGoalText(worst.symbol)} ${pctText(worst.score)}</strong>
+        </div>
+    `;
+}
+
+function updateAllocationCard(holdings) {
+    const allocationList = document.getElementById('allocationList');
+    const allocationInsight = document.getElementById('allocationInsight');
+
+    if (!allocationList || !allocationInsight) return;
+
+    const rows = Array.isArray(holdings) ? holdings : [];
+    const totalValue = rows.reduce((sum, holding) => {
+        return sum + parseFloat(holding.total_value || 0);
+    }, 0);
+
+    if (!rows.length || totalValue <= 0) {
+        allocationList.innerHTML = `
+            <div class="allocation-empty">No allocation data yet.</div>
+        `;
+        allocationInsight.className = 'allocation-insight neutral';
+        allocationInsight.innerHTML = `
+            <div class="allocation-insight-icon">i</div>
+            <div>
+                <p class="allocation-insight-label">Allocation insight</p>
+                <p class="allocation-insight-text">Add investments to see allocation insights.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const allocations = rows
+        .map(holding => {
+            const value = parseFloat(holding.total_value || 0);
+            return {
+                symbol: holding.symbol || holding.name || 'Asset',
+                pct: totalValue > 0 ? (value / totalValue) * 100 : 0
+            };
+        })
+        .sort((a, b) => b.pct - a.pct);
+
+    allocationList.innerHTML = allocations.map(item => {
+        const pct = Number.isFinite(item.pct) ? item.pct : 0;
+        const pctText = pct % 1 === 0 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`;
+
+        return `
+            <div class="alloc-item">
+                <div>
+                    <p class="alloc-name">${escapeGoalText(item.symbol)}</p>
+                    <div class="progress-bar" style="margin-top:6px">
+                        <div class="progress-fill ok" style="width:${Math.min(pct, 100).toFixed(1)}%"></div>
+                    </div>
+                </div>
+                <span class="alloc-pct">${pctText}</span>
+            </div>
+        `;
+    }).join('');
+
+    const top = allocations[0];
+    const topPct = Number.isFinite(top.pct) ? top.pct : 0;
+    const topPctText = topPct % 1 === 0 ? `${topPct.toFixed(0)}%` : `${topPct.toFixed(1)}%`;
+    const isConcentrated = topPct > 40;
+    const isBalanced = topPct >= 25;
+    const techSymbols = new Set(['AAPL', 'MSFT', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN']);
+    const techExposure = allocations.reduce((sum, item) => {
+        return techSymbols.has(String(item.symbol || '').toUpperCase()) ? sum + item.pct : sum;
+    }, 0);
+    const techExposureText = techExposure % 1 === 0 ? `${techExposure.toFixed(0)}%` : `${techExposure.toFixed(1)}%`;
+    const techInsight = techExposure > 60
+        ? `<p class="allocation-insight-text">You are heavily exposed to technology stocks at ${techExposureText}. Consider diversifying across sectors.</p>`
+        : '';
+
+    allocationInsight.className = `allocation-insight ${isConcentrated ? 'warning' : 'neutral'}`;
+    allocationInsight.innerHTML = `
+        <div class="allocation-insight-icon">${isConcentrated ? '!' : 'i'}</div>
+        <div>
+            <p class="allocation-insight-label">Allocation insight</p>
+            <p class="allocation-insight-text">${
+                isConcentrated
+                    ? `${escapeGoalText(top.symbol)} makes up ${topPctText} of your portfolio. This may increase concentration risk.`
+                    : isBalanced
+                        ? `Your largest holding is ${escapeGoalText(top.symbol)} at ${topPctText}. Allocation looks reasonably balanced.`
+                        : `Your holdings are broadly spread. The largest position is ${escapeGoalText(top.symbol)} at ${topPctText}.`
+            }</p>
+            ${techInsight}
+        </div>
+    `;
+}
+
 // ── CHARTS ──
 window.incomeChart   = null;
 window.spendingChart = null;
+window.portfolioChart = null;
+window.sectorChart = null;
 
 function buildIncomeChart() {
     const canvas = document.getElementById('incomeExpenseChart');
@@ -952,11 +3738,134 @@ function buildSpendingChart() {
 function buildPortfolioChart() {
     const canvas = document.getElementById('portfolioChart');
     if (!canvas) return;
-    new Chart(canvas.getContext('2d'), {
+    const activeRange = document.querySelector('.investment-chart-card .chart-tab.active')?.textContent.trim() || 'YTD';
+    const chartRanges = {
+        '1M': {
+            labels: ['Week 1','Week 2','Week 3','Week 4'],
+            portfolio: [14120,14280,14370,14499],
+            sp500: [14120,14190,14260,14310],
+            nasdaq: [14120,14220,14320,14420],
+            whatIf: [15120,15310,15440,15610],
+            buys: [{ x: 'Week 2', y: 14280, label: 'Added AAPL' }],
+            events: [{ x: 'Week 3', y: 14540, label: 'Earnings week' }]
+        },
+        '3M': {
+            labels: ['Feb','Mar','Apr'],
+            portfolio: [13250,13920,14499],
+            sp500: [13250,13610,13980],
+            nasdaq: [13250,13780,14340],
+            whatIf: [14250,15080,15840],
+            buys: [{ x: 'Feb', y: 13250, label: 'Bought VOO' }, { x: 'Apr', y: 14499, label: 'Bought MSFT' }],
+            events: [{ x: 'Mar', y: 14150, label: 'Fed decision' }]
+        },
+        'YTD': {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+            portfolio: [8500,8800,9100,8900,9300,9600,9800,10200],
+            sp500: [8500,8685,8780,8660,8990,9220,9410,9660],
+            nasdaq: [8500,8720,9050,8825,9360,9700,10030,10620],
+            whatIf: [9500,9825,10210,9990,10520,10910,11280,11820],
+            buys: [{ x: 'Jan', y: 8500, label: 'Bought AAPL' }, { x: 'Feb', y: 8800, label: 'Bought VOO' }, { x: 'Apr', y: 8900, label: 'Bought MSFT' }],
+            events: [{ x: 'Mar', y: 9300, label: 'Fed decision' }, { x: 'May', y: 9550, label: 'Big tech earnings' }, { x: 'Jul', y: 10150, label: 'Market rally' }]
+        },
+        '1Y': {
+            labels: ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+            portfolio: [7600,7820,8050,8290,8500,8800,9100,8900,9300,9600,9800,10200],
+            sp500: [7600,7740,7920,8120,8320,8500,8660,8540,8860,9080,9280,9520],
+            nasdaq: [7600,7810,8060,8310,8580,8840,9180,8960,9520,9840,10180,10780],
+            whatIf: [8600,8900,9220,9530,9810,10180,10580,10320,10890,11320,11740,12280],
+            buys: [{ x: 'Jan', y: 8500, label: 'Bought AAPL' }, { x: 'Feb', y: 8800, label: 'Bought VOO' }, { x: 'Apr', y: 8900, label: 'Bought MSFT' }],
+            events: [{ x: 'Dec', y: 8500, label: 'Year-end rally' }, { x: 'Mar', y: 9300, label: 'Fed decision' }, { x: 'May', y: 9550, label: 'Big tech earnings' }]
+        }
+    };
+    const selected = chartRanges[activeRange] || chartRanges.YTD;
+    const labels = selected.labels;
+    const portfolio = selected.portfolio;
+    const sp500 = selected.sp500;
+    const nasdaq = selected.nasdaq;
+    const whatIf = selected.whatIf;
+    const showWhatIf = document.getElementById('portfolioWhatIfToggle')?.checked;
+    const buyMarkers = selected.buys;
+    const eventMarkers = selected.events;
+    const firstPortfolio = portfolio[0] || 0;
+    const lastPortfolio = portfolio[portfolio.length - 1] || 0;
+    const firstSp500 = sp500[0] || 0;
+    const lastSp500 = sp500[sp500.length - 1] || 0;
+    const portfolioReturn = firstPortfolio > 0 ? ((lastPortfolio - firstPortfolio) / firstPortfolio) * 100 : 0;
+    const sp500Return = firstSp500 > 0 ? ((lastSp500 - firstSp500) / firstSp500) * 100 : 0;
+    const outperformance = portfolioReturn - sp500Return;
+    const summaryEl = document.getElementById('portfolioChartSummary');
+
+    if (summaryEl) {
+        const rangeLabel = activeRange === 'YTD' ? 'YTD' : `over ${activeRange}`;
+        const direction = outperformance >= 0 ? 'outperforming' : 'trailing';
+        summaryEl.textContent = `Your portfolio is ${direction} S&P 500 by ${pctText(Math.abs(outperformance))} ${rangeLabel}.`;
+        summaryEl.classList.toggle('negative', outperformance < 0);
+    }
+
+    if (window.portfolioChart) window.portfolioChart.destroy();
+
+    window.portfolioChart = new Chart(canvas.getContext('2d'), {
         type:'line',
-        data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],datasets:[{data:[8500,8800,9100,8900,9300,9600,9800,10200],borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.08)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.4}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{color:'#9ca3af',font:{size:11}},border:{display:false}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{color:'#9ca3af',font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'k'},border:{display:false}}}}
+        data:{
+            labels,
+            datasets:[
+                {label:'Portfolio',data:portfolio,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.05)',borderWidth:2.4,pointRadius:0,pointHoverRadius:4,fill:true,tension:0.4},
+                {label:'S&P 500',data:sp500,borderColor:'#3b82f6',backgroundColor:'transparent',borderWidth:1.7,pointRadius:0,borderDash:[5,4],tension:0.4},
+                {label:'NASDAQ',data:nasdaq,borderColor:'#7c3aed',backgroundColor:'transparent',borderWidth:2,pointRadius:0,borderDash:[7,4],tension:0.4},
+                ...(showWhatIf ? [{label:'What-if: +$1,000 AAPL',data:whatIf,borderColor:'#f97316',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,borderDash:[7,6],tension:0.4}] : []),
+                {label:'Buy markers',data:buyMarkers,borderColor:'#10b981',backgroundColor:'#ffffff',showLine:false,pointRadius:3.5,pointHoverRadius:5.5,pointBorderWidth:2,pointStyle:'circle'},
+                {label:'Market events',data:eventMarkers,borderColor:'#f97316',backgroundColor:'#fff7ed',showLine:false,pointRadius:3.5,pointHoverRadius:5,pointBorderWidth:2,pointStyle:'rectRot'}
+            ]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            interaction:{mode:'nearest',intersect:false},
+            plugins:{
+                legend:{display:false},
+                tooltip:{
+                    callbacks:{
+                        title:items=>{
+                            const item = items && items[0];
+                            return item ? `Date: ${item.label}` : '';
+                        },
+                        label:ctx=>{
+                            const raw = ctx.raw || {};
+                            const value = typeof raw.y === 'number' ? raw.y : ctx.parsed.y;
+
+                            if (ctx.dataset.label === 'Buy markers' || ctx.dataset.label === 'Market events') {
+                                return [
+                                    `Portfolio value: $${Number(value || 0).toLocaleString()}`,
+                                    `Event: ${raw.label || ctx.dataset.label}`
+                                ];
+                            }
+                            return `${ctx.dataset.label}: $${Number(value || 0).toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+            scales:{
+                x:{grid:{color:'rgba(0,0,0,0.03)'},ticks:{color:'#9ca3af',font:{size:11}},border:{display:false}},
+                y:{
+                    min: Math.floor(Math.min(...portfolio, ...sp500, ...nasdaq, ...(showWhatIf ? whatIf : [])) / 500) * 500,
+                    max: Math.ceil(Math.max(...portfolio, ...sp500, ...nasdaq, ...(showWhatIf ? whatIf : [])) / 500) * 500,
+                    grid:{color:'rgba(0,0,0,0.03)'},
+                    ticks:{
+                        color:'#9ca3af',
+                        font:{size:11},
+                        stepSize:500,
+                        callback:v=>'$'+(v/1000).toFixed(1)+'k'
+                    },
+                    border:{display:false}
+                }
+            }
+        }
     });
+}
+
+const portfolioWhatIfToggle = document.getElementById('portfolioWhatIfToggle');
+if (portfolioWhatIfToggle) {
+    portfolioWhatIfToggle.addEventListener('change', buildPortfolioChart);
 }
 
 // ── DEMO DATA (fallback if backend is off) ──
@@ -1066,6 +3975,30 @@ function formatDate(dateStr) {
     });
 }
 
+function formatFrequencyLabel(frequency) {
+    const labels = {
+        weekly: 'Weekly',
+        biweekly: 'Biweekly',
+        monthly: 'Monthly',
+        yearly: 'Yearly'
+    };
+
+    return labels[String(frequency || '').toLowerCase()] || String(frequency || 'Monthly');
+}
+
+function dateInputValue(dateValue) {
+    if (!dateValue) return '';
+
+    const asString = String(dateValue);
+    const directMatch = asString.match(/\d{4}-\d{2}-\d{2}/);
+    if (directMatch) return directMatch[0];
+
+    const parsed = new Date(dateValue);
+    if (Number.isNaN(parsed.getTime())) return '';
+
+    return parsed.toISOString().split('T')[0];
+}
+
 function enhanceRecurringDateCells() {
     const rows = document.querySelectorAll('#page-recurring tbody tr');
 
@@ -1166,7 +4099,7 @@ function renderRecurringPayments(items) {
                     </div>
                 </td>
 
-                <td><span class="freq-badge">${item.frequency}</span></td>
+                <td><span class="freq-badge">${formatFrequencyLabel(item.frequency)}</span></td>
 
                 <td class="tx-date-cell">
                     <div class="recurring-date-value">${formatDate(item.next_date)}</div>
@@ -1197,7 +4130,20 @@ function renderRecurringPayments(items) {
                     </button>
                 </td>
 
-                <td><button class="dots-btn">···</button></td>
+                <td>
+                    <div class="recurring-row-actions">
+                        <button
+                            class="dots-btn edit-recurring-btn"
+                            data-id="${item.id}"
+                            title="Edit recurring payment"
+                        >✎</button>
+                        <button
+                            class="dots-btn delete-recurring-btn"
+                            data-id="${item.id}"
+                            title="Delete recurring payment"
+                        >✕</button>
+                    </div>
+                </td>
             </tr>
         `;
     }).join("");
@@ -1235,6 +4181,23 @@ function renderRecurringPayments(items) {
             }
         });
     });
+
+    tbody.querySelectorAll(".edit-recurring-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const id = button.dataset.id;
+            const item = allRecurringPayments.find(row => String(row.id) === String(id));
+
+            if (item) {
+                openRecurringModal(item);
+            }
+        });
+    });
+
+    tbody.querySelectorAll(".delete-recurring-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            openDeleteRecurringModal(button.dataset.id);
+        });
+    });
 }
 
 async function loadRecurringPayments() {
@@ -1242,6 +4205,7 @@ async function loadRecurringPayments() {
         const res = await fetch(API + "/recurring");
         const items = await res.json();
 
+        allRecurringPayments = Array.isArray(items) ? items : [];
         renderRecurringPayments(items);
         updateRecurringStats(items);
     } catch (error) {
@@ -1442,7 +4406,19 @@ function closeDeleteAllTransactionsModal() {
 }
 
 if (addNewBtn) {
-    addNewBtn.addEventListener("click", openTransactionModal);
+    addNewBtn.addEventListener("click", () => {
+        if (document.body.dataset.activePage === "recurring") {
+            openRecurringModal();
+            return;
+        }
+
+        if (document.body.dataset.activePage === "goals") {
+            openGoalModal();
+            return;
+        }
+
+        openTransactionModal();
+    });
 }
 
 if (addTransactionBtn) {
@@ -1594,9 +4570,106 @@ const addGoalBtn = document.getElementById("addGoalBtn");
 const goalModalClose = document.getElementById("goalModalClose");
 const goalModalCancel = document.getElementById("goalModalCancel");
 const goalForm = document.getElementById("goalForm");
+const deleteGoalModal = document.getElementById("deleteGoalModal");
+const deleteGoalModalClose = document.getElementById("deleteGoalModalClose");
+const deleteGoalCancel = document.getElementById("deleteGoalCancel");
+const deleteGoalConfirm = document.getElementById("deleteGoalConfirm");
+const deleteGoalIdInput = document.getElementById("deleteGoalId");
+const goalContributionModal = document.getElementById("goalContributionModal");
+const goalContributionModalClose = document.getElementById("goalContributionModalClose");
+const goalContributionCancel = document.getElementById("goalContributionCancel");
+const goalContributionForm = document.getElementById("goalContributionForm");
+const goalContributionIdInput = document.getElementById("goalContributionId");
+const goalContributionDesc = document.getElementById("goalContributionDesc");
+const goalContributionAmountInput = document.getElementById("goalContributionAmount");
+const goalContributionDateInput = document.getElementById("goalContributionDate");
+const goalContributionNoteInput = document.getElementById("goalContributionNote");
+const goalContributionSubmitBtn = document.getElementById("goalContributionSubmit");
 
-function openGoalModal() {
+async function updateGoalAutoLink(goal, enabled) {
+    const manualSaved = goal.manual_saved_amount !== undefined ? goal.manual_saved_amount : goal.saved_amount;
+    const category = goal.category || "Savings";
+
+    const response = await fetch(API + `/goals/${goal.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: goal.name,
+            target_amount: goal.target_amount,
+            saved_amount: manualSaved || 0,
+            deadline: dateInputValue(goal.deadline),
+            icon: goal.icon || getCategoryIcon(category) || "🎯",
+            category,
+            auto_link_savings: enabled
+        })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to update auto-link");
+    }
+
+    await loadGoals();
+}
+
+function updateGoalAutoLinkHint() {
+    const goalAutoLinkInput = document.getElementById("goalAutoLinkSavings");
+    const goalAutoLinkHint = document.getElementById("goalAutoLinkHint");
+
+    if (goalAutoLinkHint) {
+        goalAutoLinkHint.style.display = goalAutoLinkInput && goalAutoLinkInput.checked ? "block" : "none";
+    }
+}
+
+function openGoalModal(goal = null) {
     if (!goalModal) return;
+
+    const goalIdInput = document.getElementById("goalId");
+    const goalModalTitle = document.getElementById("goalModalTitle");
+    const goalModalDesc = document.getElementById("goalModalDesc");
+    const goalSubmitBtn = document.getElementById("goalSubmitBtn");
+    const goalNameInput = document.getElementById("goalName");
+    const goalCategoryInput = document.getElementById("goalCategory");
+    const goalTargetInput = document.getElementById("goalTargetAmount");
+    const goalSavedInput = document.getElementById("goalSavedAmount");
+    const goalDeadlineInput = document.getElementById("goalDeadline");
+    const goalAutoLinkInput = document.getElementById("goalAutoLinkSavings");
+
+    if (goalForm) {
+        goalForm.reset();
+    }
+
+    if (goal) {
+        if (goalIdInput) goalIdInput.value = goal.id || "";
+        if (goalModalTitle) goalModalTitle.textContent = "Edit Goal";
+        if (goalModalDesc) goalModalDesc.textContent = "Update this goal and keep your savings plan accurate.";
+        if (goalSubmitBtn) goalSubmitBtn.textContent = "Save Changes";
+        if (goalNameInput) goalNameInput.value = goal.name || "";
+        if (goalCategoryInput) {
+            const categoryName = goal.category || "Savings";
+            const categoryIcon = getCategoryIcon(categoryName);
+            setSelectedGoalCategory(categoryName, categoryIcon);
+        }
+        if (goalTargetInput) goalTargetInput.value = goal.target_amount || "";
+        if (goalSavedInput) {
+            const manualSaved = goal.manual_saved_amount !== undefined ? goal.manual_saved_amount : goal.saved_amount;
+            goalSavedInput.value = manualSaved || 0;
+        }
+        if (goalDeadlineInput) goalDeadlineInput.value = dateInputValue(goal.deadline);
+        if (goalAutoLinkInput) goalAutoLinkInput.checked = !!goal.auto_link_savings;
+    } else {
+        if (goalIdInput) goalIdInput.value = "";
+        if (goalModalTitle) goalModalTitle.textContent = "Create Goal";
+        if (goalModalDesc) goalModalDesc.textContent = "Create a new savings goal and track your progress.";
+        if (goalSubmitBtn) goalSubmitBtn.textContent = "Save Goal";
+        setSelectedGoalCategory("", "🏷️");
+        if (goalSavedInput) goalSavedInput.value = "0";
+        if (goalAutoLinkInput) goalAutoLinkInput.checked = true;
+    }
+
+    updateGoalAutoLinkHint();
     goalModal.style.display = "flex";
 }
 
@@ -1607,6 +4680,70 @@ function closeGoalModal() {
     if (goalForm) {
         goalForm.reset();
     }
+
+    const goalIdInput = document.getElementById("goalId");
+    const goalModalTitle = document.getElementById("goalModalTitle");
+    const goalModalDesc = document.getElementById("goalModalDesc");
+    const goalSubmitBtn = document.getElementById("goalSubmitBtn");
+
+    if (goalIdInput) goalIdInput.value = "";
+    if (goalModalTitle) goalModalTitle.textContent = "Create Goal";
+    if (goalModalDesc) goalModalDesc.textContent = "Create a new savings goal and track your progress.";
+    if (goalSubmitBtn) goalSubmitBtn.textContent = "Save Goal";
+    setSelectedGoalCategory("", "🏷️");
+}
+
+function openGoalContributionModal(goal) {
+    if (!goalContributionModal || !goalContributionIdInput) return;
+
+    if (goalContributionForm) {
+        goalContributionForm.reset();
+    }
+
+    goalContributionIdInput.value = goal.id || "";
+
+    if (goalContributionDesc) {
+        goalContributionDesc.textContent = `Add savings toward ${goal.name || "this goal"}.`;
+    }
+
+    if (goalContributionDateInput) {
+        goalContributionDateInput.value = new Date().toISOString().split("T")[0];
+    }
+
+    if (goalContributionAmountInput) {
+        goalContributionAmountInput.focus();
+    }
+
+    goalContributionModal.style.display = "flex";
+
+    setTimeout(() => {
+        if (goalContributionAmountInput) goalContributionAmountInput.focus();
+    }, 50);
+}
+
+function closeGoalContributionModal() {
+    if (!goalContributionModal) return;
+    goalContributionModal.style.display = "none";
+
+    if (goalContributionForm) {
+        goalContributionForm.reset();
+    }
+
+    if (goalContributionIdInput) {
+        goalContributionIdInput.value = "";
+    }
+}
+
+function openDeleteGoalModal(goalId) {
+    if (!deleteGoalModal || !deleteGoalIdInput) return;
+    deleteGoalIdInput.value = goalId || "";
+    deleteGoalModal.style.display = "flex";
+}
+
+function closeDeleteGoalModal() {
+    if (!deleteGoalModal || !deleteGoalIdInput) return;
+    deleteGoalModal.style.display = "none";
+    deleteGoalIdInput.value = "";
 }
 
 if (addGoalBtn) {
@@ -1629,24 +4766,92 @@ if (goalModal) {
     });
 }
 
+document.addEventListener("change", (e) => {
+    if (e.target && e.target.id === "goalAutoLinkSavings") {
+        updateGoalAutoLinkHint();
+    }
+});
+
+if (deleteGoalModalClose) {
+    deleteGoalModalClose.addEventListener("click", closeDeleteGoalModal);
+}
+
+if (deleteGoalCancel) {
+    deleteGoalCancel.addEventListener("click", closeDeleteGoalModal);
+}
+
+if (deleteGoalModal) {
+    deleteGoalModal.addEventListener("click", (e) => {
+        if (e.target === deleteGoalModal) {
+            closeDeleteGoalModal();
+        }
+    });
+}
+
+if (goalContributionModalClose) {
+    goalContributionModalClose.addEventListener("click", closeGoalContributionModal);
+}
+
+if (goalContributionCancel) {
+    goalContributionCancel.addEventListener("click", closeGoalContributionModal);
+}
+
+if (goalContributionModal) {
+    goalContributionModal.addEventListener("click", (e) => {
+        if (e.target === goalContributionModal) {
+            closeGoalContributionModal();
+        }
+    });
+}
+
+if (deleteGoalConfirm) {
+    deleteGoalConfirm.addEventListener("click", async () => {
+        const goalId = deleteGoalIdInput ? deleteGoalIdInput.value : "";
+        if (!goalId) return;
+
+        try {
+            const response = await fetch(API + `/goals/${goalId}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to delete goal");
+            }
+
+            closeDeleteGoalModal();
+            await loadGoals();
+            showToast("Goal deleted");
+        } catch (error) {
+            console.error("Error deleting goal:", error);
+            showToast("Could not delete goal");
+        }
+    });
+}
+
 if (goalForm) {
     goalForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const goalId = document.getElementById("goalId").value.trim();
         const name = document.getElementById("goalName").value.trim();
-        const icon = document.getElementById("goalIcon").value.trim() || "🎯";
+        const category = document.getElementById("goalCategory").value.trim();
+        const icon = getCategoryIcon(category) || "🎯";
         const target_amount = parseFloat(document.getElementById("goalTargetAmount").value);
         const saved_amount = parseFloat(document.getElementById("goalSavedAmount").value);
         const deadline = document.getElementById("goalDeadline").value;
+        const auto_link_savings = document.getElementById("goalAutoLinkSavings")?.checked || false;
 
-        if (!name || !deadline || Number.isNaN(target_amount) || Number.isNaN(saved_amount)) {
+        if (!name || !category || !deadline || Number.isNaN(target_amount) || Number.isNaN(saved_amount)) {
             alert("Please fill in all goal fields correctly.");
             return;
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/goals", {
-                method: "POST",
+            const isEditing = !!goalId;
+
+            const response = await fetch(isEditing ? API + `/goals/${goalId}` : API + "/goals", {
+                method: isEditing ? "PUT" : "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -1655,7 +4860,9 @@ if (goalForm) {
                     target_amount,
                     saved_amount,
                     deadline,
-                    icon
+                    icon,
+                    category,
+                    auto_link_savings
                 })
             });
 
@@ -1671,10 +4878,66 @@ if (goalForm) {
                 await loadGoals();
             }
 
-            showToast("Goal added");
+            showToast(goalId ? "Goal updated" : "Goal added");
         } catch (error) {
             console.error("Error adding goal:", error);
-            alert("Could not add goal: " + error.message);
+            showToast("Could not save goal");
+        }
+    });
+}
+
+if (goalContributionForm) {
+    goalContributionForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const goalId = goalContributionIdInput ? goalContributionIdInput.value : "";
+        const amount = parseFloat(goalContributionAmountInput ? goalContributionAmountInput.value : "");
+        const date = goalContributionDateInput ? goalContributionDateInput.value : "";
+        const note = goalContributionNoteInput ? goalContributionNoteInput.value.trim() : "";
+
+        if (!goalId || Number.isNaN(amount) || amount <= 0 || !date) {
+            showToast("Enter a valid contribution amount");
+            return;
+        }
+
+        try {
+            if (goalContributionSubmitBtn) {
+                goalContributionSubmitBtn.disabled = true;
+                goalContributionSubmitBtn.textContent = "Adding...";
+            }
+
+            const response = await fetch(API + `/goals/${goalId}/contribute`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    amount,
+                    date,
+                    note
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to add contribution");
+            }
+
+            closeGoalContributionModal();
+            recentGoalSavingsAnimation = {
+                goalId,
+                amount
+            };
+            await loadGoals();
+            showToast("Savings added");
+        } catch (error) {
+            console.error("Error adding contribution:", error);
+            showToast("Could not add contribution");
+        } finally {
+            if (goalContributionSubmitBtn) {
+                goalContributionSubmitBtn.disabled = false;
+                goalContributionSubmitBtn.textContent = "Add Savings";
+            }
         }
     });
 }
@@ -2232,6 +5495,8 @@ const categoryQuickModalCancel = document.getElementById("categoryQuickModalCanc
 const categoryQuickForm = document.getElementById("categoryQuickForm");
 const quickCategoryName = document.getElementById("quickCategoryName");
 const transactionCategorySelect = document.getElementById("transactionCategory");
+const quickAddRecurringCategoryBtn = document.getElementById("quickAddRecurringCategoryBtn");
+const quickAddGoalCategoryBtn = document.getElementById("quickAddGoalCategoryBtn");
 
 function openCategoryQuickModal() {
     if (!categoryQuickModal) return;
@@ -2293,6 +5558,13 @@ if (quickAddRecurringCategoryBtn) {
     });
 }
 
+if (quickAddGoalCategoryBtn) {
+    quickAddGoalCategoryBtn.addEventListener("click", () => {
+        categoryPickerTarget = "goal";
+        openCategoryQuickModal();
+    });
+}
+
 if (categoryQuickModalClose) {
     categoryQuickModalClose.addEventListener("click", closeCategoryQuickModal);
 }
@@ -2341,7 +5613,7 @@ if (categoryQuickForm) {
             const savedName = savedCategory.name || newCategoryName;
             const savedIcon = savedCategory.icon || '🏷️';
 
-            addCategoryToSelect(savedName, categoryPickerTarget !== "budget", savedIcon);
+            addCategoryToSelect(savedName, categoryPickerTarget === "transaction", savedIcon);
 
             if (categoryPickerTarget === "budget") {
                 setSelectedBudgetCategory(savedName, savedIcon);
@@ -2349,6 +5621,10 @@ if (categoryQuickForm) {
 
             if (categoryPickerTarget === "recurring") {
                 setSelectedRecurringCategory(savedName, savedIcon);
+            }
+
+            if (categoryPickerTarget === "goal") {
+                setSelectedGoalCategory(savedName, savedIcon);
             }
 
             closeCategoryQuickModal();
@@ -2415,17 +5691,22 @@ if (deleteAllTransactionsConfirm) {
 // ==============================
 const openCategoryPickerBtn = document.getElementById("openCategoryPickerBtn");
 const openRecurringCategoryPickerBtn = document.getElementById("openRecurringCategoryPickerBtn");
+const openGoalCategoryPickerBtn = document.getElementById("openGoalCategoryPickerBtn");
 const categoryPickerModal = document.getElementById("categoryPickerModal");
 const categoryPickerModalClose = document.getElementById("categoryPickerModalClose");
 const categoryPickerSearch = document.getElementById("categoryPickerSearch");
 const categoryPickerGrid = document.getElementById("categoryPickerGrid");
+const categoryPickerTitle = document.getElementById("categoryPickerTitle");
+const categoryPickerDesc = document.getElementById("categoryPickerDesc");
 const transactionCategoryHidden = document.getElementById("transactionCategory");
 const transactionCategoryDisplay = document.getElementById("transactionCategoryDisplay");
 const transactionCategoryIcon = document.getElementById("transactionCategoryIcon");
-const quickAddRecurringCategoryBtn = document.getElementById("quickAddRecurringCategoryBtn");
 const recurringCategoryHidden = document.getElementById("recurringCategory");
 const recurringCategoryDisplay = document.getElementById("recurringCategoryDisplay");
 const recurringCategoryIcon = document.getElementById("recurringCategoryIcon");
+const goalCategoryHidden = document.getElementById("goalCategory");
+const goalCategoryDisplay = document.getElementById("goalCategoryDisplay");
+const goalCategoryIcon = document.getElementById("goalCategoryIcon");
 
 function setSelectedTransactionCategory(name, icon = '🏷️') {
     const cleanName = String(name || '').trim();
@@ -2449,6 +5730,14 @@ function setSelectedRecurringCategory(name, icon = "🏷️") {
     if (recurringCategoryHidden) recurringCategoryHidden.value = cleanName;
     if (recurringCategoryDisplay) recurringCategoryDisplay.textContent = cleanName || "Select category";
     if (recurringCategoryIcon) recurringCategoryIcon.textContent = icon || "🏷️";
+}
+
+function setSelectedGoalCategory(name, icon = "🏷️") {
+    const cleanName = String(name || "").trim();
+
+    if (goalCategoryHidden) goalCategoryHidden.value = cleanName;
+    if (goalCategoryDisplay) goalCategoryDisplay.textContent = cleanName || "Select category";
+    if (goalCategoryIcon) goalCategoryIcon.textContent = icon || "🏷️";
 }
 
 function renderCategoryPickerGrid(searchTerm = '') {
@@ -2486,7 +5775,9 @@ function renderCategoryPickerGrid(searchTerm = '') {
             ? (budgetCategoryHidden ? budgetCategoryHidden.value : '')
             : categoryPickerTarget === "recurring"
                 ? (recurringCategoryHidden ? recurringCategoryHidden.value : '')
-                : (transactionCategoryHidden ? transactionCategoryHidden.value : '');
+                : categoryPickerTarget === "goal"
+                    ? (goalCategoryHidden ? goalCategoryHidden.value : '')
+                    : (transactionCategoryHidden ? transactionCategoryHidden.value : '');
 
     categoryPickerGrid.innerHTML = categories.map(cat => {
         const name = cat.name || 'Other';
@@ -2515,6 +5806,8 @@ function renderCategoryPickerGrid(searchTerm = '') {
                 setSelectedBudgetCategory(name, icon);
             } else if (categoryPickerTarget === "recurring") {
                 setSelectedRecurringCategory(name, icon);
+            } else if (categoryPickerTarget === "goal") {
+                setSelectedGoalCategory(name, icon);
             } else {
                 setSelectedTransactionCategory(name, icon);
             }
@@ -2526,6 +5819,22 @@ function renderCategoryPickerGrid(searchTerm = '') {
 
 function openCategoryPickerModal() {
     if (!categoryPickerModal) return;
+
+    const contextLabels = {
+        transaction: 'this transaction',
+        budget: 'this budget',
+        recurring: 'this recurring payment',
+        goal: 'this goal'
+    };
+    const contextLabel = contextLabels[categoryPickerTarget] || 'this item';
+
+    if (categoryPickerTitle) {
+        categoryPickerTitle.textContent = 'Choose Category';
+    }
+
+    if (categoryPickerDesc) {
+        categoryPickerDesc.textContent = `Select a category for ${contextLabel}.`;
+    }
 
     categoryPickerModal.style.display = 'flex';
     renderCategoryPickerGrid(categoryPickerSearch ? categoryPickerSearch.value : '');
@@ -2555,6 +5864,13 @@ if (openCategoryPickerBtn) {
 if (openRecurringCategoryPickerBtn) {
     openRecurringCategoryPickerBtn.addEventListener("click", () => {
         categoryPickerTarget = "recurring";
+        openCategoryPickerModal();
+    });
+}
+
+if (openGoalCategoryPickerBtn) {
+    openGoalCategoryPickerBtn.addEventListener("click", () => {
+        categoryPickerTarget = "goal";
         openCategoryPickerModal();
     });
 }
@@ -3079,10 +6395,16 @@ const addRecurringBtn = document.getElementById("addRecurringBtn");
 const recurringModalClose = document.getElementById("recurringModalClose");
 const recurringModalCancel = document.getElementById("recurringModalCancel");
 const recurringForm = document.getElementById("recurringForm");
+const deleteRecurringModal = document.getElementById("deleteRecurringModal");
+const deleteRecurringModalClose = document.getElementById("deleteRecurringModalClose");
+const deleteRecurringCancel = document.getElementById("deleteRecurringCancel");
+const deleteRecurringConfirm = document.getElementById("deleteRecurringConfirm");
+const deleteRecurringIdInput = document.getElementById("deleteRecurringId");
 
 const recurringTypeInput = document.getElementById("recurringType");
 const recurringTypeExpenseBtn = document.getElementById("recurringTypeExpenseBtn");
 const recurringTypeIncomeBtn = document.getElementById("recurringTypeIncomeBtn");
+let recurringSaveInProgress = false;
 
 function setRecurringType(type = "expense") {
     const normalized = type === "income" ? "income" : "expense";
@@ -3098,37 +6420,125 @@ function setRecurringType(type = "expense") {
     }
 }
 
-function openRecurringModal() {
-    if (!recurringModal) return;
+function getRecurringModalRefs() {
+    return {
+        modal: document.getElementById("recurringModal"),
+        form: document.getElementById("recurringForm"),
+        idInput: document.getElementById("recurringId"),
+        title: document.getElementById("recurringModalTitle"),
+        desc: document.getElementById("recurringModalDesc"),
+        submitBtn: document.getElementById("recurringSubmitBtn"),
+        nextDateInput: document.getElementById("recurringNextDate")
+    };
+}
 
-    if (recurringForm) recurringForm.reset();
+function openRecurringModal(recurring = null) {
+    const { modal, form, idInput, title, desc, submitBtn, nextDateInput } = getRecurringModalRefs();
+    if (!modal) return;
 
-    setRecurringType("expense");
-    setSelectedRecurringCategory("", "🏷️");
+    if (form) form.reset();
 
-    const nextDateInput = document.getElementById("recurringNextDate");
-    if (nextDateInput) {
-        nextDateInput.value = new Date().toISOString().split("T")[0];
+    const nameInput = document.getElementById("recurringName");
+    const amountInput = document.getElementById("recurringAmount");
+    const accountInput = document.getElementById("recurringAccount");
+    const frequencyInput = document.getElementById("recurringFrequency");
+
+    if (recurring) {
+        const amount = parseFloat(recurring.amount || 0);
+        const categoryName = recurring.category || "";
+        const categoryIcon = getCategoryIcon(categoryName);
+
+        if (idInput) idInput.value = recurring.id || "";
+        if (title) title.textContent = "Edit Recurring Payment";
+        if (desc) desc.textContent = "Update this recurring payment and keep your forecast accurate.";
+        if (submitBtn) submitBtn.textContent = "Save Changes";
+        if (nameInput) nameInput.value = recurring.name || "";
+        if (amountInput) amountInput.value = Math.abs(amount) || "";
+        if (accountInput) accountInput.value = recurring.account || "Recurring";
+        if (frequencyInput) frequencyInput.value = recurring.frequency || "monthly";
+        if (nextDateInput) nextDateInput.value = dateInputValue(recurring.next_date) || new Date().toISOString().split("T")[0];
+
+        setRecurringType(amount > 0 ? "income" : "expense");
+        setSelectedRecurringCategory(categoryName, categoryIcon);
+    } else {
+        if (idInput) idInput.value = "";
+        if (title) title.textContent = "Add Recurring Payment";
+        if (desc) desc.textContent = "Add a new recurring income or bill to your forecast.";
+        if (submitBtn) submitBtn.textContent = "Save Recurring";
+        if (accountInput) accountInput.value = "Recurring";
+
+        setRecurringType("expense");
+        setSelectedRecurringCategory("", "🏷️");
+
+        if (nextDateInput) {
+            nextDateInput.value = new Date().toISOString().split("T")[0];
+        }
     }
 
-    recurringModal.style.display = "flex";
+    modal.style.display = "flex";
 }
 
 function closeRecurringModal() {
-    if (!recurringModal) return;
-    recurringModal.style.display = "none";
+    const { modal, form, idInput, title, desc, submitBtn } = getRecurringModalRefs();
+    if (!modal) return;
+    modal.style.display = "none";
+
+    if (form) form.reset();
+    if (idInput) idInput.value = "";
+    if (title) title.textContent = "Add Recurring Payment";
+    if (desc) desc.textContent = "Add a new recurring income or bill to your forecast.";
+    if (submitBtn) submitBtn.textContent = "Save Recurring";
+    setRecurringType("expense");
+    setSelectedRecurringCategory("", "🏷️");
 }
+
+function openDeleteRecurringModal(recurringId) {
+    if (!deleteRecurringModal || !deleteRecurringIdInput) return;
+    deleteRecurringIdInput.value = recurringId || "";
+    deleteRecurringModal.style.display = "flex";
+}
+
+function closeDeleteRecurringModal() {
+    if (!deleteRecurringModal || !deleteRecurringIdInput) return;
+    deleteRecurringModal.style.display = "none";
+    deleteRecurringIdInput.value = "";
+}
+
+window.openRecurringModal = openRecurringModal;
+window.closeRecurringModal = closeRecurringModal;
+
+document.addEventListener("click", (e) => {
+    if (!(e.target instanceof Element)) return;
+
+    const addBtn = e.target.closest("#addRecurringBtn");
+    const closeBtn = e.target.closest("#recurringModalClose");
+    const cancelBtn = e.target.closest("#recurringModalCancel");
+    const modalBackdrop = e.target.id === "recurringModal" ? e.target : null;
+    const deleteModalBackdrop = e.target.id === "deleteRecurringModal" ? e.target : null;
+
+    if (addBtn) {
+        e.preventDefault();
+        openRecurringModal();
+        return;
+    }
+
+    if (closeBtn || cancelBtn || modalBackdrop) {
+        e.preventDefault();
+        closeRecurringModal();
+        return;
+    }
+
+    if (deleteModalBackdrop) {
+        e.preventDefault();
+        closeDeleteRecurringModal();
+    }
+});
 
 if (addRecurringBtn) {
-    addRecurringBtn.addEventListener("click", openRecurringModal);
-}
-
-if (recurringModalClose) {
-    recurringModalClose.addEventListener("click", closeRecurringModal);
-}
-
-if (recurringModalCancel) {
-    recurringModalCancel.addEventListener("click", closeRecurringModal);
+    addRecurringBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        openRecurringModal();
+    });
 }
 
 if (recurringTypeExpenseBtn) {
@@ -3139,10 +6549,46 @@ if (recurringTypeIncomeBtn) {
     recurringTypeIncomeBtn.addEventListener("click", () => setRecurringType("income"));
 }
 
+if (deleteRecurringModalClose) {
+    deleteRecurringModalClose.addEventListener("click", closeDeleteRecurringModal);
+}
+
+if (deleteRecurringCancel) {
+    deleteRecurringCancel.addEventListener("click", closeDeleteRecurringModal);
+}
+
+if (deleteRecurringConfirm) {
+    deleteRecurringConfirm.addEventListener("click", async () => {
+        const recurringId = deleteRecurringIdInput ? deleteRecurringIdInput.value : "";
+        if (!recurringId) return;
+
+        try {
+            const response = await fetch(API + `/recurring/${recurringId}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to delete recurring payment");
+            }
+
+            closeDeleteRecurringModal();
+            await loadRecurringPayments();
+            showToast("Recurring payment deleted");
+        } catch (error) {
+            console.error("Recurring delete error:", error);
+            showToast("Could not delete recurring payment");
+        }
+    });
+}
+
 if (recurringForm) {
     recurringForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        if (recurringSaveInProgress) return;
+
+        const recurringId = document.getElementById("recurringId").value.trim();
         const name = document.getElementById("recurringName").value.trim();
         const rawAmount = parseFloat(document.getElementById("recurringAmount").value);
         const type = document.getElementById("recurringType").value;
@@ -3157,16 +6603,26 @@ if (recurringForm) {
         }
 
         const amount = type === "income" ? Math.abs(rawAmount) : -Math.abs(rawAmount);
+        const submitBtn = recurringForm.querySelector('button[type="submit"]');
+        const isEditing = !!recurringId;
 
         try {
-            const response = await fetch(API + "/recurring", {
-                method: "POST",
+            recurringSaveInProgress = true;
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Saving...";
+            }
+
+            const response = await fetch(isEditing ? API + `/recurring/${recurringId}` : API + "/recurring", {
+                method: isEditing ? "PUT" : "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     name,
                     amount,
+                    type,
                     category,
                     account,
                     frequency,
@@ -3181,10 +6637,23 @@ if (recurringForm) {
 
             closeRecurringModal();
             await loadRecurringPayments();
-            showToast("Recurring payment added");
+            showToast(
+                isEditing
+                    ? "Recurring payment updated"
+                    : response.status === 200
+                        ? "Recurring payment already exists"
+                        : "Recurring payment added"
+            );
         } catch (error) {
             console.error("Error adding recurring payment:", error);
-            showToast("Could not add recurring payment");
+            showToast(isEditing ? "Could not update recurring payment" : "Could not add recurring payment");
+        } finally {
+            recurringSaveInProgress = false;
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Save Recurring";
+            }
         }
     });
 }

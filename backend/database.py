@@ -57,7 +57,25 @@ def init_db():
             saved_amount  DECIMAL(10,2) DEFAULT 0,
             deadline      DATE,
             icon          VARCHAR(10),
+            category      TEXT DEFAULT 'Savings',
+            auto_link_savings BOOLEAN DEFAULT TRUE,
             created_at    TIMESTAMP DEFAULT NOW()
+        );
+    """)
+
+    cur.execute("ALTER TABLE goals ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'Savings'")
+    cur.execute("ALTER TABLE goals ADD COLUMN IF NOT EXISTS auto_link_savings BOOLEAN DEFAULT TRUE")
+    cur.execute("ALTER TABLE goals ALTER COLUMN auto_link_savings SET DEFAULT TRUE")
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS goal_contributions (
+            id SERIAL PRIMARY KEY,
+            goal_id INTEGER NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
+            amount DECIMAL(10,2) NOT NULL,
+            note TEXT,
+            date DATE NOT NULL DEFAULT CURRENT_DATE,
+            source TEXT NOT NULL DEFAULT 'manual',
+            created_at TIMESTAMP DEFAULT NOW()
         );
     """)
 

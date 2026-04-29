@@ -5,8 +5,10 @@ from psycopg2.extras import RealDictCursor
 from pathlib import Path
 from dotenv import load_dotenv
 from groq import Groq
+from decimal import Decimal, InvalidOperation
 import pandas as pd
 import io
+import json
 import os
 
 load_dotenv(Path(__file__).with_name(".env"))
@@ -451,7 +453,57 @@ def delete_budget(budget_id):
 def get_goals():
     conn = get_connection()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("SELECT * FROM goals ORDER BY deadline")
+    cur.execute("""
+        SELECT
+            g.*,
+            COALESCE(g.saved_amount, 0) AS manual_saved_amount,
+            COALESCE(linked.linked_savings_amount, 0) AS linked_savings_amount,
+            COALESCE(g.saved_amount, 0) + COALESCE(linked.linked_savings_amount, 0) AS effective_saved_amount,
+            manual_activity.last_manual_date,
+            linked_activity.last_linked_date,
+            NULLIF(
+                GREATEST(
+                    COALESCE(manual_activity.last_manual_date, DATE '1900-01-01'),
+                    COALESCE(linked_activity.last_linked_date, DATE '1900-01-01')
+                ),
+                DATE '1900-01-01'
+            ) AS last_goal_activity_date
+        FROM goals g
+        LEFT JOIN LATERAL (
+            SELECT COALESCE(SUM(ABS(t.amount)), 0) AS linked_savings_amount
+            FROM transactions t
+            WHERE g.auto_link_savings = TRUE
+              AND (
+                  LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%' || LOWER(COALESCE(g.name, '')) || '%'
+              )
+              AND (
+                  LOWER(COALESCE(t.account, '')) LIKE '%sav%'
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%saving%'
+                  OR LOWER(COALESCE(t.category, '')) LIKE '%saving%'
+              )
+        ) linked ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT MAX(gc.date) AS last_manual_date
+            FROM goal_contributions gc
+            WHERE gc.goal_id = g.id
+        ) manual_activity ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT MAX(t.date) AS last_linked_date
+            FROM transactions t
+            WHERE g.auto_link_savings = TRUE
+              AND (
+                  LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%' || LOWER(COALESCE(g.name, '')) || '%'
+              )
+              AND (
+                  LOWER(COALESCE(t.account, '')) LIKE '%sav%'
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%saving%'
+                  OR LOWER(COALESCE(t.category, '')) LIKE '%saving%'
+              )
+        ) linked_activity ON TRUE
+        ORDER BY g.deadline NULLS LAST
+    """)
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -459,18 +511,437 @@ def get_goals():
 
 @app.route('/api/goals', methods=['POST'])
 def add_goal():
-    data = request.json
+    data = request.json or {}
+
+    name = (data.get('name') or '').strip()
+    target_amount = data.get('target_amount')
+    saved_amount = data.get('saved_amount', 0)
+    deadline = data.get('deadline')
+    icon = (data.get('icon') or '🎯').strip()
+    category = (data.get('category') or 'Savings').strip()
+    auto_link_savings = data.get('auto_link_savings')
+    auto_link_savings = True if auto_link_savings is None else bool(auto_link_savings)
+
+    if not name or target_amount is None:
+        return jsonify({"error": "Name and target amount are required"}), 400
+
     conn = get_connection()
-    cur  = conn.cursor()
+    cur  = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
-        INSERT INTO goals (name, target_amount, saved_amount, deadline, icon)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (data['name'], data['target_amount'],
-          data.get('saved_amount', 0), data.get('deadline'), data.get('icon', '🎯')))
+        INSERT INTO goals (name, target_amount, saved_amount, deadline, icon, category, auto_link_savings)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        RETURNING *
+    """, (name, target_amount, saved_amount, deadline, icon, category, auto_link_savings))
+    goal = cur.fetchone()
     conn.commit()
     cur.close()
     conn.close()
-    return jsonify({"message": "Goal created!"}), 201
+    return jsonify({"message": "Goal created!", "goal": goal}), 201
+
+
+@app.route('/api/goals/<int:goal_id>', methods=['PUT'])
+def update_goal(goal_id):
+    data = request.json or {}
+
+    name = (data.get('name') or '').strip()
+    target_amount = data.get('target_amount')
+    saved_amount = data.get('saved_amount', 0)
+    deadline = data.get('deadline')
+    icon = (data.get('icon') or '🎯').strip()
+    category = (data.get('category') or 'Savings').strip()
+    auto_link_savings = data.get('auto_link_savings')
+    auto_link_savings = True if auto_link_savings is None else bool(auto_link_savings)
+
+    if not name or target_amount is None:
+        return jsonify({"error": "Name and target amount are required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        UPDATE goals
+        SET name = %s,
+            target_amount = %s,
+            saved_amount = %s,
+            deadline = %s,
+            icon = %s,
+            category = %s,
+            auto_link_savings = %s
+        WHERE id = %s
+        RETURNING *
+    """, (
+        name,
+        target_amount,
+        saved_amount,
+        deadline,
+        icon,
+        category,
+        auto_link_savings,
+        goal_id
+    ))
+
+    updated = cur.fetchone()
+
+    if not updated:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Goal not found"}), 404
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Goal updated", "goal": updated}), 200
+
+
+@app.route('/api/goals/<int:goal_id>/contributions', methods=['GET'])
+def get_goal_contributions(goal_id):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        SELECT *
+        FROM goals
+        WHERE id = %s
+    """, (goal_id,))
+    goal = cur.fetchone()
+
+    if not goal:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Goal not found"}), 404
+
+    cur.execute("""
+        SELECT
+            id,
+            amount,
+            note,
+            date,
+            source,
+            created_at,
+            'manual' AS history_type,
+            NULL AS transaction_name,
+            NULL AS transaction_category,
+            NULL AS transaction_account
+        FROM goal_contributions
+        WHERE goal_id = %s
+    """, (goal_id,))
+    manual_rows = cur.fetchall()
+
+    transaction_rows = []
+    if goal.get("auto_link_savings"):
+        cur.execute("""
+            SELECT
+                t.id,
+                ABS(t.amount) AS amount,
+                t.name AS note,
+                t.date,
+                'transaction' AS source,
+                t.created_at,
+                'transaction' AS history_type,
+                t.name AS transaction_name,
+                t.category AS transaction_category,
+                t.account AS transaction_account
+            FROM transactions t
+            WHERE (
+                LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(%s, ''))
+                OR LOWER(COALESCE(t.name, '')) LIKE '%%' || LOWER(COALESCE(%s, '')) || '%%'
+            )
+              AND (
+                LOWER(COALESCE(t.account, '')) LIKE '%%sav%%'
+                OR LOWER(COALESCE(t.name, '')) LIKE '%%saving%%'
+                OR LOWER(COALESCE(t.category, '')) LIKE '%%saving%%'
+              )
+            ORDER BY t.date DESC, t.created_at DESC
+            LIMIT 20
+        """, (goal.get("category") or "", goal.get("name") or ""))
+        transaction_rows = cur.fetchall()
+
+    rows = manual_rows + transaction_rows
+    rows.sort(
+        key=lambda item: (
+            item.get("date") or "",
+            item.get("created_at") or ""
+        ),
+        reverse=True
+    )
+
+    cur.close()
+    conn.close()
+
+    return jsonify(rows[:30]), 200
+
+
+@app.route('/api/goals/<int:goal_id>/suggestions', methods=['GET'])
+def get_goal_suggestions(goal_id):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        SELECT
+            g.*,
+            COALESCE(g.saved_amount, 0) AS manual_saved_amount,
+            COALESCE(linked.linked_savings_amount, 0) AS linked_savings_amount,
+            COALESCE(g.saved_amount, 0) + COALESCE(linked.linked_savings_amount, 0) AS effective_saved_amount
+        FROM goals g
+        LEFT JOIN LATERAL (
+            SELECT COALESCE(SUM(ABS(t.amount)), 0) AS linked_savings_amount
+            FROM transactions t
+            WHERE g.auto_link_savings = TRUE
+              AND (
+                  LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%%' || LOWER(COALESCE(g.name, '')) || '%%'
+              )
+              AND (
+                  LOWER(COALESCE(t.account, '')) LIKE '%%sav%%'
+                  OR LOWER(COALESCE(t.name, '')) LIKE '%%saving%%'
+                  OR LOWER(COALESCE(t.category, '')) LIKE '%%saving%%'
+              )
+        ) linked ON TRUE
+        WHERE g.id = %s
+    """, (goal_id,))
+    goal = cur.fetchone()
+
+    if not goal:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Goal not found"}), 404
+
+    cur.execute("""
+        SELECT name, amount, category, account, date
+        FROM transactions
+        ORDER BY date DESC
+        LIMIT 80
+    """)
+    transactions = cur.fetchall()
+
+    cur.execute("""
+        SELECT category, ABS(SUM(amount)) AS spent
+        FROM transactions
+        WHERE amount < 0
+          AND date >= CURRENT_DATE - INTERVAL '30 days'
+        GROUP BY category
+        ORDER BY spent DESC
+        LIMIT 6
+    """)
+    top_spending = cur.fetchall()
+
+    cur.execute("""
+        SELECT name, amount, category, account, date
+        FROM transactions
+        WHERE amount < 0
+          AND date >= CURRENT_DATE - INTERVAL '30 days'
+          AND (
+              LOWER(COALESCE(category, '')) = LOWER(%s)
+              OR LOWER(COALESCE(name, '')) LIKE '%%' || LOWER(%s) || '%%'
+          )
+        ORDER BY ABS(amount) DESC
+        LIMIT 8
+    """, (goal["category"] or "", goal["name"] or ""))
+    goal_related_spending = cur.fetchall()
+
+    cur.execute("""
+        SELECT name, amount, category, account, date
+        FROM transactions
+        WHERE date >= CURRENT_DATE - INTERVAL '45 days'
+          AND (
+              LOWER(COALESCE(account, '')) LIKE '%sav%'
+              OR LOWER(COALESCE(name, '')) LIKE '%saving%'
+              OR LOWER(COALESCE(category, '')) LIKE '%saving%'
+          )
+        ORDER BY date DESC
+        LIMIT 12
+    """)
+    savings_activity = cur.fetchall()
+
+    cur.execute("""
+        SELECT category, amount, start_date, days
+        FROM budgets
+        ORDER BY created_at DESC
+        LIMIT 25
+    """)
+    budgets = cur.fetchall()
+
+    cur.execute("""
+        SELECT name, amount, category, account, frequency, next_date
+        FROM recurring_payments
+        WHERE is_active = TRUE
+        ORDER BY next_date ASC
+        LIMIT 25
+    """)
+    recurring = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    prompt = f"""
+You are Money Coach inside FinTrack.
+
+Give premium, practical savings advice for this one goal only.
+Use only the user's FinTrack data below. Do not invent numbers.
+Keep it simple and decision-focused.
+
+Goal:
+{goal}
+
+Recent transactions:
+{transactions}
+
+Top spending in the last 30 days:
+{top_spending}
+
+Goal-related spending in the last 30 days:
+{goal_related_spending}
+
+Savings activity in the last 45 days:
+{savings_activity}
+
+Budgets:
+{budgets}
+
+Recurring payments:
+{recurring}
+
+Return valid JSON only in this exact shape:
+{{
+  "cards": [
+    {{
+      "title": "short title",
+      "action": "specific action in one sentence",
+      "why": "why this matters in one sentence"
+    }}
+  ]
+}}
+
+Create exactly 3 cards:
+1. A this-week action that helps this goal.
+2. A spending tradeoff using real user data if available.
+3. An automation or savings opportunity.
+
+Do not mention raw negative numbers like -3000; say spent 3000 instead.
+Avoid obvious advice like "stay on pace", "keep auto savings on", or "review spending" unless you name a specific action.
+If the data is thin, make the card a useful data-gap action, such as what transaction/category the user should add next.
+"""
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a concise personal finance coach. Give practical, specific, supportive advice."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.25,
+            max_tokens=220
+        )
+
+        answer = (response.choices[0].message.content or "").strip()
+        json_start = answer.find("{")
+        json_end = answer.rfind("}")
+
+        if json_start != -1 and json_end != -1:
+            parsed = json.loads(answer[json_start:json_end + 1])
+            cards = parsed.get("cards", [])
+        else:
+            cards = []
+
+        clean_cards = []
+        for card in cards:
+            if not isinstance(card, dict):
+                continue
+
+            title = str(card.get("title") or "").strip()
+            action = str(card.get("action") or "").strip()
+            why = str(card.get("why") or "").strip()
+
+            if title and action:
+                clean_cards.append({
+                    "title": title,
+                    "action": action,
+                    "why": why
+                })
+
+        return jsonify({"suggestions": clean_cards[:3]}), 200
+
+    except Exception as e:
+        print("Goal suggestions error:", e)
+        return jsonify({"error": "Goal suggestions could not load right now"}), 500
+
+
+@app.route('/api/goals/<int:goal_id>/contribute', methods=['POST'])
+def contribute_to_goal(goal_id):
+    data = request.json or {}
+
+    try:
+        amount = Decimal(str(data.get('amount', '0')))
+    except (InvalidOperation, TypeError):
+        return jsonify({"error": "Contribution amount must be a number"}), 400
+
+    note = (data.get('note') or '').strip()
+    date = data.get('date')
+
+    if amount <= 0:
+        return jsonify({"error": "Contribution amount must be greater than 0"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("SELECT id FROM goals WHERE id = %s", (goal_id,))
+    goal = cur.fetchone()
+
+    if not goal:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Goal not found"}), 404
+
+    cur.execute("""
+        INSERT INTO goal_contributions (goal_id, amount, note, date, source)
+        VALUES (%s, %s, %s, COALESCE(%s::date, CURRENT_DATE), %s)
+    """, (
+        goal_id,
+        amount,
+        note,
+        date or None,
+        'manual'
+    ))
+
+    cur.execute("""
+        UPDATE goals
+        SET saved_amount = COALESCE(saved_amount, 0) + %s
+        WHERE id = %s
+        RETURNING *
+    """, (amount, goal_id))
+
+    updated = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Contribution added", "goal": updated}), 200
+
+
+@app.route('/api/goals/<int:goal_id>', methods=['DELETE'])
+def delete_goal(goal_id):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM goals WHERE id = %s", (goal_id,))
+
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Goal not found"}), 404
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Goal deleted"}), 200
 
 # ══════════════════════════════════════
 #  CATEGORIES
@@ -653,6 +1124,154 @@ def get_investments():
         'today_change':      round(total_change, 2),
     })
 
+
+@app.route('/api/investment-news', methods=['GET'])
+def get_investment_news():
+    from datetime import datetime, timedelta, timezone
+
+    holdings = [
+        { 'symbol': 'AAPL', 'name': 'Apple Inc.',      'type': 'STOCK' },
+        { 'symbol': 'VOO',  'name': 'S&P 500 ETF',     'type': 'ETF'   },
+        { 'symbol': 'MSFT', 'name': 'Microsoft Corp.', 'type': 'STOCK' },
+    ]
+    holding_by_symbol = {h['symbol']: h for h in holdings}
+    now = datetime.now(timezone.utc)
+
+    fallback_news = {
+        'AAPL': {
+            'title': 'Apple supplier checks point to steady iPhone demand',
+            'source': 'Market Watchlist',
+            'summary': 'Relevant because Apple is your largest individual stock holding.',
+            'impact': 'medium',
+            'sentiment': 'Bullish',
+            'published_at': (now - timedelta(hours=2)).isoformat()
+        },
+        'MSFT': {
+            'title': 'Microsoft cloud growth remains a key focus before earnings',
+            'source': 'Earnings Desk',
+            'summary': 'Cloud revenue and AI spending are the main items to watch for this position.',
+            'impact': 'high',
+            'sentiment': 'Neutral',
+            'published_at': (now - timedelta(hours=4)).isoformat()
+        },
+        'VOO': {
+            'title': 'S&P 500 investors watch inflation data and rate expectations',
+            'source': 'Index Brief',
+            'summary': 'This matters because VOO tracks broad market sentiment.',
+            'impact': 'medium',
+            'sentiment': 'Neutral',
+            'published_at': (now - timedelta(days=1)).isoformat()
+        }
+    }
+
+    fallback_earnings = {
+        'AAPL': '2026-05-02',
+        'MSFT': '2026-04-30',
+        'VOO': None
+    }
+
+    news_items = []
+
+    def infer_symbol_from_title(title, fallback_symbol):
+        lowered = (title or '').lower()
+
+        if 'microsoft' in lowered or 'msft' in lowered:
+            return 'MSFT'
+        if 'apple' in lowered or 'iphone' in lowered or 'aapl' in lowered:
+            return 'AAPL'
+        if 's&p' in lowered or 's&p 500' in lowered or 'index' in lowered or 'market' in lowered:
+            return 'VOO'
+
+        return fallback_symbol
+
+    def infer_sentiment(title):
+        lowered = (title or '').lower()
+        bullish_words = ['breakout', 'growth', 'rally', 'beat', 'upside', 'strong', 'record']
+        bearish_words = ['lawsuit', 'miss', 'cut', 'slump', 'drop', 'warning', 'risk', 'probe']
+
+        if any(word in lowered for word in bullish_words):
+            return 'Bullish'
+        if any(word in lowered for word in bearish_words):
+            return 'Bearish'
+
+        return 'Neutral'
+
+    try:
+        import yfinance as yf
+
+        for holding in holdings:
+            symbol = holding['symbol']
+            ticker = yf.Ticker(symbol)
+            raw_news = getattr(ticker, 'news', []) or []
+
+            if raw_news:
+                item = raw_news[0]
+                content = item.get('content') if isinstance(item.get('content'), dict) else {}
+                title = item.get('title') or content.get('title') or fallback_news[symbol]['title']
+                matched_symbol = infer_symbol_from_title(title, symbol)
+                matched_holding = holding_by_symbol.get(matched_symbol, holding)
+                fallback_item = fallback_news.get(matched_symbol, fallback_news[symbol])
+                publisher = item.get('publisher') or content.get('provider', {}).get('displayName') or fallback_news[symbol]['source']
+                link = item.get('link') or content.get('canonicalUrl', {}).get('url') or ''
+                publish_time = item.get('providerPublishTime') or item.get('pubDate') or fallback_item['published_at']
+
+                news_items.append({
+                    'symbol': matched_symbol,
+                    'name': matched_holding['name'],
+                    'title': title,
+                    'source': publisher,
+                    'summary': fallback_item['summary'],
+                    'impact': fallback_item['impact'],
+                    'sentiment': infer_sentiment(title),
+                    'published_at': publish_time,
+                    'url': link
+                })
+            else:
+                raise ValueError(f'No news returned for {symbol}')
+    except Exception as e:
+        print('Investment news fallback:', e)
+        news_items = [
+            {
+                'symbol': symbol,
+                'name': next((h['name'] for h in holdings if h['symbol'] == symbol), symbol),
+                'title': item['title'],
+                'source': item['source'],
+                'summary': item['summary'],
+                'impact': item['impact'],
+                'sentiment': item['sentiment'],
+                'published_at': item['published_at'],
+                'url': ''
+            }
+            for symbol, item in fallback_news.items()
+        ]
+
+    earnings = [
+        {
+            'symbol': holding['symbol'],
+            'name': holding['name'],
+            'date': fallback_earnings.get(holding['symbol']),
+            'event': 'Earnings' if holding['type'] == 'STOCK' else 'ETF distribution review'
+        }
+        for holding in holdings
+    ]
+
+    alerts = [
+        {
+            'symbol': item['symbol'],
+            'title': item['title'],
+            'message': f"{item['symbol']} has a high-impact news item to review.",
+            'impact': item['impact']
+        }
+        for item in news_items
+        if item.get('impact') == 'high'
+    ]
+
+    return jsonify({
+        'news': news_items,
+        'earnings': earnings,
+        'alerts': alerts
+    })
+
 # ══════════════════════════════════════
 #  MONEY COACH — Groq AI
 # ══════════════════════════════════════
@@ -764,14 +1383,135 @@ Keep total answer under 140 words unless asked for more.
             "error": "Money Coach could not answer right now"
         }), 500
 
+
+@app.route('/api/investment-copilot', methods=['POST'])
+def investment_copilot():
+    data = request.json or {}
+    question = (data.get('question') or '').strip()
+    holdings = data.get('holdings') or []
+    goals = data.get('goals') or []
+    alerts = data.get('alerts') or []
+
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
+
+    prompt = f"""
+You are the AI Investment Copilot inside FinTrack.
+
+Use ONLY the user's portfolio data below. Do not invent holdings, prices, goals, or returns.
+Give a direct, practical answer. This is educational guidance, not financial advice.
+If the user asks whether to sell, answer with a clear stance like "wait", "review", or "trim carefully" and explain why.
+Keep the answer short and decision-focused.
+
+User question:
+{question}
+
+Current holdings:
+{holdings}
+
+Goals:
+{goals}
+
+Current portfolio alerts:
+{alerts}
+
+Answer with exactly:
+Short answer:
+[1-2 lines]
+
+Why:
+[2-3 bullets]
+
+Next move:
+[1-2 actions]
+"""
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a careful portfolio copilot. Be practical, concise, and avoid jargon. Do not provide guarantees."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.2,
+            max_tokens=420
+        )
+
+        return jsonify({"answer": response.choices[0].message.content})
+    except Exception as e:
+        print("Investment Copilot error:", e)
+        return jsonify({
+            "answer": "Short answer:\nReview before acting.\n\nWhy:\n- I can see your holdings, but the AI service is unavailable right now.\n- Use allocation, performance, risk, and tax panels before making a sell decision.\n\nNext move:\nCheck concentration, tax impact, and upcoming earnings before trading."
+        })
+
 # ══════════════════════════════════════
 #  RECURRING PAYMENTS
 # ══════════════════════════════════════
+
+def normalize_recurring_amount(raw_amount, payment_type=None):
+    try:
+        amount = Decimal(str(raw_amount))
+    except (InvalidOperation, TypeError):
+        return None
+
+    normalized_type = (payment_type or '').strip().lower()
+
+    if normalized_type == 'expense':
+        return -abs(amount)
+
+    if normalized_type == 'income':
+        return abs(amount)
+
+    return amount
+
+
+def repair_recurring_transaction_signs(cur):
+    cur.execute("""
+        UPDATE transactions t
+        SET amount = CASE
+                WHEN rp.amount < 0 THEN -ABS(t.amount)
+                ELSE ABS(t.amount)
+            END,
+            category = rp.category
+        FROM recurring_payments rp
+        WHERE t.source = 'recurring'
+          AND LOWER(t.name) = LOWER(rp.name)
+          AND LOWER(t.account) = LOWER(rp.account)
+          AND ABS(t.amount) = ABS(rp.amount)
+          AND (
+              (rp.amount < 0 AND t.amount > 0)
+              OR (rp.amount > 0 AND t.amount < 0)
+              OR LOWER(COALESCE(t.category, '')) <> LOWER(COALESCE(rp.category, ''))
+          )
+    """)
+
 
 @app.route('/api/recurring', methods=['GET'])
 def get_recurring():
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        DELETE FROM recurring_payments rp
+        USING recurring_payments keep
+        WHERE rp.id > keep.id
+          AND LOWER(rp.name) = LOWER(keep.name)
+          AND rp.amount = keep.amount
+          AND LOWER(rp.category) = LOWER(keep.category)
+          AND LOWER(rp.account) = LOWER(keep.account)
+          AND LOWER(rp.frequency) = LOWER(keep.frequency)
+          AND rp.next_date = keep.next_date
+    """)
+    conn.commit()
+
+    repair_recurring_transaction_signs(cur)
+    conn.commit()
 
     cur.execute("""
         SELECT *
@@ -791,7 +1531,7 @@ def add_recurring():
     data = request.json or {}
 
     name = (data.get('name') or '').strip()
-    amount = data.get('amount')
+    amount = normalize_recurring_amount(data.get('amount'), data.get('type'))
     category = (data.get('category') or 'Other').strip()
     account = (data.get('account') or 'Recurring').strip()
     frequency = (data.get('frequency') or 'monthly').strip()
@@ -801,7 +1541,49 @@ def add_recurring():
         return jsonify({"error": "Name, amount, and next date are required"}), 400
 
     conn = get_connection()
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        SELECT id
+        FROM recurring_payments
+        WHERE LOWER(name) = LOWER(%s)
+          AND amount = %s
+          AND LOWER(category) = LOWER(%s)
+          AND LOWER(account) = LOWER(%s)
+          AND LOWER(frequency) = LOWER(%s)
+          AND next_date = %s
+        ORDER BY id ASC
+    """, (
+        name,
+        amount,
+        category,
+        account,
+        frequency,
+        next_date
+    ))
+
+    existing_rows = cur.fetchall()
+
+    if existing_rows:
+        keep_id = existing_rows[0]["id"]
+        duplicate_ids = [row["id"] for row in existing_rows[1:]]
+
+        if duplicate_ids:
+            cur.execute("""
+                DELETE FROM recurring_payments
+                WHERE id = ANY(%s)
+            """, (duplicate_ids,))
+            conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "message": "Recurring payment already exists",
+            "id": keep_id,
+            "mode": "existing",
+            "merged_duplicates": len(duplicate_ids)
+        }), 200
 
     cur.execute("""
         INSERT INTO recurring_payments
@@ -825,6 +1607,79 @@ def add_recurring():
     return jsonify({"message": "Recurring payment created"}), 201
 
 
+@app.route('/api/recurring/<int:recurring_id>', methods=['PUT'])
+def update_recurring(recurring_id):
+    data = request.json or {}
+
+    name = (data.get('name') or '').strip()
+    amount = normalize_recurring_amount(data.get('amount'), data.get('type'))
+    category = (data.get('category') or 'Other').strip()
+    account = (data.get('account') or 'Recurring').strip()
+    frequency = (data.get('frequency') or 'monthly').strip()
+    next_date = data.get('next_date')
+
+    if not name or amount is None or not next_date:
+        return jsonify({"error": "Name, amount, and next date are required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+        UPDATE recurring_payments
+        SET name = %s,
+            amount = %s,
+            category = %s,
+            account = %s,
+            frequency = %s,
+            next_date = %s
+        WHERE id = %s
+        RETURNING *
+    """, (
+        name,
+        amount,
+        category,
+        account,
+        frequency,
+        next_date,
+        recurring_id
+    ))
+
+    updated = cur.fetchone()
+
+    if not updated:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Recurring payment not found"}), 404
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "message": "Recurring payment updated",
+        "recurring": updated
+    }), 200
+
+
+@app.route('/api/recurring/<int:recurring_id>', methods=['DELETE'])
+def delete_recurring(recurring_id):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM recurring_payments WHERE id = %s", (recurring_id,))
+
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Recurring payment not found"}), 404
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Recurring payment deleted"}), 200
+
+
 @app.route('/api/recurring/<int:recurring_id>/mark-paid', methods=['POST'])
 def mark_recurring_paid(recurring_id):
     conn = get_connection()
@@ -838,13 +1693,20 @@ def mark_recurring_paid(recurring_id):
         conn.close()
         return jsonify({"error": "Recurring payment not found"}), 404
 
+    transaction_amount = normalize_recurring_amount(item["amount"])
+
+    if transaction_amount is None:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Recurring payment amount is invalid"}), 400
+
     # Create real transaction
     cur.execute("""
         INSERT INTO transactions (name, amount, category, account, date, source)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (
         item["name"],
-        item["amount"],
+        transaction_amount,
         item["category"],
         item["account"],
         item["next_date"],

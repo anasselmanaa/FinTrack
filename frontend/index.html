@@ -129,7 +129,7 @@
             </div>
             <button class="btn-primary" id="addNewBtn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add New
+                <span id="addNewBtnLabel">Add New</span>
             </button>
             <button class="icon-btn" id="themeToggle" title="Toggle theme">
                 <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -939,15 +939,17 @@
         <div class="page" id="page-goals">
             <!-- Stats -->
             <div class="stats-row">
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Saved</p><p class="stat-value">$69,500</p><p class="stat-change positive"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+$2,500 this month</p></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Target Total</p><p class="stat-value">$167,500</p><p class="stat-label" style="margin-top:4px">Across 7 goals</p></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Remaining</p><p class="stat-value">$98,000</p><p class="stat-label" style="margin-top:4px">41% complete</p></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Goals Completed</p><p class="stat-value">1/7</p><p class="stat-change positive" style="margin-top:4px">Keep it up!</p></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Saved</p><p class="stat-value" id="goals-total-saved">$0.00</p><p class="stat-change positive" id="goals-progress-note">Build your plan</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Target Total</p><p class="stat-value" id="goals-target-total">$0.00</p><p class="stat-label" id="goals-count-note" style="margin-top:4px">Across 0 goals</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Remaining</p><p class="stat-value" id="goals-remaining-total">$0.00</p><p class="stat-label" id="goals-complete-note" style="margin-top:4px">0% complete</p></div><div class="stat-icon orange"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="9"></circle></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Goals Completed</p><p class="stat-value" id="goals-completed-count">0/0</p><p class="stat-change positive" id="goals-completed-note" style="margin-top:4px">Keep going</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M5 6H3a3 3 0 0 0 3 3h1"></path><path d="M19 6h2a3 3 0 0 1-3 3h-1"></path></svg></div></div></div>
             </div>
 
             <div class="section-header">
-                <h2 class="section-title">Your Goals</h2>
-                <button class="btn-primary" id="addGoalBtn">+ Create Goal</button>
+                <div>
+                    <h2 class="section-title">Goal Plan</h2>
+                    <p class="section-subtitle">Track what you are saving for, how close you are, and what needs attention next.</p>
+                </div>
             </div>
 
             <div class="goals-page-grid">
@@ -1012,15 +1014,15 @@
         <div class="page" id="page-investments">
             <!-- Stats -->
             <div class="stats-row">
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Portfolio Value</p><p class="stat-value" id="inv-total-value">$10,200.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Today's Change</p><p class="stat-value" style="color:var(--green)" id="inv-today-change">+$168.30</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Return</p><p class="stat-value" style="color:var(--green)" id="inv-total-return">+$1,850.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Invested</p><p class="stat-value" id="inv-total-invested">$8,350.00</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Portfolio Value</p><p class="stat-value" id="inv-total-value">$10,200.00</p><p class="stat-label investment-stat-helper" id="inv-value-note">Live market value</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Today's Change</p><p class="stat-value" style="color:var(--green)" id="inv-today-change">+$168.30</p><p class="stat-label investment-stat-helper" id="inv-today-note">Today’s market move</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Profit</p><p class="stat-value" style="color:var(--green)" id="inv-total-return">+$1,850.00</p><p class="stat-label investment-stat-helper" id="inv-return-note">Since purchase cost</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Total Invested</p><p class="stat-value" id="inv-total-invested">$8,350.00</p><p class="stat-label investment-stat-helper" id="inv-invested-note">You invested $8,350.00</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div></div>
             </div>
 
             <!-- Chart + Allocation -->
-            <div class="grid-2">
-                <div class="card chart-card">
+            <div class="grid-2 investment-overview-grid">
+                <div class="card chart-card investment-chart-card">
                     <div class="chart-header">
                         <h3 class="card-title">📈 Portfolio Performance</h3>
                         <div class="chart-tabs">
@@ -1030,19 +1032,497 @@
                             <button class="chart-tab">1Y</button>
                         </div>
                     </div>
+                    <div class="portfolio-chart-tools">
+                        <div class="portfolio-chart-legend">
+                            <span><i class="portfolio-dot portfolio"></i>Portfolio</span>
+                            <span><i class="portfolio-dot sp500"></i>S&P 500</span>
+                            <span><i class="portfolio-dot nasdaq"></i>NASDAQ</span>
+                        </div>
+                        <label class="portfolio-whatif-toggle">
+                            <input type="checkbox" id="portfolioWhatIfToggle">
+                            <span class="portfolio-switch-ui"></span>
+                            <span>+$1,000 AAPL in Jan</span>
+                        </label>
+                    </div>
                     <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
+                    <p class="portfolio-chart-summary" id="portfolioChartSummary">
+                        Your portfolio is outperforming S&P 500 by +5.7% YTD.
+                    </p>
+                    <p class="portfolio-chart-note">
+                        Outlined green dots mark buys. Orange diamonds mark market events.
+                    </p>
                 </div>
-                <div class="card">
+                <div class="card investment-allocation-card">
                     <h3 class="card-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Allocation
                     </h3>
-                    <div class="alloc-list">
+                    <div class="alloc-list" id="allocationList">
                         <div class="alloc-item"><div><p class="alloc-name">AAPL</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:41.7%"></div></div></div><span class="alloc-pct">41.7%</span></div>
                         <div class="alloc-item"><div><p class="alloc-name">VOO</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:34.3%"></div></div></div><span class="alloc-pct">34.3%</span></div>
                         <div class="alloc-item"><div><p class="alloc-name">MSFT</p><div class="progress-bar" style="margin-top:6px"><div class="progress-fill ok" style="width:24%"></div></div></div><span class="alloc-pct">24%</span></div>
                     </div>
-                    <button class="btn-primary" style="width:100%;margin-top:16px;justify-content:center">+ Add Investment</button>
+                    <div class="allocation-insight warning" id="allocationInsight">
+                        <div class="allocation-insight-icon">!</div>
+                        <div>
+                            <p class="allocation-insight-label">Allocation insight</p>
+                            <p class="allocation-insight-text">AAPL makes up 41.7% of your portfolio. That may increase concentration risk.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Layer -->
+            <div class="investment-decision-grid">
+                <div class="card investment-decision-card">
+                    <div class="investment-card-kicker">Portfolio Score</div>
+                    <div class="portfolio-score-row">
+                        <p class="portfolio-score-value" id="portfolioHealthScore">-- / 100</p>
+                        <span class="portfolio-score-badge" id="portfolioHealthLabel">Loading</span>
+                    </div>
+                    <p class="investment-decision-text" id="portfolioHealthReason">Analyzing portfolio balance.</p>
+                </div>
+
+                <div class="card investment-decision-card">
+                    <div class="investment-card-kicker">AI Insight</div>
+                    <p class="investment-ai-text" id="investmentAiInsight">
+                        Your portfolio summary will appear here once live holdings load.
+                    </p>
+                    <p class="investment-mini-note">Local insight for now. Money Coach can power this later.</p>
+                </div>
+
+                <div class="card investment-decision-card">
+                    <div class="investment-card-kicker">What to do next</div>
+                    <ul class="investment-action-list" id="investmentActionList">
+                        <li>Load investments to see next actions.</li>
+                    </ul>
+                    <p class="investment-disclaimer">Educational guidance only, not financial advice.</p>
+                </div>
+            </div>
+
+            <div class="investment-support-grid">
+                <div class="card investment-simulator-card">
+                    <div class="investment-card-kicker">Growth Simulator</div>
+                    <div class="investment-sim-controls">
+                        <label>
+                            <span>Monthly</span>
+                            <input type="number" id="investmentSimMonthly" class="form-input" value="300" min="0" step="50">
+                        </label>
+                        <label>
+                            <span>Years</span>
+                            <input type="number" id="investmentSimYears" class="form-input" value="5" min="1" max="50" step="1">
+                        </label>
+                        <label>
+                            <span>Annual return</span>
+                            <input type="number" id="investmentSimReturn" class="form-input" value="6" min="0" max="30" step="0.5">
+                        </label>
+                    </div>
+                    <p class="investment-sim-result" id="investmentSimResult">
+                        Enter a contribution to estimate future value.
+                    </p>
+                    <p class="investment-mini-note">Projection only. Actual returns can vary.</p>
+                </div>
+
+                <div class="card investment-goals-card">
+                    <div class="investment-card-kicker">Investments and Goals</div>
+                    <div class="investment-goals-list" id="investmentGoalsCoverage">
+                        <p class="investment-muted">Connect goals to see how investments support your plans.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card investment-reports-card">
+                <div class="investment-risk-header">
+                    <div>
+                        <h3 class="card-title" style="margin:0">Export & Reports</h3>
+                        <p class="investment-muted">Turn your portfolio into monthly reports, tax files, and shareable summaries.</p>
+                    </div>
+                    <span class="portfolio-score-badge balanced">Ready</span>
+                </div>
+
+                <div class="investment-report-grid">
+                    <button type="button" class="investment-report-action" id="monthlyPortfolioReportBtn">
+                        <span>Monthly PDF</span>
+                        <strong>Portfolio report</strong>
+                        <p>Performance, allocation, dividends, risk, and next actions.</p>
+                        <em>Generate</em>
+                    </button>
+
+                    <button type="button" class="investment-report-action" id="annualPerformanceReportBtn">
+                        <span>Annual summary</span>
+                        <strong>Yearly performance</strong>
+                        <p>Total return, best holding, dividends, and benchmark gap.</p>
+                        <em>Download</em>
+                    </button>
+
+                    <button type="button" class="investment-report-action" id="taxDocumentExportBtn">
+                        <span>Tax CSV</span>
+                        <strong>For accountant</strong>
+                        <p>Lots, gain type, estimated gains, and education-only tax estimate.</p>
+                        <em>Download</em>
+                    </button>
+
+                    <button type="button" class="investment-report-action" id="portfolioShareImageBtn">
+                        <span>Share image</span>
+                        <strong>Portfolio wrapped</strong>
+                        <p>A polished image summary of your investing progress.</p>
+                        <em>Download</em>
+                    </button>
+                </div>
+
+                <p class="investment-disclaimer">Reports are educational summaries. Confirm tax numbers with a qualified professional.</p>
+            </div>
+
+            <div class="card investment-risk-panel">
+                <div class="investment-risk-header">
+                    <div>
+                        <h3 class="card-title" style="margin:0">Risk Analysis</h3>
+                        <p class="investment-muted">Plain-English risk checks for your current holdings.</p>
+                    </div>
+                    <span class="portfolio-score-badge balanced" id="investmentRiskLabel">Loading</span>
+                </div>
+
+                <div class="investment-risk-grid" id="investmentRiskMetrics">
+                    <div class="risk-metric-card">
+                        <span>Beta</span>
+                        <strong>--</strong>
+                        <p>How much your portfolio tends to move compared with the market.</p>
+                    </div>
+                    <div class="risk-metric-card">
+                        <span>Volatility</span>
+                        <strong>--</strong>
+                        <p>How bumpy the ride may feel month to month.</p>
+                    </div>
+                    <div class="risk-metric-card">
+                        <span>Max Drawdown</span>
+                        <strong>--</strong>
+                        <p>The largest recent drop from a high point.</p>
+                    </div>
+                    <div class="risk-metric-card">
+                        <span>Sharpe Ratio</span>
+                        <strong>--</strong>
+                        <p>Return earned for each unit of risk taken.</p>
+                    </div>
+                </div>
+
+                <div class="investment-risk-table" id="investmentRiskTable"></div>
+            </div>
+
+            <div class="card investment-sector-panel">
+                <div class="investment-risk-header">
+                    <div>
+                        <h3 class="card-title" style="margin:0">Sector Breakdown</h3>
+                        <p class="investment-muted">Compare your allocation against a simple S&amp;P 500 benchmark.</p>
+                    </div>
+                    <span class="portfolio-score-badge needs-attention" id="sectorInsightBadge">Loading</span>
+                </div>
+
+                <div class="investment-sector-layout">
+                    <div class="sector-donut-wrap">
+                        <canvas id="sectorBreakdownChart"></canvas>
+                    </div>
+                    <div>
+                        <p class="sector-insight-text" id="sectorInsightText">
+                            Add investments to see sector exposure.
+                        </p>
+                        <div class="sector-compare-list" id="sectorCompareList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card investment-dividend-panel">
+                <div class="investment-risk-header">
+                    <div>
+                        <h3 class="card-title" style="margin:0">Dividend Tracker</h3>
+                        <p class="investment-muted">Estimated income from dividend-paying holdings.</p>
+                    </div>
+                    <span class="portfolio-score-badge strong" id="dividendTrackerBadge">Estimated</span>
+                </div>
+
+                <div class="dividend-layout">
+                    <div class="dividend-main">
+                        <div class="dividend-stat-grid">
+                            <div class="dividend-stat-card">
+                                <span>Total annual dividends</span>
+                                <strong id="dividendAnnualTotal">$0.00</strong>
+                                <p id="dividendAnnualNote">Based on current holdings and yields.</p>
+                            </div>
+                            <div class="dividend-stat-card">
+                                <span>Next payment</span>
+                                <strong id="dividendNextPayment">$0.00</strong>
+                                <p id="dividendNextDate">No upcoming payment found.</p>
+                                <p class="dividend-math-note" id="dividendNextMath"></p>
+                            </div>
+                        </div>
+
+                        <div class="dividend-earned-bar">
+                            <div>
+                                <span>Total dividends received since Jan 2024</span>
+                                <strong id="dividendReceivedTotal">$0.00</strong>
+                            </div>
+                            <p id="dividendReceivedNote">Estimated from your current dividend-paying holdings.</p>
+                        </div>
+
+                        <div class="dividend-calendar-card">
+                            <div class="dividend-section-title">
+                                <span>Dividend calendar</span>
+                                <small>Next 12 months</small>
+                            </div>
+                            <div class="dividend-calendar-list" id="dividendCalendarList">
+                                <p class="investment-muted">Add dividend-paying holdings to see payments by month.</p>
+                            </div>
+                            <div class="dividend-calendar-total" id="dividendCalendarTotal">
+                                <span>Total expected dividends next 12 months</span>
+                                <strong>$0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dividend-simulator-card">
+                        <div class="dividend-section-title">
+                            <span>Reinvestment simulator</span>
+                            <small>DRIP estimate</small>
+                        </div>
+                        <div class="investment-sim-controls dividend-sim-controls">
+                            <label>
+                                <span>Years</span>
+                                <input type="number" id="dividendReinvestYears" class="form-input" value="10" min="1" max="40" step="1">
+                            </label>
+                            <label>
+                                <span>Dividend growth</span>
+                                <input type="number" id="dividendGrowthRate" class="form-input" value="4" min="0" max="20" step="0.5">
+                            </label>
+                            <label>
+                                <span>Monthly contribution</span>
+                                <input type="number" id="dividendMonthlyContribution" class="form-input" value="300" min="0" step="50">
+                            </label>
+                        </div>
+                        <p class="investment-sim-result dividend-sim-result" id="dividendReinvestResult">
+                            Load holdings to estimate reinvested dividends.
+                        </p>
+                        <p class="investment-mini-note">Projection only. Dividend amounts, prices, and yields can change.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card investment-news-panel">
+                <div class="investment-risk-header">
+                    <div>
+                        <h3 class="card-title" style="margin:0">Portfolio News</h3>
+                        <p class="investment-muted">News, earnings, and alerts only for stocks you hold.</p>
+                    </div>
+                    <span class="portfolio-score-badge balanced" id="portfolioNewsBadge">Watching</span>
+                </div>
+
+                <div class="portfolio-alert-card" id="portfolioNewsAlert" style="display:none">
+                    <span>Big event</span>
+                    <strong id="portfolioNewsAlertTitle">Review portfolio news</strong>
+                    <p id="portfolioNewsAlertText">A holding has a high-impact update.</p>
+                </div>
+
+                <div class="portfolio-news-layout">
+                    <div class="portfolio-news-feed">
+                        <div class="dividend-section-title">
+                            <span>Relevant news</span>
+                            <small id="portfolioNewsCount">Loading</small>
+                        </div>
+                        <div class="portfolio-news-list" id="portfolioNewsList">
+                            <p class="investment-muted">Loading portfolio news...</p>
+                        </div>
+                    </div>
+
+                    <div class="portfolio-earnings-card">
+                        <div class="dividend-section-title">
+                            <span>Earnings calendar</span>
+                            <small>Your holdings</small>
+                        </div>
+                        <div class="portfolio-earnings-list" id="portfolioEarningsList">
+                            <p class="investment-muted">Loading earnings dates...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="investment-action-panels">
+                <div class="card investment-rebalance-panel">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">Rebalancing Tool</h3>
+                            <p class="investment-muted">Compare target allocation with where your portfolio is today.</p>
+                        </div>
+                        <button class="btn-primary investment-panel-btn" id="generateRebalancePlanBtn" type="button">
+                            Generate Plan
+                        </button>
+                    </div>
+
+                    <div class="rebalance-target-list" id="rebalanceTargetList">
+                        <p class="investment-muted">Load holdings to see target allocation.</p>
+                    </div>
+
+                    <div class="rebalance-plan-card" id="rebalancePlanCard">
+                        <span>Suggested trades</span>
+                        <p>Click Generate Plan to calculate what to buy or sell.</p>
+                    </div>
+                </div>
+
+                <div class="card investment-tax-panel">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">Tax Insights</h3>
+                            <p class="investment-muted">Estimated capital gains view for your current holdings.</p>
+                        </div>
+                        <span class="portfolio-score-badge balanced">Estimate</span>
+                    </div>
+
+                    <div class="tax-summary-grid">
+                        <div>
+                            <span>Short-term gains</span>
+                            <strong id="taxShortTermGain">$0.00</strong>
+                            <p id="taxShortTermRate">Taxed at ~24% ordinary income</p>
+                        </div>
+                        <div>
+                            <span>Long-term gains</span>
+                            <strong id="taxLongTermGain">$0.00</strong>
+                            <p id="taxLongTermRate">Taxed at ~15% preferential rate</p>
+                        </div>
+                    </div>
+
+                    <div class="tax-insight-list" id="taxInsightList">
+                        <p class="investment-muted">Load holdings to estimate capital gains.</p>
+                    </div>
+
+                    <p class="investment-disclaimer">
+                        Educational estimate only, not tax advice. Real taxes depend on lots, income, state, wash sale rules, and your filing status.
+                    </p>
+                </div>
+            </div>
+
+            <div class="investment-performance-grid">
+                <div class="card investment-attribution-panel">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">Performance Attribution</h3>
+                            <p class="investment-muted">See which holdings drove portfolio gains this month.</p>
+                        </div>
+                        <span class="portfolio-score-badge strong" id="attributionBadge">This month</span>
+                    </div>
+
+                    <div class="attribution-total-card" id="performanceAttributionTotal">
+                        <span>Total this month</span>
+                        <strong>Your portfolio gained $0.00 this month</strong>
+                    </div>
+
+                    <div class="attribution-list" id="performanceAttributionList">
+                        <p class="investment-muted">Load holdings to see attribution.</p>
+                    </div>
+
+                    <div class="performance-moment-grid">
+                        <div>
+                            <span>Best day</span>
+                            <strong id="performanceBestDay">--</strong>
+                        </div>
+                        <div>
+                            <span>Worst day</span>
+                            <strong id="performanceWorstDay">--</strong>
+                        </div>
+                        <div>
+                            <span>Best month</span>
+                            <strong id="performanceBestMonth">--</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card investment-benchmark-panel">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">Benchmark Comparison</h3>
+                            <p class="investment-muted">Compare your portfolio with simply buying VOO.</p>
+                        </div>
+                        <span class="portfolio-score-badge balanced" id="benchmarkStatusBadge">Benchmark</span>
+                    </div>
+
+                    <div class="benchmark-gap-card" id="benchmarkGapCard">
+                        <span>S&P 500 gap</span>
+                        <strong>Loading comparison...</strong>
+                        <p>We’ll compare your portfolio against VOO.</p>
+                    </div>
+
+                    <div class="benchmark-range-list" id="benchmarkRangeList">
+                        <p class="investment-muted">Load holdings to compare 1M, 3M, and 1Y performance.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="investment-copilot-grid">
+                <div class="card investment-copilot-card">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">AI Portfolio Copilot</h3>
+                            <p class="investment-muted">Ask portfolio questions using your holdings, goals, alerts, and risk data.</p>
+                        </div>
+                        <span class="portfolio-score-badge strong">Live context</span>
+                    </div>
+
+                    <div class="copilot-chat-box">
+                        <div class="copilot-answer" id="investmentCopilotAnswer">
+                            <span>Copilot</span>
+                            <h4>Try a portfolio question</h4>
+                            <p>Ask for a grounded answer using your holdings, goals, alerts, and risk checks.</p>
+                        </div>
+                        <div class="copilot-suggestion-row">
+                            <button type="button" class="copilot-suggestion-btn">Should I sell MSFT now?</button>
+                            <button type="button" class="copilot-suggestion-btn">Am I diversified enough?</button>
+                            <button type="button" class="copilot-suggestion-btn">What's my biggest risk?</button>
+                            <button type="button" class="copilot-suggestion-btn">How is my portfolio doing?</button>
+                        </div>
+                        <div class="copilot-input-row">
+                            <input id="investmentCopilotInput" class="form-input" placeholder="Should I sell MSFT now?">
+                            <button class="btn-primary" id="investmentCopilotAskBtn" type="button">Ask</button>
+                        </div>
+                    </div>
+
+                    <div class="copilot-report-card">
+                        <div class="dividend-section-title">
+                            <span>Weekly AI portfolio report</span>
+                            <small>This week</small>
+                        </div>
+                        <p id="weeklyPortfolioReport">Load holdings to generate your weekly portfolio report.</p>
+                    </div>
+                </div>
+
+                <div class="card investment-alerts-card">
+                    <div class="investment-risk-header">
+                        <div>
+                            <h3 class="card-title" style="margin:0">Alerts & Notifications</h3>
+                            <p class="investment-muted">Price, drop, earnings, and rebalancing reminders.</p>
+                        </div>
+                        <span class="portfolio-score-badge needs-attention" id="investmentAlertBadge">0 alerts</span>
+                    </div>
+
+                    <div class="red-flag-card" id="investmentRedFlags">
+                        <span>Red flags detected</span>
+                        <p>No red flags yet.</p>
+                    </div>
+
+                    <div class="price-alert-builder">
+                        <label>
+                            <span>Price alert</span>
+                            <select id="priceAlertSymbol" class="form-input">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="VOO">VOO</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Target price</span>
+                            <input id="priceAlertTarget" class="form-input" type="number" value="300" min="1" step="1">
+                        </label>
+                        <button class="btn-primary" id="addPriceAlertBtn" type="button">Add Alert</button>
+                    </div>
+
+                    <div class="investment-alert-list" id="investmentAlertList">
+                        <p class="investment-muted">Load holdings to see portfolio alerts.</p>
+                    </div>
                 </div>
             </div>
 
@@ -1057,10 +1537,11 @@
                             <button class="chart-tab">ETFs</button>
                         </div>
                     </div>
+                    <div class="holdings-insight-strip" id="holdingsInsightStrip" style="display:none"></div>
                 </div>
                 <div class="tx-table-wrap">
                     <table class="tx-table">
-                        <thead><tr><th>Asset</th><th>Price</th><th>Shares</th><th>Avg. Cost</th><th>Total Value</th><th>Change</th></tr></thead>
+                        <thead><tr><th>Asset</th><th>Price</th><th>Shares</th><th>Avg Cost</th><th>Total Value</th><th>Unrealized</th><th>Yield</th><th>P/E</th><th>Rating</th><th>30D</th></tr></thead>
                         <tbody id="holdingsTableBody">
                             <tr>
                                 <td><div class="tx-cell-name"><div class="invest-avatar" style="background:#dcfce7;color:#16a34a;border-radius:8px">AA</div><div><p class="tx-cell-title">Apple Inc.</p><p class="tx-meta" style="font-size:11px">AAPL <span class="cat-badge" style="font-size:10px;padding:1px 6px">STOCK</span></p></div></div></td>
@@ -1091,9 +1572,9 @@
         ══════════════════════════════════════ -->
         <div class="page" id="page-recurring">
             <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Monthly Income</p><p class="stat-value" style="color:var(--green)">$9,270.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Monthly Expenses</p><p class="stat-value">$1,865.96</p></div><div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div></div></div>
-                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Net Monthly</p><p class="stat-value" style="color:var(--green)">$7,404.04</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Expected Income</p><p class="stat-value" style="color:var(--green)">$9,270.00</p></div><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Expected Expenses</p><p class="stat-value">$1,865.96</p></div><div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div></div></div>
+                <div class="stat-card"><div class="stat-body"><div><p class="stat-label">Expected Net</p><p class="stat-value" style="color:var(--green)">$7,404.04</p></div><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div></div>
                 <div class="stat-card">
                     <div class="stat-body">
                         <div>
@@ -1117,8 +1598,10 @@
             </div>
 
             <div class="section-header">
-                <h2 class="section-title">Recurring Transactions</h2>
-                <button class="btn-primary" id="addRecurringBtn" type="button">+ Add Recurring</button>
+                <div>
+                    <h2 class="section-title">Recurring Schedule</h2>
+                    <p class="section-subtitle">Forecasted recurring income and bills based on your saved schedule.</p>
+                </div>
             </div>
 
             <div class="card" style="padding:0;overflow:hidden">
@@ -1603,12 +2086,12 @@
 <div class="modal-overlay" id="categoryPickerModal" style="display:none">
     <div class="modal" style="max-width:560px">
         <div class="modal-header">
-            <h3>Choose Category</h3>
+            <h3 id="categoryPickerTitle">Choose Category</h3>
             <button class="modal-close" id="categoryPickerModalClose">✕</button>
         </div>
 
         <div class="modal-body">
-            <p class="modal-desc">Select a category for this transaction.</p>
+            <p class="modal-desc" id="categoryPickerDesc">Select a category.</p>
 
             <div class="table-search" style="margin-bottom:16px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1783,15 +2266,17 @@
 <div class="modal-overlay" id="goalModal" style="display:none">
     <div class="modal">
         <div class="modal-header">
-            <h3>Create Goal</h3>
+            <h3 id="goalModalTitle">Create Goal</h3>
             <button class="modal-close" id="goalModalClose">✕</button>
         </div>
         <div class="modal-body">
-            <p class="modal-desc">Create a new savings goal and track your progress.</p>
+            <p class="modal-desc" id="goalModalDesc">Create a new savings goal and track your progress.</p>
 
             <form id="goalForm">
-                <div class="form-row">
-                    <div class="form-group">
+                <input type="hidden" id="goalId">
+
+                <div class="form-row goal-full-row">
+                    <div class="form-group" style="width:100%">
                         <label for="goalName">Goal Name</label>
                         <input
                             type="text"
@@ -1801,16 +2286,25 @@
                             required
                         >
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="goalIcon">Icon</label>
-                        <input
-                            type="text"
-                            id="goalIcon"
-                            class="form-input"
-                            placeholder="e.g. ✈️"
-                            maxlength="4"
-                        >
+                <div class="form-row goal-full-row">
+                    <div class="form-group" style="width:100%">
+                        <label for="goalCategoryDisplay">Category</label>
+
+                        <input type="hidden" id="goalCategory" required>
+
+                        <div class="premium-category-row">
+                            <button type="button" class="premium-category-picker-btn" id="openGoalCategoryPickerBtn">
+                                <span class="premium-category-picker-icon" id="goalCategoryIcon">🏷️</span>
+                                <span class="premium-category-picker-text" id="goalCategoryDisplay">Select category</span>
+                            </button>
+
+                            <button type="button" class="premium-category-add-btn" id="quickAddGoalCategoryBtn">
+                                <span>+</span>
+                                <span>Add</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1828,7 +2322,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="goalSavedAmount">Saved Amount</label>
+                        <label for="goalSavedAmount">Current Saved</label>
                         <input
                             type="number"
                             id="goalSavedAmount"
@@ -1840,9 +2334,9 @@
                     </div>
                 </div>
 
-                <div class="form-row">
+                <div class="form-row goal-full-row">
                     <div class="form-group">
-                        <label for="goalDeadline">Deadline</label>
+                        <label for="goalDeadline">Target Date</label>
                         <input
                             type="date"
                             id="goalDeadline"
@@ -1852,11 +2346,107 @@
                     </div>
                 </div>
 
+                <div class="form-row goal-full-row">
+                    <label class="goal-autolink-card" for="goalAutoLinkSavings">
+                        <input type="checkbox" id="goalAutoLinkSavings">
+                        <span class="goal-autolink-copy">
+                            <strong>Auto savings</strong>
+                            <small>FinTrack can automatically add matching savings to this goal.</small>
+                            <small class="goal-autolink-hint" id="goalAutoLinkHint">FinTrack automatically adds matching savings to this goal.</small>
+                        </span>
+                    </label>
+                </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" id="goalModalCancel">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Goal</button>
+                    <button type="submit" class="btn-primary" id="goalSubmitBtn">Save Goal</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<!-- Goal Contribution Modal -->
+<div class="modal-overlay" id="goalContributionModal" style="display:none">
+    <div class="modal" style="max-width:460px">
+        <div class="modal-header">
+            <h3>Add Savings</h3>
+            <button class="modal-close" id="goalContributionModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc" id="goalContributionDesc">
+                Add savings toward this goal.
+            </p>
+
+            <form id="goalContributionForm">
+                <input type="hidden" id="goalContributionId">
+
+                <div class="form-row goal-full-row">
+                    <div class="form-group">
+                        <label for="goalContributionAmount">Amount</label>
+                        <input
+                            type="number"
+                            id="goalContributionAmount"
+                            class="form-input"
+                            placeholder="e.g. 250"
+                            step="0.01"
+                            min="0.01"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row goal-full-row">
+                    <div class="form-group">
+                        <label for="goalContributionDate">Date</label>
+                        <input
+                            type="date"
+                            id="goalContributionDate"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row goal-full-row">
+                    <div class="form-group">
+                        <label for="goalContributionNote">Note</label>
+                        <input
+                            type="text"
+                            id="goalContributionNote"
+                            class="form-input"
+                            placeholder="Optional"
+                        >
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="goalContributionCancel">Cancel</button>
+                    <button type="submit" class="btn-primary" id="goalContributionSubmit">Add Savings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Goal Confirm Modal -->
+<div class="modal-overlay" id="deleteGoalModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Delete Goal</h3>
+            <button class="modal-close" id="deleteGoalModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">
+                Are you sure you want to delete this goal? Your saved progress for this goal will be removed from this plan.
+            </p>
+
+            <input type="hidden" id="deleteGoalId">
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="deleteGoalCancel">Cancel</button>
+                <button type="button" class="btn-primary" id="deleteGoalConfirm" style="background:var(--red); border-color:var(--red);">
+                    Delete
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1940,14 +2530,18 @@
 </div>
 <!-- Add Recurring Payment Modal -->
 <div class="modal-overlay" id="recurringModal" style="display:none">
-    <div class="modal" style="max-width:640px">
+    <div class="modal">
         <div class="modal-header">
             <h3 id="recurringModalTitle">Add Recurring Payment</h3>
-            <button class="modal-close" id="recurringModalClose">✕</button>
+            <button class="modal-close" id="recurringModalClose" type="button" onclick="closeRecurringModal()">✕</button>
         </div>
 
         <form id="recurringForm">
+            <input type="hidden" id="recurringId">
+
             <div class="modal-body">
+                <p class="modal-desc" id="recurringModalDesc">Add a new recurring income or bill to your forecast.</p>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="recurringName">Name</label>
@@ -2043,12 +2637,81 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="recurringModalCancel">Cancel</button>
-                <button type="submit" class="btn-primary">Save Recurring</button>
+                <button type="button" class="btn-secondary" id="recurringModalCancel" onclick="closeRecurringModal()">Cancel</button>
+                <button type="submit" class="btn-primary" id="recurringSubmitBtn">Save Recurring</button>
             </div>
         </form>
     </div>
 </div>
+<!-- Delete Recurring Confirm Modal -->
+<div class="modal-overlay" id="deleteRecurringModal" style="display:none">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+            <h3>Delete Recurring Payment</h3>
+            <button class="modal-close" id="deleteRecurringModalClose">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">
+                Are you sure you want to delete this recurring payment? It will be removed from your forecast.
+            </p>
+
+            <input type="hidden" id="deleteRecurringId">
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="deleteRecurringCancel">Cancel</button>
+                <button type="button" class="btn-primary" id="deleteRecurringConfirm" style="background:var(--red); border-color:var(--red);">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        function setRecurringTypeFallback(type) {
+            var normalized = type === "income" ? "income" : "expense";
+            var input = document.getElementById("recurringType");
+            var expenseBtn = document.getElementById("recurringTypeExpenseBtn");
+            var incomeBtn = document.getElementById("recurringTypeIncomeBtn");
+
+            if (input) input.value = normalized;
+            if (expenseBtn) expenseBtn.classList.toggle("active", normalized === "expense");
+            if (incomeBtn) incomeBtn.classList.toggle("active", normalized === "income");
+        }
+
+        window.openRecurringModal = window.openRecurringModal || function () {
+            var modal = document.getElementById("recurringModal");
+            var form = document.getElementById("recurringForm");
+            var idInput = document.getElementById("recurringId");
+            var title = document.getElementById("recurringModalTitle");
+            var submitBtn = document.getElementById("recurringSubmitBtn");
+            var nextDateInput = document.getElementById("recurringNextDate");
+            var categoryInput = document.getElementById("recurringCategory");
+            var categoryDisplay = document.getElementById("recurringCategoryDisplay");
+            var categoryIcon = document.getElementById("recurringCategoryIcon");
+
+            if (!modal) return;
+            if (form) form.reset();
+            if (idInput) idInput.value = "";
+            if (title) title.textContent = "Add Recurring Payment";
+            if (submitBtn) submitBtn.textContent = "Save Recurring";
+
+            setRecurringTypeFallback("expense");
+
+            if (nextDateInput) nextDateInput.value = new Date().toISOString().split("T")[0];
+            if (categoryInput) categoryInput.value = "";
+            if (categoryDisplay) categoryDisplay.textContent = "Select category";
+            if (categoryIcon) categoryIcon.textContent = "🏷️";
+
+            modal.style.display = "flex";
+        };
+
+        window.closeRecurringModal = window.closeRecurringModal || function () {
+            var modal = document.getElementById("recurringModal");
+            if (modal) modal.style.display = "none";
+        };
+    })();
+</script>
 <script src="app.js"></script>
 </body>
 </html>
