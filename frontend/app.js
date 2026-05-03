@@ -1,12 +1,25 @@
 // FinTrack — app.js (Connected to Flask Backend)
 
-const API = 'http://127.0.0.1:5000/api';
+const API = 'http://127.0.0.1:5001/api';
 let allCategories = [];
 let transactionsLoadedFromBackend = false;
 let allRecurringPayments = [];
 let allGoals = [];
 let recentGoalSavingsAnimation = null;
 document.body.dataset.activePage = 'dashboard';
+
+const DEFAULT_CATEGORIES = [
+    { name: 'Income', icon: '💰' },
+    { name: 'Groceries', icon: '🛒' },
+    { name: 'Entertainment', icon: '🎬' },
+    { name: 'Transport', icon: '🚗' },
+    { name: 'Utilities', icon: '⚡' },
+    { name: 'Housing', icon: '🏠' },
+    { name: 'Dining', icon: '🍽️' },
+    { name: 'Health', icon: '💊' },
+    { name: 'Shopping', icon: '🛍️' },
+    { name: 'Other', icon: '🏷️' }
+];
 
 // ── THEME ──
 const html = document.documentElement;
@@ -128,6 +141,15 @@ function fmt(n) {
     return '$' + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // ══════════════════════════════════════
 //  CATEGORIES
 // ══════════════════════════════════════
@@ -136,14 +158,20 @@ async function loadCategories() {
         const res = await fetch(API + '/categories');
         const data = await res.json();
 
-        if (!Array.isArray(data)) return;
+        if (!res.ok || !Array.isArray(data)) {
+            throw new Error(data.error || 'Could not load categories');
+        }
 
-        allCategories = data;
+        allCategories = data.length > 0 ? data : [...DEFAULT_CATEGORIES];
         refreshTransactionCategoryOptions();
         renderCategoryPickerGrid('');
         renderTxCategoryFilterGrid('');
     } catch (err) {
         console.log('Using fallback categories');
+        allCategories = [...DEFAULT_CATEGORIES];
+        refreshTransactionCategoryOptions();
+        renderCategoryPickerGrid('');
+        renderTxCategoryFilterGrid('');
     }
 }
 
@@ -291,6 +319,35 @@ function updateTransactionActionStates() {
     }
 }
 
+function updateTransactionMonthlySummary() {
+    const incomeEl = document.getElementById('txMonthlyIncome');
+    const expenseEl = document.getElementById('txMonthlyExpenses');
+    const netEl = document.getElementById('txMonthlyNet');
+    const countEl = document.getElementById('txMonthlyCount');
+
+    if (!incomeEl || !expenseEl || !netEl || !countEl) return;
+
+    const summaryTransactions = Array.isArray(filtered) ? filtered : [];
+
+    const income = summaryTransactions.reduce((sum, tx) => {
+        const amount = parseFloat(tx.amount) || 0;
+        return amount > 0 ? sum + amount : sum;
+    }, 0);
+
+    const expenses = summaryTransactions.reduce((sum, tx) => {
+        const amount = parseFloat(tx.amount) || 0;
+        return amount < 0 ? sum + Math.abs(amount) : sum;
+    }, 0);
+
+    const net = income - expenses;
+
+    incomeEl.textContent = '+' + fmt(income);
+    expenseEl.textContent = '-' + fmt(expenses);
+    netEl.textContent = (net >= 0 ? '+' : '-') + fmt(net);
+    netEl.classList.toggle('negative', net < 0);
+    countEl.textContent = `${summaryTransactions.length} visible transaction${summaryTransactions.length === 1 ? '' : 's'}`;
+}
+
 function renderTable() {
     const tbody = document.getElementById('txTableBody');
     if (!tbody) return;
@@ -331,22 +388,24 @@ function renderTable() {
     } else {
         tbody.innerHTML = slice.map(tx => {
             const pos  = parseFloat(tx.amount) > 0;
-            const amt  = (pos ? '+' : '') + fmt(tx.amount);
-            const cat  = (tx.category || 'other').toLowerCase().replace(/\s+/g, '');
-            const icon = icons[tx.category] || '💳';
+            const amt  = (pos ? '+' : '-') + fmt(tx.amount);
+            const categoryText = tx.category || 'Other';
+            const accountText = tx.account || '—';
+            const cat  = categoryText.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const icon = icons[categoryText] || '💳';
             const date = tx.date ? new Date(tx.date).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
             return `<tr>
                 <td><div class="tx-cell-name">
                     <div class="tx-cell-icon ${pos ? 'green-icon' : 'gray-icon'}">${icon}</div>
-                    <p class="tx-cell-title">${tx.name}</p>
+                    <p class="tx-cell-title">${escapeHTML(tx.name)}</p>
                 </div></td>
                 <td>
                     <span class="cat-badge ${pos ? 'income type-income-badge' : 'expense type-expense-badge'}">
                         ${pos ? 'Income' : 'Expense'}
                     </span>
                 </td>
-                <td><span class="cat-badge ${cat}">${tx.category || 'Other'}</span></td>
-                <td class="tx-account-cell">${tx.account || '—'}</td>
+                <td><span class="cat-badge ${cat}">${escapeHTML(categoryText)}</span></td>
+                <td class="tx-account-cell">${escapeHTML(accountText)}</td>
                 <td class="tx-date-cell">${date}</td>
                 <td class="tx-amount-cell ${pos ? 'positive' : 'negative'}">${amt}</td>
                 <td style="display:flex; gap:8px; align-items:center; justify-content:flex-end;">
@@ -368,6 +427,7 @@ function renderTable() {
     document.querySelectorAll('.page-btn[data-pg]').forEach(b =>
         b.classList.toggle('active', parseInt(b.dataset.pg) === currentPage));
     updateTransactionActionStates();
+    updateTransactionMonthlySummary();
 }
 
 function applyFilters() {
@@ -1308,47 +1368,140 @@ function renderGoals(goals) {
 // ══════════════════════════════════════
 //  CSV UPLOAD — now sends to Flask
 // ══════════════════════════════════════
-document.getElementById('importCsvBtn').addEventListener('click', () => {
+function openCsvModal() {
+    selectedCsvFile = null;
+    if (csvFileInput) csvFileInput.value = '';
+    setCsvUploadStatus('Choose a CSV file, then click Upload & Import.');
     document.getElementById('csvModal').style.display = 'flex';
+}
+
+document.querySelectorAll('#importCsvBtn, #importCsvTransactionsBtn').forEach(button => {
+    button.addEventListener('click', openCsvModal);
 });
 document.getElementById('csvModalClose').addEventListener('click', () => {
+    selectedCsvFile = null;
     document.getElementById('csvModal').style.display = 'none';
 });
 document.getElementById('csvModalCancel').addEventListener('click', () => {
+    selectedCsvFile = null;
     document.getElementById('csvModal').style.display = 'none';
 });
 document.getElementById('csvModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('csvModal'))
+    if (e.target === document.getElementById('csvModal')) {
+        selectedCsvFile = null;
         document.getElementById('csvModal').style.display = 'none';
+    }
 });
 
 const uploadZone   = document.getElementById('uploadZone');
 const csvFileInput = document.getElementById('csvFileInput');
+const csvUploadBtn = document.getElementById('csvUploadBtn');
+const csvUploadStatus = document.getElementById('csvUploadStatus');
+let selectedCsvFile = null;
+
+function setCsvUploadStatus(message, isError = false) {
+    if (!csvUploadStatus) return;
+
+    csvUploadStatus.textContent = message;
+    csvUploadStatus.classList.toggle('error', isError);
+}
+
+function isCsvFile(file) {
+    if (!file) return false;
+
+    const fileName = String(file.name || '').toLowerCase();
+    const fileType = String(file.type || '').toLowerCase();
+    const allowedTypes = ['', 'text/csv', 'application/csv', 'application/vnd.ms-excel', 'text/plain'];
+
+    return fileName.endsWith('.csv') && allowedTypes.includes(fileType);
+}
+
+function rejectCsvFile() {
+    selectedCsvFile = null;
+    if (csvFileInput) csvFileInput.value = '';
+    setCsvUploadStatus('CSV files only', true);
+}
+
+function selectCsvFile(file) {
+    selectedCsvFile = null;
+
+    if (!file) {
+        setCsvUploadStatus('Choose a CSV file, then click Upload & Import.');
+        return;
+    }
+
+    if (!isCsvFile(file)) {
+        rejectCsvFile();
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        setCsvUploadStatus('CSV file must be 5MB or smaller.', true);
+        if (csvFileInput) csvFileInput.value = '';
+        return;
+    }
+
+    selectedCsvFile = file;
+    setCsvUploadStatus(`Ready to import: ${file.name}`);
+}
+
 uploadZone.addEventListener('click', () => csvFileInput.click());
 uploadZone.addEventListener('dragover',  (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--green)'; });
 uploadZone.addEventListener('dragleave', ()  => { uploadZone.style.borderColor = ''; });
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.style.borderColor = '';
-    if (e.dataTransfer.files[0]) uploadCSV(e.dataTransfer.files[0]);
+    selectCsvFile(e.dataTransfer.files[0]);
 });
 csvFileInput.addEventListener('change', (e) => {
-    if (e.target.files[0]) uploadCSV(e.target.files[0]);
+    selectCsvFile(e.target.files[0]);
 });
 
+if (csvUploadBtn) {
+    csvUploadBtn.addEventListener('click', () => {
+        if (!selectedCsvFile) {
+            setCsvUploadStatus('Choose a CSV file before importing.');
+            return;
+        }
+
+        uploadCSV(selectedCsvFile);
+    });
+}
+
 async function uploadCSV(file) {
+    if (!isCsvFile(file)) {
+        rejectCsvFile();
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        setCsvUploadStatus('CSV file must be 5MB or smaller.', true);
+        return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     try {
-        uploadZone.innerHTML = '<p>⏳ Uploading...</p>';
-        const res  = await fetch(API + '/upload-csv', { method:'POST', body: formData });
+        setCsvUploadStatus('Uploading...');
+        if (csvUploadBtn) csvUploadBtn.disabled = true;
+        const res  = await fetch(API + '/upload-csv', { method:'POST', body: formData, credentials: 'include' });
         const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || 'Upload failed');
+        }
+
         alert('✅ ' + data.message + '\nSource detected: ' + data.source);
         document.getElementById('csvModal').style.display = 'none';
+        selectedCsvFile = null;
+        csvFileInput.value = '';
+        setCsvUploadStatus('Choose a CSV file, then click Upload & Import.');
         loadDashboard();
         loadTransactions();
     } catch (err) {
-        alert('❌ Upload failed. Make sure Flask is running.');
+        setCsvUploadStatus(err.message || 'Upload failed. Make sure Flask is running.');
+    } finally {
+        if (csvUploadBtn) csvUploadBtn.disabled = false;
     }
 }
 
@@ -4520,8 +4673,8 @@ if (transactionForm) {
 
 const response = await fetch(
     isEditing
-        ? `http://127.0.0.1:5000/api/transactions/${transactionId}`
-        : "http://127.0.0.1:5000/api/transactions",
+        ? API + `/transactions/${transactionId}`
+        : API + "/transactions",
     {
         method: isEditing ? "PUT" : "POST",
         headers: {
@@ -5332,8 +5485,8 @@ if (budgetForm) {
 
             const response = await fetch(
                 isEditing
-                    ? `http://127.0.0.1:5000/api/budgets/${budgetId}`
-                    : "http://127.0.0.1:5000/api/budgets",
+                    ? API + `/budgets/${budgetId}`
+                    : API + "/budgets",
                 {
                 method: isEditing ? "PUT" : "POST",
                 headers: {
@@ -5744,18 +5897,7 @@ function renderCategoryPickerGrid(searchTerm = '') {
     if (!categoryPickerGrid) return;
 
     const term = String(searchTerm || '').trim().toLowerCase();
-    const categories = (allCategories.length > 0 ? allCategories : [
-        { name: 'Income', icon: '💰' },
-        { name: 'Groceries', icon: '🛒' },
-        { name: 'Entertainment', icon: '🎬' },
-        { name: 'Transport', icon: '🚗' },
-        { name: 'Utilities', icon: '⚡' },
-        { name: 'Housing', icon: '🏠' },
-        { name: 'Dining', icon: '🍽️' },
-        { name: 'Health', icon: '💊' },
-        { name: 'Shopping', icon: '🛍️' },
-        { name: 'Other', icon: '🏷️' }
-    ]).filter(cat => {
+    const categories = (allCategories.length > 0 ? allCategories : DEFAULT_CATEGORIES).filter(cat => {
         const name = String(cat.name || '').toLowerCase();
         const icon = String(cat.icon || '').toLowerCase();
         return !term || name.includes(term) || icon.includes(term);

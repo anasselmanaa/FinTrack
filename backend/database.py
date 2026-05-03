@@ -20,8 +20,21 @@ def init_db():
     cur  = conn.cursor()
 
     cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            name TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT NOW(),
+            subscription_status TEXT DEFAULT 'trial',
+            trial_started_at TIMESTAMP DEFAULT NOW()
+        );
+    """)
+
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id          SERIAL PRIMARY KEY,
+            user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
             name        VARCHAR(255) NOT NULL,
             amount      DECIMAL(10,2) NOT NULL,
             category    VARCHAR(100),
@@ -35,6 +48,7 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS budgets (
             id          SERIAL PRIMARY KEY,
+            user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
             category    VARCHAR(100) NOT NULL,
             amount      DECIMAL(10,2) NOT NULL,
             month       INTEGER,
@@ -52,6 +66,7 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS goals (
             id            SERIAL PRIMARY KEY,
+            user_id       INTEGER REFERENCES users(id) ON DELETE CASCADE,
             name          VARCHAR(255) NOT NULL,
             target_amount DECIMAL(10,2) NOT NULL,
             saved_amount  DECIMAL(10,2) DEFAULT 0,
@@ -82,6 +97,7 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS recurring_payments (
             id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             name TEXT NOT NULL,
             amount NUMERIC NOT NULL,
             category TEXT DEFAULT 'Other',
@@ -92,6 +108,11 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    cur.execute("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE")
+    cur.execute("ALTER TABLE budgets ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE")
+    cur.execute("ALTER TABLE goals ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE")
+    cur.execute("ALTER TABLE recurring_payments ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE")
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS categories (

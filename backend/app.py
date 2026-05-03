@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from database import get_connection, init_db
 from psycopg2.extras import RealDictCursor
 from pathlib import Path
 from dotenv import load_dotenv
 from groq import Groq
 from decimal import Decimal, InvalidOperation
+import bcrypt
 import pandas as pd
 import io
 import json
@@ -19,46 +21,285 @@ if not GROQ_API_KEY:
 
 groq_client = Groq(api_key=GROQ_API_KEY)
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
+CORS(app, resources={r"/api/*": {"origins": "*"}, r"/auth/*": {"origins": "*"}}, supports_credentials=True)
+DEV_AUTO_LOGIN = os.getenv("FINTRACK_DEV_AUTO_LOGIN", "true").lower() == "true"
+DEV_USER_EMAIL = os.getenv("FINTRACK_DEV_USER_EMAIL", "dev@fintrack.local")
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+class User(UserMixin):
+    def __init__(self, row):
+        self.id = str(row["id"])
+        self.email = row["email"]
+        self.name = row["name"]
+        self.subscription_status = row.get("subscription_status", "trial")
+        self.trial_started_at = row.get("trial_started_at")
+        self.created_at = row.get("created_at")
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT id, email, name, subscription_status, trial_started_at, created_at
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return User(row) if row else None
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({"error": "Please log in"}), 401
+
+
+def current_user_id():
+    return int(current_user.id)
+
+
+def public_user_payload(row):
+    return {
+        "id": row["id"],
+        "email": row["email"],
+        "name": row["name"],
+        "subscription_status": row.get("subscription_status", "trial"),
+        "trial_started_at": row.get("trial_started_at"),
+        "created_at": row.get("created_at"),
+    }
+
+
+def ensure_dev_user():
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT id, email, name, subscription_status, trial_started_at, created_at
+        FROM users
+        WHERE email = %s
+    """, (DEV_USER_EMAIL,))
+    user = cur.fetchone()
+
+    if not user:
+        password_hash = bcrypt.hashpw(os.urandom(24), bcrypt.gensalt()).decode('utf-8')
+        cur.execute("""
+            INSERT INTO users (name, email, password_hash)
+            VALUES (%s, %s, %s)
+            RETURNING id, email, name, subscription_status, trial_started_at, created_at
+        """, ("Local Demo User", DEV_USER_EMAIL, password_hash))
+        user = cur.fetchone()
+        conn.commit()
+
+    cur.close()
+    conn.close()
+    return user
+
+
+def attach_orphan_demo_data(user_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    for table in ("transactions", "budgets", "goals", "recurring_payments"):
+        cur.execute(f"UPDATE {table} SET user_id = %s WHERE user_id IS NULL", (user_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+@app.before_request
+def dev_auto_login():
+    if not DEV_AUTO_LOGIN:
+        return
+
+    if not request.path.startswith("/api/"):
+        return
+
+    if current_user.is_authenticated:
+        return
+
+    user = ensure_dev_user()
+    attach_orphan_demo_data(user["id"])
+    login_user(User(user))
+
+
+def validate_transaction_payload(data):
+    data = data or {}
+    required_fields = ["name", "amount", "category", "account", "date"]
+    missing = [
+        field
+        for field in required_fields
+        if data.get(field) is None or str(data.get(field)).strip() == ""
+    ]
+
+    if missing:
+        return None, f"Missing required fields: {', '.join(missing)}"
+
+    try:
+        amount = Decimal(str(data.get("amount")))
+    except (InvalidOperation, TypeError):
+        return None, "Amount must be a valid number"
+
+    try:
+        pd.to_datetime(str(data.get("date"))).date()
+    except Exception:
+        return None, "Date must be valid"
+
+    return {
+        "name": str(data.get("name")).strip(),
+        "amount": amount,
+        "category": str(data.get("category")).strip(),
+        "account": str(data.get("account")).strip(),
+        "date": data.get("date"),
+        "source": (data.get("source") or "manual").strip() if isinstance(data.get("source"), str) else "manual",
+    }, None
 
 # ── START UP ──
 init_db()
+
+# ══════════════════════════════════════
+#  AUTH
+# ══════════════════════════════════════
+
+@app.route('/auth/register', methods=['POST'])
+def register():
+    data = request.json or {}
+    name = (data.get('name') or '').strip()
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password') or ''
+
+    if not name or not email or not password:
+        return jsonify({"error": "Name, email, and password are required"}), 400
+
+    password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+    if cur.fetchone():
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Email is already registered"}), 409
+
+    cur.execute("""
+        INSERT INTO users (name, email, password_hash)
+        VALUES (%s, %s, %s)
+        RETURNING id, email, name, subscription_status, trial_started_at, created_at
+    """, (name, email, password_hash))
+
+    user = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Registration successful", "user": public_user_payload(user)}), 201
+
+
+@app.route('/auth/login', methods=['POST'])
+def login():
+    data = request.json or {}
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password') or ''
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT id, email, password_hash, name, subscription_status, trial_started_at, created_at
+        FROM users
+        WHERE email = %s
+    """, (email,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if not user or not bcrypt.checkpw(password.encode('utf-8'), user["password_hash"].encode('utf-8')):
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    login_user(User(user))
+
+    return jsonify({"message": "Login successful", "user": public_user_payload(user)}), 200
+
+
+@app.route('/auth/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return jsonify({"message": "Logout successful"}), 200
+
+
+@app.route('/auth/me', methods=['GET'])
+@login_required
+def me():
+    return jsonify({
+        "user": {
+            "id": current_user_id(),
+            "email": current_user.email,
+            "name": current_user.name,
+            "subscription_status": current_user.subscription_status,
+            "trial_started_at": current_user.trial_started_at,
+            "created_at": current_user.created_at,
+        }
+    }), 200
 
 # ══════════════════════════════════════
 #  TRANSACTIONS
 # ══════════════════════════════════════
 
 @app.route('/api/transactions', methods=['GET'])
+@login_required
 def get_transactions():
     conn = get_connection()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("SELECT * FROM transactions ORDER BY date DESC")
+    cur.execute("""
+        SELECT *
+        FROM transactions
+        WHERE user_id = %s
+        ORDER BY date DESC
+    """, (current_user_id(),))
     rows = cur.fetchall()
     cur.close()
     conn.close()
     return jsonify(rows)
 
 @app.route('/api/transactions', methods=['POST'])
+@login_required
 def add_transaction():
-    data = request.json
+    data, error = validate_transaction_payload(request.json)
+    if error:
+        return jsonify({"error": error}), 400
+
     conn = get_connection()
     cur  = conn.cursor()
     cur.execute("""
-        INSERT INTO transactions (name, amount, category, account, date, source)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (data['name'], data['amount'], data['category'],
-          data['account'], data['date'], data.get('source', 'manual')))
+        INSERT INTO transactions (user_id, name, amount, category, account, date, source)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (
+        current_user_id(),
+        data["name"],
+        data["amount"],
+        data["category"],
+        data["account"],
+        data["date"],
+        data["source"]
+    ))
     conn.commit()
     cur.close()
     conn.close()
     return jsonify({"message": "Transaction added!"}), 201
 
 @app.route('/api/transactions/<int:tx_id>', methods=['DELETE'])
+@login_required
 def delete_transaction(tx_id):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM transactions WHERE id = %s", (tx_id,))
+    cur.execute("DELETE FROM transactions WHERE id = %s AND user_id = %s", (tx_id, current_user_id()))
     deleted_count = cur.rowcount
 
     conn.commit()
@@ -71,8 +312,11 @@ def delete_transaction(tx_id):
     return jsonify({"message": "Transaction deleted successfully"}), 200
 
 @app.route('/api/transactions/<int:tx_id>', methods=['PUT'])
+@login_required
 def update_transaction(tx_id):
-    data = request.json
+    data, error = validate_transaction_payload(request.json)
+    if error:
+        return jsonify({"error": error}), 400
 
     conn = get_connection()
     cur = conn.cursor()
@@ -85,29 +329,35 @@ def update_transaction(tx_id):
             account = %s,
             date = %s,
             source = %s
-        WHERE id = %s
+        WHERE id = %s AND user_id = %s
     """, (
-        data['name'],
-        data['amount'],
-        data['category'],
-        data['account'],
-        data['date'],
-        data.get('source', 'manual'),
-        tx_id
+        data["name"],
+        data["amount"],
+        data["category"],
+        data["account"],
+        data["date"],
+        data["source"],
+        tx_id,
+        current_user_id()
     ))
 
+    updated_count = cur.rowcount
     conn.commit()
     cur.close()
     conn.close()
 
+    if updated_count == 0:
+        return jsonify({"error": "Transaction not found"}), 404
+
     return jsonify({"message": "Transaction updated!"})
 
 @app.route('/api/transactions', methods=['DELETE'])
+@login_required
 def delete_all_transactions():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM transactions")
+    cur.execute("DELETE FROM transactions WHERE user_id = %s", (current_user_id(),))
     deleted_count = cur.rowcount
 
     conn.commit()
@@ -124,10 +374,40 @@ def delete_all_transactions():
 # ══════════════════════════════════════
 
 @app.route('/api/upload-csv', methods=['POST'])
+@login_required
 def upload_csv():
-    file    = request.files['file']
-    content = file.read().decode('utf-8-sig')  # handles BOM characters
-    df      = pd.read_csv(io.StringIO(content))
+    max_file_size = 5 * 1024 * 1024
+
+    if 'file' not in request.files:
+        return jsonify({"error": "CSV file is required"}), 400
+
+    file = request.files['file']
+    filename = file.filename or ''
+
+    if not filename:
+        return jsonify({"error": "CSV file is required"}), 400
+
+    if not filename.lower().endswith('.csv'):
+        return jsonify({"error": "Only CSV files are supported"}), 400
+
+    if request.content_length and request.content_length > max_file_size:
+        return jsonify({"error": "CSV file must be 5MB or smaller"}), 400
+
+    raw_content = file.read()
+
+    if not raw_content:
+        return jsonify({"error": "CSV file is empty"}), 400
+
+    if len(raw_content) > max_file_size:
+        return jsonify({"error": "CSV file must be 5MB or smaller"}), 400
+
+    try:
+        content = raw_content.decode('utf-8-sig')  # handles BOM characters
+        df = pd.read_csv(io.StringIO(content))
+    except UnicodeDecodeError:
+        return jsonify({"error": "CSV file must be UTF-8 encoded"}), 400
+    except Exception:
+        return jsonify({"error": "CSV file could not be read"}), 400
 
     # Detect source
     cols   = [c.strip() for c in df.columns.tolist()]
@@ -141,15 +421,18 @@ def upload_csv():
     else:
         transactions = parse_generic(df)
 
+    if not transactions:
+        return jsonify({"error": "No valid transactions found in CSV"}), 400
+
     # Save to database
     conn = get_connection()
     cur  = conn.cursor()
     count = 0
     for tx in transactions:
         cur.execute("""
-            INSERT INTO transactions (name, amount, category, account, date, source)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (tx['name'], tx['amount'], tx['category'],
+            INSERT INTO transactions (user_id, name, amount, category, account, date, source)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (current_user_id(), tx['name'], tx['amount'], tx['category'],
               tx['account'], tx['date'], source))
         count += 1
 
@@ -249,6 +532,7 @@ def parse_generic(df):
 # ══════════════════════════════════════
 
 @app.route('/api/budgets', methods=['GET'])
+@login_required
 def get_budgets():
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -267,6 +551,7 @@ def get_budgets():
                 ) AS period_start,
                 COALESCE(b.days, 30) AS period_days
             FROM budgets b
+            WHERE b.user_id = %s
         )
         SELECT
             bp.*,
@@ -285,6 +570,7 @@ def get_budgets():
                 )
             )
             AND t.amount < 0
+            AND t.user_id = %s
             AND t.date >= bp.period_start
             AND t.date <= (bp.period_start + ((bp.period_days - 1) * INTERVAL '1 day'))::date
         GROUP BY
@@ -300,7 +586,7 @@ def get_budgets():
             bp.period_start,
             bp.period_days
         ORDER BY bp.created_at DESC
-    """)
+    """, (current_user_id(), current_user_id()))
 
     rows = cur.fetchall()
     cur.close()
@@ -309,6 +595,7 @@ def get_budgets():
     return jsonify(rows)
 
 @app.route('/api/budgets', methods=['POST'])
+@login_required
 def add_budget():
     data = request.json
 
@@ -331,8 +618,9 @@ def add_budget():
         WHERE LOWER(category) = LOWER(%s)
           AND start_date = %s
           AND days = %s
+          AND user_id = %s
         ORDER BY id ASC
-    """, (category, start_date, days))
+    """, (category, start_date, days, current_user_id()))
 
     existing_rows = cur.fetchall()
 
@@ -347,19 +635,22 @@ def add_budget():
                 year = %s,
                 match_keyword = %s
             WHERE id = %s
+              AND user_id = %s
         """, (
             amount,
             None,
             None,
             (data.get('match_keyword') or '').strip(),
-            keep_id
+            keep_id,
+            current_user_id()
         ))
 
         if duplicate_ids:
             cur.execute("""
-                DELETE FROM budgets
-                WHERE id = ANY(%s)
-            """, (duplicate_ids,))
+            DELETE FROM budgets
+            WHERE id = ANY(%s)
+              AND user_id = %s
+        """, (duplicate_ids, current_user_id()))
 
         conn.commit()
         cur.close()
@@ -373,9 +664,10 @@ def add_budget():
 
     # 2. No exact duplicate = create a new flexible budget.
     cur.execute("""
-        INSERT INTO budgets (category, amount, start_date, days, month, year, match_keyword)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO budgets (user_id, category, amount, start_date, days, month, year, match_keyword)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (
+        current_user_id(),
         category,
         amount,
         start_date,
@@ -395,6 +687,7 @@ def add_budget():
     }), 201
 
 @app.route('/api/budgets/<int:budget_id>', methods=['PUT'])
+@login_required
 def update_budget(budget_id):
     data = request.json
 
@@ -410,7 +703,7 @@ def update_budget(budget_id):
             month = %s,
             year = %s,
             match_keyword = %s
-        WHERE id = %s
+        WHERE id = %s AND user_id = %s
     """, (
         data['category'],
         data['amount'],
@@ -419,7 +712,8 @@ def update_budget(budget_id):
         None,
         None,
         (data.get('match_keyword') or '').strip(),
-        budget_id
+        budget_id,
+        current_user_id()
     ))
 
     conn.commit()
@@ -429,11 +723,12 @@ def update_budget(budget_id):
     return jsonify({"message": "Budget updated!"}), 200
 
 @app.route('/api/budgets/<int:budget_id>', methods=['DELETE'])
+@login_required
 def delete_budget(budget_id):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM budgets WHERE id = %s", (budget_id,))
+    cur.execute("DELETE FROM budgets WHERE id = %s AND user_id = %s", (budget_id, current_user_id()))
     deleted_count = cur.rowcount
 
     conn.commit()
@@ -450,6 +745,7 @@ def delete_budget(budget_id):
 # ══════════════════════════════════════
 
 @app.route('/api/goals', methods=['GET'])
+@login_required
 def get_goals():
     conn = get_connection()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
@@ -473,6 +769,7 @@ def get_goals():
             SELECT COALESCE(SUM(ABS(t.amount)), 0) AS linked_savings_amount
             FROM transactions t
             WHERE g.auto_link_savings = TRUE
+              AND t.user_id = g.user_id
               AND (
                   LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
                   OR LOWER(COALESCE(t.name, '')) LIKE '%' || LOWER(COALESCE(g.name, '')) || '%'
@@ -492,6 +789,7 @@ def get_goals():
             SELECT MAX(t.date) AS last_linked_date
             FROM transactions t
             WHERE g.auto_link_savings = TRUE
+              AND t.user_id = g.user_id
               AND (
                   LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
                   OR LOWER(COALESCE(t.name, '')) LIKE '%' || LOWER(COALESCE(g.name, '')) || '%'
@@ -502,14 +800,16 @@ def get_goals():
                   OR LOWER(COALESCE(t.category, '')) LIKE '%saving%'
               )
         ) linked_activity ON TRUE
+        WHERE g.user_id = %s
         ORDER BY g.deadline NULLS LAST
-    """)
+    """, (current_user_id(),))
     rows = cur.fetchall()
     cur.close()
     conn.close()
     return jsonify(rows)
 
 @app.route('/api/goals', methods=['POST'])
+@login_required
 def add_goal():
     data = request.json or {}
 
@@ -528,10 +828,10 @@ def add_goal():
     conn = get_connection()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
-        INSERT INTO goals (name, target_amount, saved_amount, deadline, icon, category, auto_link_savings)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO goals (user_id, name, target_amount, saved_amount, deadline, icon, category, auto_link_savings)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING *
-    """, (name, target_amount, saved_amount, deadline, icon, category, auto_link_savings))
+    """, (current_user_id(), name, target_amount, saved_amount, deadline, icon, category, auto_link_savings))
     goal = cur.fetchone()
     conn.commit()
     cur.close()
@@ -540,6 +840,7 @@ def add_goal():
 
 
 @app.route('/api/goals/<int:goal_id>', methods=['PUT'])
+@login_required
 def update_goal(goal_id):
     data = request.json or {}
 
@@ -568,6 +869,7 @@ def update_goal(goal_id):
             category = %s,
             auto_link_savings = %s
         WHERE id = %s
+          AND user_id = %s
         RETURNING *
     """, (
         name,
@@ -577,7 +879,8 @@ def update_goal(goal_id):
         icon,
         category,
         auto_link_savings,
-        goal_id
+        goal_id,
+        current_user_id()
     ))
 
     updated = cur.fetchone()
@@ -595,6 +898,7 @@ def update_goal(goal_id):
 
 
 @app.route('/api/goals/<int:goal_id>/contributions', methods=['GET'])
+@login_required
 def get_goal_contributions(goal_id):
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -603,7 +907,8 @@ def get_goal_contributions(goal_id):
         SELECT *
         FROM goals
         WHERE id = %s
-    """, (goal_id,))
+          AND user_id = %s
+    """, (goal_id, current_user_id()))
     goal = cur.fetchone()
 
     if not goal:
@@ -652,9 +957,10 @@ def get_goal_contributions(goal_id):
                 OR LOWER(COALESCE(t.name, '')) LIKE '%%saving%%'
                 OR LOWER(COALESCE(t.category, '')) LIKE '%%saving%%'
               )
+              AND t.user_id = %s
             ORDER BY t.date DESC, t.created_at DESC
             LIMIT 20
-        """, (goal.get("category") or "", goal.get("name") or ""))
+        """, (goal.get("category") or "", goal.get("name") or "", current_user_id()))
         transaction_rows = cur.fetchall()
 
     rows = manual_rows + transaction_rows
@@ -673,6 +979,7 @@ def get_goal_contributions(goal_id):
 
 
 @app.route('/api/goals/<int:goal_id>/suggestions', methods=['GET'])
+@login_required
 def get_goal_suggestions(goal_id):
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -688,6 +995,7 @@ def get_goal_suggestions(goal_id):
             SELECT COALESCE(SUM(ABS(t.amount)), 0) AS linked_savings_amount
             FROM transactions t
             WHERE g.auto_link_savings = TRUE
+              AND t.user_id = g.user_id
               AND (
                   LOWER(COALESCE(t.category, '')) = LOWER(COALESCE(g.category, ''))
                   OR LOWER(COALESCE(t.name, '')) LIKE '%%' || LOWER(COALESCE(g.name, '')) || '%%'
@@ -699,7 +1007,8 @@ def get_goal_suggestions(goal_id):
               )
         ) linked ON TRUE
         WHERE g.id = %s
-    """, (goal_id,))
+          AND g.user_id = %s
+    """, (goal_id, current_user_id()))
     goal = cur.fetchone()
 
     if not goal:
@@ -710,26 +1019,29 @@ def get_goal_suggestions(goal_id):
     cur.execute("""
         SELECT name, amount, category, account, date
         FROM transactions
+        WHERE user_id = %s
         ORDER BY date DESC
         LIMIT 80
-    """)
+    """, (current_user_id(),))
     transactions = cur.fetchall()
 
     cur.execute("""
         SELECT category, ABS(SUM(amount)) AS spent
         FROM transactions
         WHERE amount < 0
+          AND user_id = %s
           AND date >= CURRENT_DATE - INTERVAL '30 days'
         GROUP BY category
         ORDER BY spent DESC
         LIMIT 6
-    """)
+    """, (current_user_id(),))
     top_spending = cur.fetchall()
 
     cur.execute("""
         SELECT name, amount, category, account, date
         FROM transactions
         WHERE amount < 0
+          AND user_id = %s
           AND date >= CURRENT_DATE - INTERVAL '30 days'
           AND (
               LOWER(COALESCE(category, '')) = LOWER(%s)
@@ -737,13 +1049,14 @@ def get_goal_suggestions(goal_id):
           )
         ORDER BY ABS(amount) DESC
         LIMIT 8
-    """, (goal["category"] or "", goal["name"] or ""))
+    """, (current_user_id(), goal["category"] or "", goal["name"] or ""))
     goal_related_spending = cur.fetchall()
 
     cur.execute("""
         SELECT name, amount, category, account, date
         FROM transactions
-        WHERE date >= CURRENT_DATE - INTERVAL '45 days'
+        WHERE user_id = %s
+          AND date >= CURRENT_DATE - INTERVAL '45 days'
           AND (
               LOWER(COALESCE(account, '')) LIKE '%sav%'
               OR LOWER(COALESCE(name, '')) LIKE '%saving%'
@@ -751,24 +1064,26 @@ def get_goal_suggestions(goal_id):
           )
         ORDER BY date DESC
         LIMIT 12
-    """)
+    """, (current_user_id(),))
     savings_activity = cur.fetchall()
 
     cur.execute("""
         SELECT category, amount, start_date, days
         FROM budgets
+        WHERE user_id = %s
         ORDER BY created_at DESC
         LIMIT 25
-    """)
+    """, (current_user_id(),))
     budgets = cur.fetchall()
 
     cur.execute("""
         SELECT name, amount, category, account, frequency, next_date
         FROM recurring_payments
         WHERE is_active = TRUE
+          AND user_id = %s
         ORDER BY next_date ASC
         LIMIT 25
-    """)
+    """, (current_user_id(),))
     recurring = cur.fetchall()
 
     cur.close()
@@ -874,6 +1189,7 @@ If the data is thin, make the card a useful data-gap action, such as what transa
 
 
 @app.route('/api/goals/<int:goal_id>/contribute', methods=['POST'])
+@login_required
 def contribute_to_goal(goal_id):
     data = request.json or {}
 
@@ -891,7 +1207,7 @@ def contribute_to_goal(goal_id):
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
-    cur.execute("SELECT id FROM goals WHERE id = %s", (goal_id,))
+    cur.execute("SELECT id FROM goals WHERE id = %s AND user_id = %s", (goal_id, current_user_id()))
     goal = cur.fetchone()
 
     if not goal:
@@ -914,8 +1230,9 @@ def contribute_to_goal(goal_id):
         UPDATE goals
         SET saved_amount = COALESCE(saved_amount, 0) + %s
         WHERE id = %s
+          AND user_id = %s
         RETURNING *
-    """, (amount, goal_id))
+    """, (amount, goal_id, current_user_id()))
 
     updated = cur.fetchone()
     conn.commit()
@@ -926,11 +1243,12 @@ def contribute_to_goal(goal_id):
 
 
 @app.route('/api/goals/<int:goal_id>', methods=['DELETE'])
+@login_required
 def delete_goal(goal_id):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM goals WHERE id = %s", (goal_id,))
+    cur.execute("DELETE FROM goals WHERE id = %s AND user_id = %s", (goal_id, current_user_id()))
 
     if cur.rowcount == 0:
         cur.close()
@@ -1008,32 +1326,41 @@ def add_category():
 # ══════════════════════════════════════
 
 @app.route('/api/dashboard', methods=['GET'])
+@login_required
 def get_dashboard():
     conn = get_connection()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
 
     # Total balance
-    cur.execute("SELECT COALESCE(SUM(amount), 0) as total FROM transactions")
+    cur.execute("SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = %s", (current_user_id(),))
     total_balance = float(cur.fetchone()['total'])
 
     # Monthly income
     cur.execute("""
         SELECT COALESCE(SUM(amount), 0) as total FROM transactions
         WHERE amount > 0
+        AND user_id = %s
         AND date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
-    """)
+    """, (current_user_id(),))
     monthly_income = float(cur.fetchone()['total'])
 
     # Monthly expenses
     cur.execute("""
         SELECT COALESCE(SUM(amount), 0) as total FROM transactions
         WHERE amount < 0
+        AND user_id = %s
         AND date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
-    """)
+    """, (current_user_id(),))
     monthly_expenses = float(cur.fetchone()['total'])
 
     # Recent transactions
-    cur.execute("SELECT * FROM transactions ORDER BY date DESC LIMIT 6")
+    cur.execute("""
+        SELECT *
+        FROM transactions
+        WHERE user_id = %s
+        ORDER BY date DESC
+        LIMIT 6
+    """, (current_user_id(),))
     recent = cur.fetchall()
 
     cur.close()
@@ -1052,6 +1379,7 @@ def get_dashboard():
 # ══════════════════════════════════════
 
 @app.route('/api/investments', methods=['GET'])
+@login_required
 def get_investments():
     import yfinance as yf
 
@@ -1126,6 +1454,7 @@ def get_investments():
 
 
 @app.route('/api/investment-news', methods=['GET'])
+@login_required
 def get_investment_news():
     from datetime import datetime, timedelta, timezone
 
@@ -1277,6 +1606,7 @@ def get_investment_news():
 # ══════════════════════════════════════
 
 @app.route('/api/money-coach', methods=['POST'])
+@login_required
 def money_coach():
     data = request.json or {}
     question = (data.get('question') or '').strip()
@@ -1290,17 +1620,19 @@ def money_coach():
     cur.execute("""
         SELECT name, amount, category, account, date
         FROM transactions
+        WHERE user_id = %s
         ORDER BY date DESC
         LIMIT 80
-    """)
+    """, (current_user_id(),))
     transactions = cur.fetchall()
 
     cur.execute("""
         SELECT category, amount, start_date, days, created_at
         FROM budgets
+        WHERE user_id = %s
         ORDER BY created_at DESC
         LIMIT 30
-    """)
+    """, (current_user_id(),))
     budgets = cur.fetchall()
 
     cur.close()
@@ -1385,6 +1717,7 @@ Keep total answer under 140 words unless asked for more.
 
 
 @app.route('/api/investment-copilot', methods=['POST'])
+@login_required
 def investment_copilot():
     data = request.json or {}
     question = (data.get('question') or '').strip()
@@ -1471,7 +1804,7 @@ def normalize_recurring_amount(raw_amount, payment_type=None):
     return amount
 
 
-def repair_recurring_transaction_signs(cur):
+def repair_recurring_transaction_signs(cur, user_id):
     cur.execute("""
         UPDATE transactions t
         SET amount = CASE
@@ -1481,6 +1814,8 @@ def repair_recurring_transaction_signs(cur):
             category = rp.category
         FROM recurring_payments rp
         WHERE t.source = 'recurring'
+          AND t.user_id = %s
+          AND rp.user_id = %s
           AND LOWER(t.name) = LOWER(rp.name)
           AND LOWER(t.account) = LOWER(rp.account)
           AND ABS(t.amount) = ABS(rp.amount)
@@ -1489,10 +1824,11 @@ def repair_recurring_transaction_signs(cur):
               OR (rp.amount > 0 AND t.amount < 0)
               OR LOWER(COALESCE(t.category, '')) <> LOWER(COALESCE(rp.category, ''))
           )
-    """)
+    """, (user_id, user_id))
 
 
 @app.route('/api/recurring', methods=['GET'])
+@login_required
 def get_recurring():
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -1501,23 +1837,26 @@ def get_recurring():
         DELETE FROM recurring_payments rp
         USING recurring_payments keep
         WHERE rp.id > keep.id
+          AND rp.user_id = %s
+          AND keep.user_id = %s
           AND LOWER(rp.name) = LOWER(keep.name)
           AND rp.amount = keep.amount
           AND LOWER(rp.category) = LOWER(keep.category)
           AND LOWER(rp.account) = LOWER(keep.account)
           AND LOWER(rp.frequency) = LOWER(keep.frequency)
           AND rp.next_date = keep.next_date
-    """)
+    """, (current_user_id(), current_user_id()))
     conn.commit()
 
-    repair_recurring_transaction_signs(cur)
+    repair_recurring_transaction_signs(cur, current_user_id())
     conn.commit()
 
     cur.execute("""
         SELECT *
         FROM recurring_payments
+        WHERE user_id = %s
         ORDER BY next_date ASC
-    """)
+    """, (current_user_id(),))
 
     rows = cur.fetchall()
     cur.close()
@@ -1527,6 +1866,7 @@ def get_recurring():
 
 
 @app.route('/api/recurring', methods=['POST'])
+@login_required
 def add_recurring():
     data = request.json or {}
 
@@ -1547,6 +1887,7 @@ def add_recurring():
         SELECT id
         FROM recurring_payments
         WHERE LOWER(name) = LOWER(%s)
+          AND user_id = %s
           AND amount = %s
           AND LOWER(category) = LOWER(%s)
           AND LOWER(account) = LOWER(%s)
@@ -1555,6 +1896,7 @@ def add_recurring():
         ORDER BY id ASC
     """, (
         name,
+        current_user_id(),
         amount,
         category,
         account,
@@ -1572,7 +1914,8 @@ def add_recurring():
             cur.execute("""
                 DELETE FROM recurring_payments
                 WHERE id = ANY(%s)
-            """, (duplicate_ids,))
+                  AND user_id = %s
+            """, (duplicate_ids, current_user_id()))
             conn.commit()
 
         cur.close()
@@ -1587,10 +1930,11 @@ def add_recurring():
 
     cur.execute("""
         INSERT INTO recurring_payments
-            (name, amount, category, account, frequency, next_date, is_active)
+            (user_id, name, amount, category, account, frequency, next_date, is_active)
         VALUES
-            (%s, %s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (
+        current_user_id(),
         name,
         amount,
         category,
@@ -1608,6 +1952,7 @@ def add_recurring():
 
 
 @app.route('/api/recurring/<int:recurring_id>', methods=['PUT'])
+@login_required
 def update_recurring(recurring_id):
     data = request.json or {}
 
@@ -1633,6 +1978,7 @@ def update_recurring(recurring_id):
             frequency = %s,
             next_date = %s
         WHERE id = %s
+          AND user_id = %s
         RETURNING *
     """, (
         name,
@@ -1641,7 +1987,8 @@ def update_recurring(recurring_id):
         account,
         frequency,
         next_date,
-        recurring_id
+        recurring_id,
+        current_user_id()
     ))
 
     updated = cur.fetchone()
@@ -1662,11 +2009,12 @@ def update_recurring(recurring_id):
 
 
 @app.route('/api/recurring/<int:recurring_id>', methods=['DELETE'])
+@login_required
 def delete_recurring(recurring_id):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM recurring_payments WHERE id = %s", (recurring_id,))
+    cur.execute("DELETE FROM recurring_payments WHERE id = %s AND user_id = %s", (recurring_id, current_user_id()))
 
     if cur.rowcount == 0:
         cur.close()
@@ -1681,11 +2029,12 @@ def delete_recurring(recurring_id):
 
 
 @app.route('/api/recurring/<int:recurring_id>/mark-paid', methods=['POST'])
+@login_required
 def mark_recurring_paid(recurring_id):
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
-    cur.execute("SELECT * FROM recurring_payments WHERE id = %s", (recurring_id,))
+    cur.execute("SELECT * FROM recurring_payments WHERE id = %s AND user_id = %s", (recurring_id, current_user_id()))
     item = cur.fetchone()
 
     if not item:
@@ -1702,9 +2051,10 @@ def mark_recurring_paid(recurring_id):
 
     # Create real transaction
     cur.execute("""
-        INSERT INTO transactions (name, amount, category, account, date, source)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO transactions (user_id, name, amount, category, account, date, source)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     """, (
+        current_user_id(),
         item["name"],
         transaction_amount,
         item["category"],
@@ -1727,7 +2077,8 @@ def mark_recurring_paid(recurring_id):
         UPDATE recurring_payments
         SET next_date = next_date + %s::interval
         WHERE id = %s
-    """, (interval, recurring_id))
+          AND user_id = %s
+    """, (interval, recurring_id, current_user_id()))
 
     conn.commit()
     cur.close()
@@ -1737,4 +2088,4 @@ def mark_recurring_paid(recurring_id):
 
 # ── RUN ──
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

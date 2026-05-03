@@ -1,0 +1,9 @@
+Flask
+flask-cors
+flask-login
+bcrypt
+psycopg2
+pandas
+python-dotenv
+groq
+yfinance

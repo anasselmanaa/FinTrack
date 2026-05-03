@@ -697,8 +697,17 @@
                             All Transactions
                         </h2>
                         <div class="table-actions">
+                            <button class="btn-export" id="importCsvTransactionsBtn" type="button">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Import CSV
+                            </button>
+
                             <button class="btn-export" id="exportTransactionsBtn" type="button">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 Export
                             </button>
 
@@ -710,6 +719,48 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 Add Transaction
                             </button>
+                        </div>
+                    </div>
+
+                    <div class="transactions-monthly-summary" id="transactionsMonthlySummary">
+                        <div class="tx-summary-item tx-summary-income">
+                            <div class="tx-summary-top">
+                                <span class="tx-summary-label">Visible income</span>
+                                <span class="tx-summary-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+                                </span>
+                            </div>
+                            <strong class="tx-summary-value positive" id="txMonthlyIncome">+$0.00</strong>
+                        </div>
+
+                        <div class="tx-summary-item tx-summary-expense">
+                            <div class="tx-summary-top">
+                                <span class="tx-summary-label">Visible expenses</span>
+                                <span class="tx-summary-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                                </span>
+                            </div>
+                            <strong class="tx-summary-value negative" id="txMonthlyExpenses">-$0.00</strong>
+                        </div>
+
+                        <div class="tx-summary-item tx-summary-net">
+                            <div class="tx-summary-top">
+                                <span class="tx-summary-label">Visible net</span>
+                                <span class="tx-summary-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M7 7h10"/><path d="M7 17h10"/></svg>
+                                </span>
+                            </div>
+                            <strong class="tx-summary-value positive" id="txMonthlyNet">+$0.00</strong>
+                        </div>
+
+                        <div class="tx-summary-item tx-summary-count">
+                            <div class="tx-summary-top">
+                                <span class="tx-summary-label">Activity</span>
+                                <span class="tx-summary-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-3"/></svg>
+                                </span>
+                            </div>
+                            <strong class="tx-summary-value" id="txMonthlyCount">0 visible transactions</strong>
                         </div>
                     </div>
 
@@ -1827,11 +1878,12 @@
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 <p>Drag & drop your CSV here</p>
                 <p class="upload-sub">or <label for="csvFileInput" class="upload-link">browse files</label></p>
-                <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+                <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none">
             </div>
+            <p class="form-hint" id="csvUploadStatus">Choose a CSV file, then click Upload & Import.</p>
             <div class="modal-footer">
                 <button class="btn-secondary" id="csvModalCancel">Cancel</button>
-                <button class="btn-primary">Upload & Import</button>
+                <button class="btn-primary" id="csvUploadBtn" type="button">Upload & Import</button>
             </div>
         </div>
     </div>
@@ -2712,6 +2764,6 @@
         };
     })();
 </script>
-<script src="app.js"></script>
+<script src="app.js?v=tx-polish-1"></script>
 </body>
 </html>
