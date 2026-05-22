@@ -1,6 +1,9 @@
 .env
 backend/.env
 venv/
+.claude/
+.vscode/
+backend/uploads/
 __pycache__/
 *.pyc
 .DS_Store

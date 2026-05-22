@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinTrack – Get Good at Money</title>
+<meta name="description" content="FinTrack helps you track spending, budgets, goals, receipts, recurring bills, and AI money guidance in one calm workspace.">
+<meta name="theme-color" content="#163832">
+<link rel="canonical" href="https://fintrack.app/">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta property="og:site_name" content="FinTrack">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FinTrack – Get good at money">
+<meta property="og:description" content="Track budgets, goals, receipts, recurring bills, and AI money guidance in one calm workspace.">
+<meta property="og:url" content="https://fintrack.app/">
+<meta property="og:image" content="https://fintrack.app/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinTrack – Get good at money">
+<meta name="twitter:description" content="Track budgets, goals, receipts, recurring bills, and AI money guidance in one calm workspace.">
+<meta name="twitter:image" content="https://fintrack.app/assets/og-image.png">
+<meta name="twitter:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1:  #163832;   /* darkest — nav, footer, hero bg */
+  --dark2:  #235347;   /* dark — buttons, accents, sidebar */
+  --mid:    #8EB69B;   /* sage — secondary elements, borders */
+  --light:  #DAF1DE;   /* mint — backgrounds, card highlights */
+  --white:  #ffffff;
+  --text:   #163832;
+  --text2:  #3d6b5f;
+  --f: 'Lato', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  background: var(--dark1);
+  display: flex; align-items: center;
+  height: 64px; padding: 0 32px; gap: 0;
+}
+.nav-brand {
+  font-size: 26px; font-weight: 900; letter-spacing: -0.5px;
+  color: #fff; margin-right: 28px; text-decoration: none;
+  display: flex; align-items: center; gap: 3px;
+}
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a {
+  color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400;
+  text-decoration: none; padding: 8px 14px; border-radius: 6px;
+  transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+}
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta {
+  background: #F5C842; color: var(--dark1);
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap;
+}
+.nav-cta:hover { background: #f0bc2a; color: var(--dark1); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+
+/* Dropdown */
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu {
+  display: none; position: absolute; top: 100%; left: 0;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 8px 40px rgba(22,56,50,0.18);
+  padding: 10px 0; min-width: 220px; z-index: 300;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+/* ══ HERO — matches YNAB layout exactly ══ */
+.hero {
+  min-height: calc(100svh - 64px);
+  margin-top: 64px;
+  background:
+    linear-gradient(118deg, rgba(222,247,226,0.98) 0%, rgba(190,232,199,0.96) 44%, rgba(132,194,148,0.96) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.36), rgba(22,56,50,0.08));
+  display: grid;
+  grid-template-columns: minmax(330px, 0.84fr) minmax(540px, 1.16fr);
+  align-items: center;
+  padding: clamp(42px, 6vh, 78px) clamp(42px, 6vw, 96px);
+  position: relative;
+  overflow: hidden;
+  gap: clamp(42px, 4.2vw, 78px);
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(22,56,50,0.032) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 21px),
+    linear-gradient(90deg, rgba(22,56,50,0.10), transparent 28%, transparent 72%, rgba(22,56,50,0.09));
+  opacity: 0.58;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 0;
+}
+.money-rain {
+  position: absolute;
+  inset: -22vh 0 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.money-bill {
+  position: absolute;
+  top: -18vh;
+  left: var(--x);
+  width: var(--w);
+  opacity: 0;
+  animation: moneyFall var(--d) linear infinite;
+  animation-delay: var(--delay);
+  will-change: transform, opacity;
+  transform-origin: 50% 50%;
+}
+.money-bill svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 16px 22px rgba(22,56,50,0.12));
+}
+.money-bill:nth-child(3n) svg { transform: scaleX(-1); }
+.money-bill:nth-child(4n) svg { transform: rotate(7deg); }
+.money-bill:nth-child(5n) svg { transform: scaleX(-1) rotate(-6deg); }
+.money-bill .bill-paper { fill: rgba(218,241,222,0.62); stroke: rgba(55,117,66,0.72); }
+.money-bill .bill-mark { fill: rgba(69,139,78,0.72); }
+.money-bill .bill-line { stroke: rgba(35,83,71,0.32); }
+.money-bill-soft {
+  height: calc(var(--w) * 0.54);
+  filter: drop-shadow(0 14px 20px rgba(22,56,50,0.10));
+}
+.money-bill-soft::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 4px solid rgba(55,117,66,0.62);
+  border-radius: 18% 9% 18% 11%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(69,139,78,0.72) 0 16%, transparent 17%),
+    radial-gradient(circle at 22% 30%, rgba(69,139,78,0.62) 0 6%, transparent 7%),
+    radial-gradient(circle at 78% 70%, rgba(69,139,78,0.58) 0 6%, transparent 7%),
+    linear-gradient(135deg, rgba(218,241,222,0.58), rgba(169,211,174,0.50));
+  transform: skewY(var(--skew, -4deg));
+}
+.money-bill-soft::after {
+  content: '$';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.7em;
+  height: 1.7em;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: rgba(218,241,222,0.92);
+  background: rgba(69,139,78,0.74);
+  font-size: calc(var(--w) * 0.17);
+  font-weight: 900;
+}
+@keyframes moneyFall {
+  0% {
+    transform: translate3d(0, -24vh, 0) rotate(var(--r));
+    opacity: 0;
+  }
+  9% { opacity: var(--o); }
+  86% { opacity: var(--o); }
+  100% {
+    transform: translate3d(calc(var(--drift) * 0.16), 122vh, 0) rotate(calc(var(--r) + (var(--spin) * 0.55)));
+    opacity: 0;
+  }
+}
+@keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+
+.hero-left {
+  max-width: 46rem;
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  grid-column: 2;
+  grid-row: 1;
+  transform: translate(0.8vw, -5vh);
+}
+.hero-left h1 {
+  font-size: clamp(3.25rem, 8.4vw, 5.75rem);
+  font-weight: 900;
+  line-height: 0.97;
+  color: var(--dark1);
+  letter-spacing: -1.6px;
+  margin-bottom: 1.2rem;
+}
+.hero-italic {
+  font-size: clamp(1.1rem, 2.1vw, 1.45rem);
+  font-style: italic;
+  color: var(--dark2);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  max-width: 40.625rem;
+}
+.hero-price-highlight {
+  color: #F5C842;
+  font-style: normal;
+  font-weight: 900;
+  white-space: nowrap;
+  -webkit-text-stroke: 1.25px #163832;
+  text-stroke: 1.25px #163832;
+  paint-order: stroke fill;
+}
+.btn-hero {
+  display: inline-block; background: #F5C842; color: var(--dark1);
+  font-size: 1.45rem; font-weight: 900; padding: 0 4.35rem; height: 5.25rem; line-height: 5.25rem; border-radius: 1.15rem; letter-spacing: 0.35px;
+  text-decoration: none; transition: all 0.15s;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+  box-shadow: 0 20px 54px rgba(245,200,66,0.58), 0 10px 24px rgba(22,56,50,0.18);
+}
+.btn-hero:hover { background: #F5C842; color: var(--dark1); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(22,56,50,0.3), 0 0 0 3px rgba(255,255,255,0.8); }
+.hero-note { display: block; margin-top: 12px; color: var(--dark2); font-size: 13px; margin-top: 14px; margin-bottom: 0; }
+
+/* ══ iPHONE ══ */
+.hero-phone {
+  position: relative;
+  justify-self: end;
+  align-self: center;
+  width: 332px;
+  min-width: 332px;
+  max-width: 332px;
+  height: auto;
+  aspect-ratio: 9 / 19.5;
+  z-index: 2;
+  margin-left: 0;
+  margin-right: clamp(30px, 2.2vw, 46px);
+  grid-column: 1;
+  grid-row: 1;
+  animation: hphover 4.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+@keyframes hphover {
+  0%,100% { transform: translate3d(0, -1.2vh, 0) rotate(-0.7deg); }
+  50%      { transform: translate3d(0, -2.1vh, 0) rotate(0.7deg); }
+}
+.iphone-frame {
+  position: relative;
+  background: linear-gradient(160deg, #4a4a4a 0%, #2a2a2a 40%, #1a1a1a 100%);
+  border-radius: 48px; padding: 12px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 20px 40px rgba(0,0,0,0.4);
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+}
+.iphone-frame::before {
+  content: ''; position: absolute; left: -3px; top: 100px;
+  width: 3px; height: 36px;
+  background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 44px 0 #3a3a3a, 0 88px 0 #3a3a3a;
+}
+.iphone-frame::after {
+  content: ''; position: absolute; right: -3px; top: 140px;
+  width: 3px; height: 90px;
+  background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+  border-radius: 0 2px 2px 0;
+}
+.iphone-screen { background: #000; border-radius: 38px; overflow: hidden; position: relative; flex: 1; display: flex; flex-direction: column; }
+.iphone-status {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 10px 16px 8px; background: #000; height: 44px;
+}
+.iphone-status-time { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.iphone-island {
+  width: 90px; height: 28px; background: #111; border-radius: 20px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); justify-self: center; align-self: center;
+}
+.iphone-status-icons {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 5px; color: #fff; font-size: 11px; font-weight: 600;
+}
+.iphone-content { background: #fff; padding: 10px 9px 10px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.iphone-app-header {
+  background: linear-gradient(135deg, var(--dark1), var(--dark2), var(--mid));
+  margin: -10px -9px 10px; padding: 12px 13px 15px; border-radius: 0 0 20px 20px;
+}
+.iphone-app-header-title { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 700; margin-bottom: 3px; letter-spacing: 0.5px; }
+.iphone-app-header-name  { font-size: 19px; color: #fff; font-weight: 800; }
+.hp-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--light); border-radius: 10px;
+  padding: 9px 11px; margin-bottom: 7px; font-size: 16px;
+}
+.hp-row-label { color: var(--text2); font-weight: 500; }
+.hp-pill { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.hp-pill.review { background: var(--dark1); color: #fff; }
+.hp-pill.assign { background: #F5C842; color: var(--dark1); }
+.hp-section { font-size: 9px; font-weight: 800; color: var(--mid); letter-spacing: 1px; text-transform: uppercase; margin: 10px 0 6px 2px; }
+.hp-priority {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 11px; border-radius: 10px; margin-bottom: 5px;
+  font-size: 12px; background: var(--light);
+}
+.hp-amt { font-weight: 700; color: var(--text); }
+.hp-amt.green { color: var(--dark2); }
+.hp-summary-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 8px; margin-top: 12px; }
+.hp-summary-card { background: var(--light); border-radius: 10px; padding: 10px; text-align: center; }
+.hp-summary-label { font-size: 9px; color: var(--mid); margin-bottom: 3px; font-weight: 600; }
+.hp-summary-val { font-size: 14px; font-weight: 800; color: var(--text); }
+.iphone-indicator { background: #fff; display: flex; justify-content: center; padding: 6px 0 10px; }
+.iphone-indicator-bar { width: 100px; height: 4px; background: #1a1a1a; border-radius: 2px; }
+
+/* ══ STATS ══ */
+.stats-section { background: #ffffff; padding: 100px 80px; }
+.stats-inner { display: flex; gap: 60px; align-items: flex-start; max-width: 1100px; margin: 0 auto; }
+.stats-copy { flex: 0 0 380px; }
+.stats-copy h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.1; color: var(--text); margin-bottom: 12px; }
+.stats-copy .sub { font-size: 14px; color: var(--text2); font-style: italic; margin-bottom: 20px; }
+.stats-copy p { font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 28px; }
+.btn-outline {
+  display: inline-block; border: 2px solid var(--dark2);
+  color: var(--dark2); font-size: 14px; font-weight: 700;
+  padding: 11px 22px; border-radius: 8px; text-decoration: none; transition: all 0.15s;
+}
+.btn-outline:hover { background: #F5C842; color: var(--dark1); }
+.stats-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; flex: 1; }
+.stat-card {
+  background: #fff; border-radius: 14px; padding: 32px 28px;
+  box-shadow: 0 2px 16px rgba(22,56,50,0.08);
+  border-bottom: 4px solid var(--mid); border-top: 2px solid #DAF1DE; text-align: center;
+}
+.stat-num { font-size: 72px; font-weight: 900; line-height: 1; color: var(--dark1); letter-spacing: -2px; font-style: italic; background: linear-gradient(135deg, var(--dark2), var(--dark1)); -webkit-background-clip: text; }
+.stat-desc { font-size: 14px; color: var(--text2); line-height: 1.5; margin-top: 8px; }
+
+/* ══ QUOTE ══ */
+.quote-section { background: #DAF1DE; padding: 110px 80px; text-align: center; }
+.quote-text { color: var(--dark1) !important;
+  font-size: clamp(22px, 3vw, 36px); font-style: italic; font-weight: 300;
+  color: var(--text); line-height: 1.55; max-width: 860px; margin: 0 auto 28px;
+}
+.quote-highlight { background: rgba(35,83,71,0.15); padding: 2px 6px; border-radius: 4px; }
+.quote-attr { font-size: 15px; color: var(--text2); }
+.quote-attr strong { font-weight: 700; color: var(--text); }
+
+/* ══ WHY ══ */
+.why-section {
+  background: #ffffff; padding: 100px 80px;
+  display: flex; flex-direction: column; gap: 60px;
+  align-items: center; text-align: center;
+}
+.why-heading { max-width: 700px; }
+.why-heading h2 {
+  font-size: clamp(40px, 5vw, 64px); font-weight: 900; line-height: 1.1;
+  color: var(--text); margin-bottom: 16px; letter-spacing: -1px;
+}
+.why-heading p {
+  font-size: clamp(15px, 1.4vw, 18px); color: var(--text2); line-height: 1.6;
+}
+/* App mockup */
+.why-right { width: 100%; max-width: 1080px; min-width: 0; overflow: visible; }
+.app-mockup {
+  background: #ffffff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(22,56,50,0.15);
+  border: 1px solid var(--mid);
+}
+.app-topbar {
+  background: var(--dark1); padding: 12px 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.app-dot { width: 10px; height: 10px; border-radius: 50%; }
+.app-url { flex: 1; background: rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: rgba(255,255,255,0.7); font-family: monospace; margin: 0 8px; }
+.app-body { padding: 18px; }
+.app-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.app-month-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.app-assign-badge { background: #F5C842; color: var(--dark1); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 6px; }
+.app-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--mid); margin-bottom: 14px; }
+.app-tab { font-size: 12px; color: #999; padding: 6px 12px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.app-tab.active { color: var(--dark2); border-bottom-color: var(--dark2); font-weight: 700; }
+.app-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 6px; align-items: center;
+  padding: 7px 8px; border-radius: 6px; font-size: 12px; margin-bottom: 3px;
+}
+.app-row:hover { background: var(--light); }
+.app-row-name { font-weight: 500; color: var(--text); }
+.app-row-sub { font-size: 10px; color: #999; }
+.app-num { font-size: 12px; color: var(--text2); text-align: right; }
+.app-num.green { color: var(--dark2); }
+.app-num.red   { color: #c0392b; font-weight: 700; }
+.app-funded    { font-size: 10px; color: var(--dark2); font-weight: 600; }
+.app-section-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--mid); padding: 6px 8px 4px; margin-top: 6px; }
+
+/* ══ GOALS ══ */
+.goals-section { background: #ffffff; padding: 100px 80px; text-align: center; }
+.goals-section h2 { font-size: clamp(34px, 4.5vw, 54px); font-weight: 900; color: var(--text); margin-bottom: 8px; line-height: 1.1; }
+.goals-italic { font-size: 18px; font-style: italic; color: var(--text2); margin-bottom: 44px; }
+.goals-carousel { max-width: 860px; margin: 0 auto 28px; position: relative; }
+.goals-page { display: none; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.goals-page.active { display: grid; animation: goalFade 0.45s ease both; }
+@keyframes goalFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.goal-card {
+  background: #fafffe; border-radius: 14px; padding: 32px 20px;
+  box-shadow: 0 2px 12px rgba(22,56,50,0.08); text-align: center; cursor: pointer;
+  border-bottom: 3px solid transparent; transition: all 0.2s;
+}
+.goal-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(22,56,50,0.14); border-bottom-color: var(--mid); box-shadow: 0 8px 24px rgba(22,56,50,0.14), 0 0 0 2px #DAF1DE; }
+.goal-icon-wrap { width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 30px; background: var(--light); }
+.goal-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+.goal-link  { font-size: 13px; color: var(--dark2); font-weight: 700; text-decoration: none; }
+.goal-link:hover { text-decoration: underline; }
+.goals-nav { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.goals-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #F5C842; color: var(--dark1); border: none; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.goals-nav-btn:hover { background: var(--dark1); }
+.goals-dots { display: flex; gap: 6px; }
+.goals-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mid); opacity: 0.4; }
+.goals-dot.active { opacity: 1; background: var(--dark2); }
+
+/* ══ FINAL CTA ══ */
+.cta-section {
+  background: linear-gradient(135deg, var(--dark1) 0%, #1d4a40 40%, var(--dark2) 100%);
+  padding: 110px 80px 100px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.cta-section::before {
+  content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+  width: 720px; height: 420px;
+  background: radial-gradient(ellipse at center, rgba(245,200,66,0.14) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cta-section::after {
+  content: ''; position: absolute; bottom: -200px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 400px;
+  background: radial-gradient(ellipse at center, rgba(142,182,155,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-inner { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+
+.cta-eyebrow {
+  display: inline-block;
+  font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: #F5C842;
+  background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.25);
+  padding: 8px 16px; border-radius: 999px;
+  margin-bottom: 22px;
+}
+.cta-section h2 {
+  font-size: clamp(42px, 6vw, 76px); font-weight: 900; line-height: 1.04;
+  color: #fff; margin: 0 0 22px; letter-spacing: -1.5px;
+}
+.cta-section h2 span {
+  background: linear-gradient(135deg, #DAF1DE 0%, #F5C842 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cta-lede {
+  font-size: 17px; color: rgba(255,255,255,0.78); line-height: 1.7;
+  max-width: 680px; margin: 0 auto 50px;
+}
+
+.cta-features {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+  margin: 0 0 50px; text-align: left;
+}
+.cta-feat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(218,241,222,0.12);
+  border-radius: 16px;
+  padding: 22px 20px;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.cta-feat:hover {
+  transform: translateY(-4px);
+  border-color: rgba(245,200,66,0.4);
+  background: rgba(255,255,255,0.06);
+}
+.cta-feat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(245,200,66,0.12);
+  border: 1px solid rgba(245,200,66,0.25);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.cta-feat-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 6px; letter-spacing: -0.2px; }
+.cta-feat-sub   { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+.cta-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn-white {
+  background: #F5C842; color: var(--dark1);
+  font-size: 17px; font-weight: 900; padding: 18px 38px; border-radius: 12px;
+  text-decoration: none; transition: all 0.18s;
+  box-shadow: 0 10px 32px rgba(245,200,66,0.4);
+}
+.btn-white:hover { background: #DAF1DE; transform: translateY(-2px); box-shadow: 0 14px 36px rgba(245,200,66,0.5); }
+.btn-outline-w {
+  border: 2px solid rgba(255,255,255,0.55); color: #fff;
+  font-size: 17px; font-weight: 900; padding: 18px 38px; border-radius: 12px;
+  text-decoration: none; transition: all 0.18s;
+}
+.btn-outline-w:hover { border-color: #fff; background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+.cta-trust { font-size: 13px; color: rgba(255,255,255,0.55); margin: 22px 0 0; }
+.cta-trust strong { color: #DAF1DE; font-weight: 800; }
+
+/* ══ FOOTER ══ */
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-search {
+  display: flex; align-items: center;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.4);
+  border-radius: 10px; padding: 9px 14px; gap: 8px; margin-bottom: 20px;
+}
+.footer-search input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+.footer-search input::placeholder { color: rgba(255,255,255,0.4); }
+.footer-socials { display: flex; gap: 10px; }
+.fsoc {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.7); font-size: 14px; text-decoration: none; transition: all 0.15s;
+}
+.fsoc:hover { background: #F5C842; color: var(--dark1); }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+/* ══ Scroll animations ══ */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal.d1 { transition-delay: 0.1s; }
+.reveal.d2 { transition-delay: 0.2s; }
+.reveal.d3 { transition-delay: 0.3s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ══ AI CHAT ══ */
+.ai-chat { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; padding: 3px 0 1px; flex: 1; min-height: 0; }
+.ai-msg-row { display: flex; align-items: flex-end; gap: 4px; }
+.ai-row-right { flex-direction: row-reverse; }
+.ai-avatar { width: 25px; height: 25px; border-radius: 50%; background: var(--dark2); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.ai-bubble { max-width: 84%; padding: 7px 10px; border-radius: 13px; font-size: 12px; line-height: 1.34; font-weight: 600; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.ai-bubble-left { background: var(--light); color: var(--dark1); border-bottom-left-radius: 4px; }
+.ai-bubble-right { background: var(--dark2); color: #DAF1DE; border-bottom-right-radius: 4px; }
+.ai-typing { display: flex; align-items: center; gap: 3px; padding: 10px 12px; }
+.ai-typing span { width: 5px; height: 5px; background: var(--mid); border-radius: 50%; animation: typingdot 1.2s infinite; }
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingdot { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-4px);opacity:1} }
+.ai-input-bar { display: flex; align-items: center; gap: 6px; background: var(--light); border-radius: 20px; padding: 5px 5px 5px 11px; margin-top: 5px; flex-shrink: 0; }
+.ai-input-field { flex: 1; font-size: 13px; color: var(--mid); font-weight: 600; }
+.ai-send-btn { width: 26px; height: 26px; background: var(--dark2); color: #DAF1DE; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; cursor: pointer; }
+/* ══ TRUST BAR ══ */
+.trust-bar { margin-top: 0px;
+  background: #f5fbf6;
+  border-top: 1px solid rgba(142,182,155,0.25);
+  border-bottom: 1px solid rgba(142,182,155,0.25);
+  overflow: hidden;
+  padding: 32px 0;
+  position: relative;
+}
+.trust-bar::before,
+.trust-bar::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 140px; z-index: 2; pointer-events: none;
+}
+.trust-bar::before { left: 0; background: linear-gradient(to right, #f5fbf6 30%, transparent); }
+.trust-bar::after  { right: 0; background: linear-gradient(to left, #f5fbf6 30%, transparent); }
+
+.trust-track {
+  display: flex; align-items: center; gap: 48px;
+  width: max-content;
+  animation: trustscroll 32s linear infinite;
+}
+.trust-track:hover { animation-play-state: paused; }
+
+@keyframes trustscroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.trust-item { display: flex; align-items: center; gap: 10px; white-space: nowrap; flex-shrink: 0; }
+.trust-divider { width: 1px; height: 48px; background: rgba(142,182,155,0.35); flex-shrink: 0; }
+
+/* Forbes */
+/* Forbes bigger */ .trust-forbes {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 36px; font-weight: 700; font-style: italic;
+  color: var(--dark1); letter-spacing: -0.5px;
+}
+
+/* Real Simple award with laurel */
+.trust-laurel { position: relative; display: flex; align-items: center; justify-content: center; }
+.trust-award-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 1px;
+}
+.trust-award-top { font-size: 8px; font-weight: 900; color: var(--dark2); letter-spacing: 1.5px; text-transform: uppercase; }
+.trust-award-mid { font-size: 10px; font-weight: 700; color: var(--dark1); white-space: nowrap; }
+.trust-award-bot { font-size: 9px; font-weight: 600; color: var(--dark2); }
+
+/* New York Times */
+.trust-nyt {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 26px; font-weight: 700; color: var(--dark1);
+  letter-spacing: -0.3px;
+}
+
+/* Trustpilot */
+.trust-pilot { display: flex; flex-direction: column; gap: 3px; }
+.trust-pilot-top { display: flex; align-items: center; gap: 5px; }
+.trust-pilot-name { font-size: 15px; font-weight: 700; color: var(--dark1); }
+.trust-pilot-stars { display: flex; gap: 2px; }
+.trust-star-box {
+  width: 32px; height: 32px;
+  background: var(--dark2); color: #fff;
+  font-size: 17px; display: flex; align-items: center; justify-content: center;
+  border-radius: 3px;
+}
+.trust-star-box.half { background: var(--mid); }
+.trust-pilot-sub {
+  display: flex; gap: 12px;
+  font-size: 13px; font-weight: 700; color: var(--dark2);
+}
+
+/* WIRED */
+.trust-wired { font-family: "Impact", "Arial Narrow", "Haettenschweiler", sans-serif; display: flex; align-items: center; gap: 3px; }
+.wired-box { display: inline-flex; align-items: center; justify-content: center; background: var(--dark1); color: #DAF1DE; width: 38px; height: 40px; font-size: 24px; font-weight: 900; border-radius: 3px; font-family: "Impact", "Arial Narrow", sans-serif; letter-spacing: 0; } .wired-plain { display: inline-flex; align-items: center; justify-content: center; color: var(--dark1); width: 22px; height: 40px; font-size: 24px; font-weight: 900; font-family: "Georgia", "Times New Roman", serif; }
+
+
+/* ══ MAC MOCKUP ══ */
+.mac-mockup {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto;
+  isolation: isolate;
+  filter: drop-shadow(0 34px 64px rgba(22,56,50,0.20));
+}
+.mac-screen-wrap {
+  background:
+    linear-gradient(145deg, #4a4b49 0%, #2f302f 36%, #151716 100%);
+  border-radius: 24px 24px 0 0;
+  padding: 10px 10px 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.18),
+    inset 0 20px 30px rgba(255,255,255,0.06),
+    inset 0 -14px 24px rgba(0,0,0,0.24),
+    0 24px 70px rgba(22,56,50,0.18);
+}
+.mac-camera-bar {
+  display: flex; justify-content: center; align-items: center;
+  height: 22px; position: relative;
+}
+.mac-camera {
+  width: 7px; height: 7px; border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #8a8a8a, #343434 65%);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.22), 0 0 10px rgba(255,255,255,0.10);
+}
+.mac-screen {
+  background: #f4faf6;
+  border-radius: 13px 13px 0 0;
+  overflow: hidden;
+  max-width: 100%;
+  box-shadow:
+    inset 0 0 0 1px rgba(218,241,222,0.22),
+    inset 0 0 0 999px rgba(255,255,255,0.02);
+}
+/* Mac topbar */
+.mac-topbar {
+  background: linear-gradient(180deg, #133f36, #0f352e);
+  display: flex; align-items: center;
+  padding: 10px 18px; gap: 10px;
+  border-bottom: 1px solid rgba(218,241,222,0.10);
+}
+.mac-dot { width: 12px; height: 12px; border-radius: 50%; }
+.mac-url {
+  flex: 1;
+  background: rgba(255,255,255,0.13);
+  border-radius: 9px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.72);
+  font-family: "SFMono-Regular", "Consolas", monospace;
+  margin: 0 8px;
+  text-align: center;
+  letter-spacing: 0.2px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+}
+/* Mac sidebar */
+.mac-app {
+  display: grid; grid-template-columns: 182px 1fr;
+  min-height: 520px;
+  text-align: left;
+}
+.mac-sidebar {
+  background:
+    radial-gradient(circle at top left, rgba(142,182,155,0.24), transparent 30%),
+    linear-gradient(180deg, #123b33, #0d3029);
+  padding: 20px 0;
+  display: flex; flex-direction: column;
+  box-shadow: inset -1px 0 0 rgba(218,241,222,0.10);
+}
+.mac-sidebar-logo {
+  font-size: 22px; font-weight: 950; color: #DAF1DE;
+  padding: 0 20px 22px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 14px; letter-spacing: -0.6px;
+}
+.mac-nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 20px; font-size: 12px; color: rgba(255,255,255,0.62);
+  cursor: pointer; transition: all 0.15s;
+  border-left: 3px solid transparent;
+  font-weight: 750;
+}
+.mac-nav-item.active {
+  background: linear-gradient(90deg, rgba(218,241,222,0.16), rgba(218,241,222,0.04));
+  color: #DAF1DE;
+  border-left-color: #8EB69B;
+}
+.mac-nav-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: #fff; }
+.mac-nav-icon {
+  width: 18px; height: 18px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(218,241,222,0.10);
+  font-size: 11px;
+  color: #DAF1DE;
+}
+/* Mac content */
+.mac-content {
+  padding: 20px 22px 22px;
+  background:
+    radial-gradient(circle at top right, rgba(218,241,222,0.70), transparent 32%),
+    linear-gradient(180deg, #f8fcfa, #f1f8f3);
+  overflow: hidden;
+  text-align: left;
+}
+.mac-content-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.mac-page-title {
+  font-size: 22px; font-weight: 950; color: var(--dark1);
+  letter-spacing: -0.5px;
+}
+.mac-page-subtitle {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 750;
+  color: #70917c;
+}
+.mac-search {
+  min-width: 210px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(22,56,50,0.07);
+  color: #88a092;
+  font-size: 10px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  box-shadow: 0 7px 16px rgba(22,56,50,0.05);
+}
+/* Stat cards */
+.mac-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 13px; }
+.mac-stat {
+  background: rgba(255,255,255,0.94); border-radius: 14px; padding: 12px 13px;
+  border: 1px solid rgba(22,56,50,0.06);
+  box-shadow: 0 12px 25px rgba(22,56,50,0.055);
+}
+.mac-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.mac-stat-label { font-size: 8px; color: #759c83; font-weight: 850; text-transform: uppercase; letter-spacing: 0.75px; }
+.mac-stat-icon {
+  width: 24px; height: 24px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(16,185,129,0.10); color: #13956f;
+  font-size: 12px; font-weight: 900;
+}
+.mac-stat-icon.red { background: rgba(220,38,38,0.08); color: #c0392b; }
+.mac-stat-val { font-size: 18px; font-weight: 950; color: var(--dark1); letter-spacing: -0.5px; }
+.mac-stat-val.green { color: var(--dark2); }
+.mac-stat-val.red { color: #c0392b; }
+.mac-stat-change { font-size: 9px; color: #7fa98c; margin-top: 3px; font-weight: 800; }
+/* Charts row */
+.mac-charts { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; margin-bottom: 13px; }
+.mac-chart-card {
+  background: rgba(255,255,255,0.95); border-radius: 16px; padding: 14px 15px;
+  border: 1px solid rgba(22,56,50,0.06);
+  box-shadow: 0 12px 28px rgba(22,56,50,0.06);
+}
+.mac-chart-title {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 950; color: var(--dark1);
+  margin-bottom: 12px; letter-spacing: -0.1px;
+}
+.mac-chart-kicker {
+  font-size: 9px;
+  font-weight: 850;
+  color: #13a873;
+  background: rgba(16,185,129,0.10);
+  padding: 4px 7px;
+  border-radius: 999px;
+}
+.mac-chart-area { position: relative; height: 94px; }
+.mac-chart-svg { width: 100%; height: 100%; }
+/* Donut */
+.mac-donut-wrap { display: flex; align-items: center; gap: 14px; }
+.mac-donut {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: conic-gradient(#235347 0 61%, #8EB69B 61% 76%, #163832 76% 86%, #DAF1DE 86% 100%);
+  box-shadow: inset 0 0 0 1px rgba(22,56,50,0.05), 0 10px 20px rgba(22,56,50,0.08);
+}
+.mac-donut::before {
+  content: "";
+  position: absolute;
+  inset: 13px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(22,56,50,0.05);
+}
+.mac-donut-total {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark1);
+  font-size: 10px;
+  font-weight: 950;
+  z-index: 1;
+}
+.mac-donut-legend { flex: 1; }
+.mac-legend-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 7px;
+  font-size: 10px; color: var(--text2); margin-bottom: 6px; font-weight: 800;
+}
+.mac-legend-label { display: flex; align-items: center; gap: 7px; }
+.mac-legend-val { color: var(--dark1); font-weight: 950; }
+.mac-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mac-coach-strip {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(218,241,222,0.78), rgba(255,255,255,0.90));
+  border: 1px solid rgba(16,185,129,0.16);
+  margin-bottom: 11px;
+}
+.mac-coach-copy { color: var(--dark1); font-size: 11px; font-weight: 850; }
+.mac-coach-copy span { color: #13a873; }
+.mac-coach-pill {
+  color: #13a873;
+  background: rgba(16,185,129,0.12);
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+/* Recent transactions */
+.mac-tx-title {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 950; color: var(--dark1); margin-bottom: 8px;
+}
+.mac-tx-title span { font-size: 9px; color: #7fa98c; font-weight: 850; }
+.mac-tx-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 11px; border-radius: 12px; font-size: 12px;
+  background: rgba(255,255,255,0.92); margin-bottom: 6px;
+  border: 1px solid rgba(22,56,50,0.05);
+  box-shadow: 0 8px 18px rgba(22,56,50,0.045);
+}
+.mac-tx-row-left { display: flex; align-items: center; gap: 8px; }
+.mac-tx-icon {
+  width: 26px; height: 26px; border-radius: 9px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(218,241,222,0.72);
+  color: var(--dark2);
+  font-size: 12px;
+  font-weight: 900;
+}
+.mac-tx-name { color: var(--dark1); font-weight: 850; font-size: 12px; }
+.mac-tx-cat  { color: #7fa98c; font-size: 10px; font-weight: 750; }
+.mac-tx-amt  { font-weight: 900; font-size: 13px; }
+.mac-tx-amt.pos { color: var(--dark2); }
+.mac-tx-amt.neg { color: #c0392b; }
+/* Mac stand */
+.mac-stand {
+  position: relative;
+  height: 12px;
+  margin: 0 1.9%;
+  border-radius: 0 0 11px 11px;
+  background:
+    linear-gradient(90deg, transparent 0 39%, rgba(255,255,255,0.16) 39% 61%, transparent 61% 100%),
+    linear-gradient(180deg, #2d302e 0%, #101211 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.13),
+    inset 0 -1px 0 rgba(0,0,0,0.58),
+    0 8px 18px rgba(0,0,0,0.15);
+}
+.mac-base {
+  position: relative;
+  height: 30px;
+  margin: 0 -26px;
+  border-radius: 0 0 28px 28px / 0 0 13px 13px;
+  background:
+    linear-gradient(90deg, rgba(95,103,98,0.28), transparent 12%, transparent 88%, rgba(95,103,98,0.28)),
+    linear-gradient(180deg, #f2f4f2 0%, #cbd1cd 42%, #9ba49e 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    inset 0 -9px 17px rgba(0,0,0,0.20),
+    0 20px 34px rgba(22,56,50,0.20);
+}
+.mac-base::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 158px;
+  height: 9px;
+  transform: translateX(-50%);
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(180deg, rgba(136,145,139,0.42), rgba(232,235,232,0.44));
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,0.66),
+    inset 0 1px 0 rgba(59,66,62,0.20);
+}
+.mac-base::after {
+  content: "";
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 5px;
+  height: 1px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.46);
+}
+
+@media (max-width: 960px) {
+  nav { padding: 0 18px; }
+  .nav-menu { display: none; }
+  .hero {
+    margin-top: 64px;
+    min-height: calc(100vh - 64px);
+    padding: 32px 28px 56px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .hero-left { transform: none; }
+  .hero-phone { display: none; }
+  .stats-section, .why-section, .goals-section, .cta-section { padding: 70px 28px; }
+  .stats-inner, .why-section { max-width: 100%; flex-direction: column; gap: 40px; }
+  .stats-copy { flex: none; }
+  .why-right { overflow-x: auto; padding: 0 0 18px; }
+  .mac-mockup { min-width: 820px; }
+  .quote-section { padding: 80px 28px; }
+  .goals-page { grid-template-columns: 1fr; }
+  .cta-section { padding: 70px 24px 80px; }
+  .cta-features { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cta-feat { padding: 18px 16px; }
+  footer { padding: 60px 28px 32px; }
+  .footer-top { flex-direction: column; gap: 36px; }
+  .footer-cols { flex-wrap: wrap; gap: 28px; }
+}
+</style>
+</head>
+<body id="top">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="nav-login">Log In</a>
+    <a href="login.html?mode=register" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="money-rain" aria-hidden="true">
+    <span class="money-bill" style="--x:8%;--w:104px;--d:15s;--delay:-9s;--r:-18deg;--drift:58px;--spin:92deg;--o:.34">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill" style="--x:22%;--w:78px;--d:18s;--delay:-3s;--r:20deg;--drift:-34px;--spin:-110deg;--o:.22">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill" style="--x:37%;--w:122px;--d:20s;--delay:-13s;--r:-6deg;--drift:46px;--spin:140deg;--o:.28">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill" style="--x:56%;--w:90px;--d:16s;--delay:-6s;--r:31deg;--drift:-62px;--spin:-135deg;--o:.24">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill" style="--x:73%;--w:112px;--d:21s;--delay:-16s;--r:-27deg;--drift:32px;--spin:118deg;--o:.26">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill" style="--x:88%;--w:84px;--d:17s;--delay:-11s;--r:14deg;--drift:-48px;--spin:-98deg;--o:.2">
+      <svg viewBox="0 0 120 64" fill="none"><path class="bill-paper" d="M8 18C35 5 76 5 111 20L102 50C72 41 40 39 12 52L8 18Z" stroke-width="6" stroke-linejoin="round"/><circle class="bill-mark" cx="58" cy="33" r="13"/><path d="M52 36c3 5 12 3 12-2 0-6-11-3-11-9 0-5 8-6 12-2" stroke="#DAF1DE" stroke-width="4" stroke-linecap="round"/><path d="M59 20v26" stroke="#DAF1DE" stroke-width="3" stroke-linecap="round"/><circle class="bill-mark" cx="28" cy="22" r="5"/><circle class="bill-mark" cx="91" cy="42" r="5"/><path class="bill-line" d="M20 45C48 35 76 36 99 43" stroke-width="2"/></svg>
+    </span>
+    <span class="money-bill money-bill-soft" style="--x:3%;--w:70px;--d:14s;--delay:-4s;--r:24deg;--drift:38px;--spin:86deg;--o:.18;--skew:5deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:15%;--w:92px;--d:19s;--delay:-15s;--r:-34deg;--drift:-44px;--spin:-132deg;--o:.24;--skew:-7deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:30%;--w:64px;--d:13s;--delay:-8s;--r:11deg;--drift:54px;--spin:104deg;--o:.16;--skew:8deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:47%;--w:102px;--d:22s;--delay:-19s;--r:-16deg;--drift:-36px;--spin:-92deg;--o:.2;--skew:-5deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:64%;--w:76px;--d:15s;--delay:-2s;--r:38deg;--drift:42px;--spin:126deg;--o:.19;--skew:6deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:81%;--w:98px;--d:18s;--delay:-12s;--r:-22deg;--drift:-56px;--spin:-116deg;--o:.21;--skew:-8deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:94%;--w:68px;--d:16s;--delay:-7s;--r:18deg;--drift:-70px;--spin:98deg;--o:.17;--skew:4deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:42%;--w:82px;--d:17s;--delay:-1s;--r:-42deg;--drift:28px;--spin:-148deg;--o:.18;--skew:-6deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:6%;--w:86px;--d:12s;--delay:-1.5s;--r:-8deg;--drift:72px;--spin:122deg;--o:.2;--skew:7deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:12%;--w:58px;--d:20s;--delay:-17s;--r:44deg;--drift:-24px;--spin:-88deg;--o:.15;--skew:-5deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:19%;--w:118px;--d:24s;--delay:-20s;--r:-31deg;--drift:34px;--spin:156deg;--o:.22;--skew:4deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:27%;--w:74px;--d:14s;--delay:-10s;--r:9deg;--drift:-52px;--spin:-119deg;--o:.18;--skew:9deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:34%;--w:96px;--d:18s;--delay:-5s;--r:28deg;--drift:62px;--spin:101deg;--o:.19;--skew:-7deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:51%;--w:60px;--d:13s;--delay:-3.5s;--r:-48deg;--drift:-28px;--spin:-146deg;--o:.16;--skew:5deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:59%;--w:126px;--d:25s;--delay:-22s;--r:17deg;--drift:44px;--spin:132deg;--o:.21;--skew:-6deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:68%;--w:72px;--d:16s;--delay:-9s;--r:-13deg;--drift:-68px;--spin:-104deg;--o:.17;--skew:8deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:77%;--w:88px;--d:19s;--delay:-14s;--r:35deg;--drift:24px;--spin:95deg;--o:.18;--skew:-4deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:86%;--w:110px;--d:23s;--delay:-18s;--r:-38deg;--drift:-46px;--spin:-138deg;--o:.21;--skew:6deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:97%;--w:78px;--d:15s;--delay:-6s;--r:22deg;--drift:-92px;--spin:112deg;--o:.17;--skew:-8deg"></span>
+    <span class="money-bill money-bill-soft" style="--x:44%;--w:68px;--d:21s;--delay:-12s;--r:52deg;--drift:74px;--spin:168deg;--o:.15;--skew:7deg"></span>
+  </div>
+  <div class="hero-phone">
+    <div class="iphone-frame">
+      <div class="iphone-screen">
+        <div class="iphone-status">
+          <span class="iphone-status-time">9:41</span>
+          <div class="iphone-island"></div>
+          <div class="iphone-status-icons">
+            <svg width="13" height="11" viewBox="0 0 13 11" fill="white"><rect x="0" y="4" width="2" height="7" rx="0.5"/><rect x="3" y="2.5" width="2" height="8.5" rx="0.5"/><rect x="6" y="1" width="2" height="10" rx="0.5"/><rect x="9" y="0" width="2" height="11" rx="0.5"/></svg>
+            <svg width="14" height="11" viewBox="0 0 14 11" fill="white"><path d="M7 2.2C9.8 2.2 12.3 3.4 14 5.3L12.5 6.8C11.2 5.3 9.2 4.3 7 4.3S2.8 5.3 1.5 6.8L0 5.3C1.7 3.4 4.2 2.2 7 2.2Z"/><path d="M7 5.5C8.8 5.5 10.4 6.3 11.5 7.5L10 9C9.3 8.2 8.2 7.6 7 7.6S4.7 8.2 4 9L2.5 7.5C3.6 6.3 5.2 5.5 7 5.5Z"/><circle cx="7" cy="10.5" r="1"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="3" stroke="white" stroke-opacity="0.4"/><rect x="1.5" y="1.5" width="14" height="8" rx="2" fill="white"/><path d="M20 3.5C20.8 3.8 21.5 4.6 21.5 5.5C21.5 6.4 20.8 7.2 20 7.5V3.5Z" fill="white" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="iphone-content">
+          <div class="iphone-app-header">
+            <div class="iphone-app-header-title">FINTRACK</div>
+            <div class="iphone-app-header-name" style="display:flex;align-items:center;gap:6px">
+              <span style="width:7px;height:7px;background:#DAF1DE;border-radius:50%;display:inline-block;box-shadow:0 0 6px #DAF1DE"></span>
+              Money Coach
+            </div>
+          </div>
+          <div class="ai-chat">
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left">Hey! 👋 Want me to roast your spending? 🔥</div>
+            </div>
+            <div class="ai-msg-row ai-row-right">
+              <div class="ai-bubble ai-bubble-right">Yes please 😬</div>
+            </div>
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left">You spent <strong>$340</strong> on Uber Eats — <strong>3x</strong> your budget. Cook 2 meals = save <strong>$180/mo</strong> 🍳</div>
+            </div>
+            <div class="ai-msg-row ai-row-right">
+              <div class="ai-bubble ai-bubble-right">Should I sell AAPL?</div>
+            </div>
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left"><strong>$214.50</strong> ↗ +12% this month. Hold. Earnings in 6 days 📈</div>
+            </div>
+            <div class="ai-msg-row ai-row-right">
+              <div class="ai-bubble ai-bubble-right">€500 to USD?</div>
+            </div>
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left">€500 = <strong>$542.30</strong> at today's rate 💵</div>
+            </div>
+            <div class="ai-msg-row ai-row-right">
+              <div class="ai-bubble ai-bubble-right">Tokyo trip in 6 months?</div>
+            </div>
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left">Save <strong>$85/week</strong> and you can reach Tokyo <strong>2 months early</strong> ✈️</div>
+            </div>
+            <div class="ai-msg-row ai-row-right">
+              <div class="ai-bubble ai-bubble-right">Set my plan</div>
+            </div>
+            <div class="ai-msg-row ai-row-left">
+              <div class="ai-avatar">🤖</div>
+              <div class="ai-bubble ai-bubble-left ai-typing"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+          <div class="ai-input-bar">
+            <div class="ai-input-field">Ask anything...</div>
+            <div class="ai-send-btn">↑</div>
+          </div>
+        </div>
+        <div class="iphone-indicator"><div class="iphone-indicator-bar"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-left">
+    <h1>Broke before payday?<br><span style="color:#F5C842; font-weight:900; -webkit-text-stroke: 4px #163832; text-stroke: 4px #163832; paint-order: stroke fill;">FinTrack</span><br>got your back.</h1>
+    <p class="hero-italic">Track every dollar in CAD (or any currency). Snap receipts. Get smart insights. Cancel the spreadsheets. Free for 14 days, then <span class="hero-price-highlight">$4.99/mo.</span></p>
+    <a href="login.html?mode=register" class="btn-hero">Start Your Free Trial</a>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-track">
+
+    <!-- SET 1 -->
+    <div class="trust-item">
+      <span class="trust-forbes">Forbes</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item trust-award">
+      <div class="trust-laurel">
+        <svg viewBox="0 0 120 60" width="120" height="60" fill="none">
+          <!-- Left laurel branch -->
+          <path d="M10 30 Q15 20 20 25 Q15 30 10 30Z" fill="var(--dark2)" opacity="0.9"/>
+          <path d="M8 30 Q10 18 18 22 Q12 28 8 30Z" fill="var(--dark2)" opacity="0.8"/>
+          <path d="M9 32 Q8 20 17 26 Q11 32 9 32Z" fill="var(--dark2)" opacity="0.7"/>
+          <path d="M11 34 Q6 24 15 28 Q10 34 11 34Z" fill="var(--dark2)" opacity="0.6"/>
+          <path d="M14 36 Q7 28 14 32 Q10 37 14 36Z" fill="var(--dark2)" opacity="0.5"/>
+          <path d="M18 38 Q10 32 16 35 Q13 39 18 38Z" fill="var(--dark2)" opacity="0.4"/>
+          <!-- Right laurel branch -->
+          <path d="M110 30 Q105 20 100 25 Q105 30 110 30Z" fill="var(--dark2)" opacity="0.9"/>
+          <path d="M112 30 Q110 18 102 22 Q108 28 112 30Z" fill="var(--dark2)" opacity="0.8"/>
+          <path d="M111 32 Q112 20 103 26 Q109 32 111 32Z" fill="var(--dark2)" opacity="0.7"/>
+          <path d="M109 34 Q114 24 105 28 Q110 34 109 34Z" fill="var(--dark2)" opacity="0.6"/>
+          <path d="M106 36 Q113 28 106 32 Q110 37 106 36Z" fill="var(--dark2)" opacity="0.5"/>
+          <path d="M102 38 Q110 32 104 35 Q107 39 102 38Z" fill="var(--dark2)" opacity="0.4"/>
+        </svg>
+        <div class="trust-award-text">
+          <span class="trust-award-top">REAL SIMPLE</span>
+          <span class="trust-award-mid">Best Budgeting App</span>
+          <span class="trust-award-bot">2025</span>
+        </div>
+      </div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-nyt">The New York Times</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item trust-pilot">
+      <div class="trust-pilot-top">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--dark2)"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+        <span class="trust-pilot-name">Trustpilot</span>
+      </div>
+      <div class="trust-pilot-stars">
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box half">★</span>
+      </div>
+      <div class="trust-pilot-sub">
+        <span>TrustScore 4.6</span>
+        <span>500+ Reviews</span>
+      </div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-wired"><span class="wired-box">W</span><span class="wired-plain">I</span><span class="wired-box">R</span><span class="wired-plain">E</span><span class="wired-box">D</span></span>
+    </div>
+
+    <!-- SET 2 — seamless duplicate -->
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-forbes">Forbes</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item trust-award">
+      <div class="trust-laurel">
+        <svg viewBox="0 0 120 60" width="120" height="60" fill="none">
+          <path d="M10 30 Q15 20 20 25 Q15 30 10 30Z" fill="var(--dark2)" opacity="0.9"/>
+          <path d="M8 30 Q10 18 18 22 Q12 28 8 30Z" fill="var(--dark2)" opacity="0.8"/>
+          <path d="M9 32 Q8 20 17 26 Q11 32 9 32Z" fill="var(--dark2)" opacity="0.7"/>
+          <path d="M11 34 Q6 24 15 28 Q10 34 11 34Z" fill="var(--dark2)" opacity="0.6"/>
+          <path d="M14 36 Q7 28 14 32 Q10 37 14 36Z" fill="var(--dark2)" opacity="0.5"/>
+          <path d="M18 38 Q10 32 16 35 Q13 39 18 38Z" fill="var(--dark2)" opacity="0.4"/>
+          <path d="M110 30 Q105 20 100 25 Q105 30 110 30Z" fill="var(--dark2)" opacity="0.9"/>
+          <path d="M112 30 Q110 18 102 22 Q108 28 112 30Z" fill="var(--dark2)" opacity="0.8"/>
+          <path d="M111 32 Q112 20 103 26 Q109 32 111 32Z" fill="var(--dark2)" opacity="0.7"/>
+          <path d="M109 34 Q114 24 105 28 Q110 34 109 34Z" fill="var(--dark2)" opacity="0.6"/>
+          <path d="M106 36 Q113 28 106 32 Q110 37 106 36Z" fill="var(--dark2)" opacity="0.5"/>
+          <path d="M102 38 Q110 32 104 35 Q107 39 102 38Z" fill="var(--dark2)" opacity="0.4"/>
+        </svg>
+        <div class="trust-award-text">
+          <span class="trust-award-top">REAL SIMPLE</span>
+          <span class="trust-award-mid">Best Budgeting App</span>
+          <span class="trust-award-bot">2025</span>
+        </div>
+      </div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-nyt">The New York Times</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item trust-pilot">
+      <div class="trust-pilot-top">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--dark2)"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+        <span class="trust-pilot-name">Trustpilot</span>
+      </div>
+      <div class="trust-pilot-stars">
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box">★</span>
+        <span class="trust-star-box half">★</span>
+      </div>
+      <div class="trust-pilot-sub">
+        <span>TrustScore 4.6</span>
+        <span>500+ Reviews</span>
+      </div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-wired"><span class="wired-box">W</span><span class="wired-plain">I</span><span class="wired-box">R</span><span class="wired-plain">E</span><span class="wired-box">D</span></span>
+    </div>
+    <div class="trust-divider"></div>
+
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats-section" id="features">
+  <div class="stats-inner">
+    <div class="stats-copy reveal">
+      <h2>We're #1 for a reason...</h2>
+
+      <p>FinTrack does what no other app does. An AI that actually reads your spending and tells you what to fix. Live stock prices. Your money in any currency, any language — English, French, or Spanish. All of it for $4.99/month.</p>
+
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal d1"><div class="stat-num">92%</div><div class="stat-desc">say their finances are in a better place since starting FinTrack*</div></div>
+      <div class="stat-card reveal d2"><div class="stat-num">87%</div><div class="stat-desc">say FinTrack has changed the way they think about money*</div></div>
+      <div class="stat-card reveal d1"><div class="stat-num">74%</div><div class="stat-desc">of FinTrackers could live for 3 months or more on savings*</div></div>
+      <div class="stat-card reveal d2"><div class="stat-num">90%</div><div class="stat-desc">have recommended FinTrack to friends or family*</div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <p class="quote-text reveal">"I used to check my bank account with my eyes half closed and now I went from -$200 before payday to having a $1,500 emergency fund. FinTrack is actually insane."</p>
+  <p class="quote-attr reveal d1"><strong>Marcus L.</strong>, 20, <em>College Sophomore</em></p>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="preview">
+  <div class="why-heading reveal">
+    <h2>How it looks.</h2>
+    <p>A peek inside FinTrack — see your money, your goals, and your future at a glance.</p>
+  </div>
+  <div class="why-right reveal d2">
+    <div class="mac-mockup">
+      <!-- Screen -->
+      <div class="mac-screen-wrap">
+        <div class="mac-camera-bar"><div class="mac-camera"></div></div>
+        <div class="mac-screen">
+          <!-- Browser bar -->
+          <div class="mac-topbar">
+            <div class="mac-dot" style="background:#ff5f57"></div>
+            <div class="mac-dot" style="background:#febc2e"></div>
+            <div class="mac-dot" style="background:#28c840"></div>
+            <div class="mac-url">fintrack.app/dashboard</div>
+          </div>
+          <!-- App layout -->
+          <div class="mac-app">
+            <!-- Sidebar -->
+            <div class="mac-sidebar">
+              <div class="mac-sidebar-logo">FinTrack.</div>
+              <div class="mac-nav-item active"><span class="mac-nav-icon">▦</span> Dashboard</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">▭</span> Transactions</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">◎</span> Budgets</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">◌</span> Goals</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">↗</span> Investments</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">↻</span> Recurring</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">✦</span> AI Coach</div>
+              <div class="mac-nav-item"><span class="mac-nav-icon">⚙</span> Settings</div>
+            </div>
+            <!-- Dashboard content -->
+            <div class="mac-content">
+              <div class="mac-content-head">
+                <div>
+                  <div class="mac-page-title">Dashboard</div>
+                  <div class="mac-page-subtitle">Your money, forecast, and next move.</div>
+                </div>
+                <div class="mac-search">⌕ Search FinTrack...</div>
+              </div>
+              <!-- Stat cards -->
+              <div class="mac-stats">
+                <div class="mac-stat">
+                  <div class="mac-stat-top">
+                    <div class="mac-stat-label">Balance</div>
+                    <div class="mac-stat-icon">▮</div>
+                  </div>
+                  <div class="mac-stat-val">$48,574</div>
+                  <div class="mac-stat-change">↗ +12.5%</div>
+                </div>
+                <div class="mac-stat">
+                  <div class="mac-stat-top">
+                    <div class="mac-stat-label">Income</div>
+                    <div class="mac-stat-icon">↑</div>
+                  </div>
+                  <div class="mac-stat-val green">$8,420</div>
+                  <div class="mac-stat-change">↗ +8.2%</div>
+                </div>
+                <div class="mac-stat">
+                  <div class="mac-stat-top">
+                    <div class="mac-stat-label">Expenses</div>
+                    <div class="mac-stat-icon red">↓</div>
+                  </div>
+                  <div class="mac-stat-val red">$3,842</div>
+                  <div class="mac-stat-change">↘ -4.1%</div>
+                </div>
+                <div class="mac-stat">
+                  <div class="mac-stat-top">
+                    <div class="mac-stat-label">Savings</div>
+                    <div class="mac-stat-icon">✓</div>
+                  </div>
+                  <div class="mac-stat-val green">$12,350</div>
+                  <div class="mac-stat-change">↗ +15.3%</div>
+                </div>
+              </div>
+              <!-- Charts -->
+              <div class="mac-charts">
+                <div class="mac-chart-card">
+                  <div class="mac-chart-title">
+                    <span>Income vs Expenses</span>
+                    <span class="mac-chart-kicker">This month</span>
+                  </div>
+                  <div class="mac-chart-area">
+                    <svg class="mac-chart-svg" viewBox="0 0 200 60" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="macIncomeFill" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0%" stop-color="#10b981" stop-opacity="0.18"/>
+                          <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+                        </linearGradient>
+                      </defs>
+                      <!-- Grid lines -->
+                      <line x1="0" y1="14" x2="200" y2="14" stroke="#e8f5f2" stroke-width="0.6"/>
+                      <line x1="0" y1="30" x2="200" y2="30" stroke="#e8f5f2" stroke-width="0.6"/>
+                      <line x1="0" y1="46" x2="200" y2="46" stroke="#e8f5f2" stroke-width="0.6"/>
+                      <!-- Income fill -->
+                      <path d="M0,46 C28,40 40,36 60,34 C82,31 89,39 108,34 C130,27 140,20 160,18 C177,16 188,13 200,10 L200,60 L0,60 Z"
+                        fill="url(#macIncomeFill)"/>
+                      <!-- Income line -->
+                      <path d="M0,46 C28,40 40,36 60,34 C82,31 89,39 108,34 C130,27 140,20 160,18 C177,16 188,13 200,10"
+                        fill="none" stroke="#16b981" stroke-width="2.4" stroke-linecap="round"/>
+                      <!-- Expense line -->
+                      <path d="M0,52 C30,50 48,48 66,47 C88,46 98,50 118,47 C139,44 154,43 174,41 C185,40 194,39 200,38"
+                        fill="none" stroke="#8EB69B" stroke-width="2.1" stroke-linecap="round"/>
+                      <circle cx="160" cy="18" r="2.2" fill="#16b981"/>
+                      <circle cx="118" cy="47" r="2" fill="#8EB69B"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mac-chart-card">
+                  <div class="mac-chart-title">
+                    <span>Spending Allocation</span>
+                    <span class="mac-chart-kicker">Smart view</span>
+                  </div>
+                  <div class="mac-donut-wrap">
+                    <div class="mac-donut">
+                      <div class="mac-donut-total">$2.9k</div>
+                    </div>
+                    <div class="mac-donut-legend">
+                      <div class="mac-legend-item"><div class="mac-legend-label"><div class="mac-legend-dot" style="background:#235347"></div>Housing</div><div class="mac-legend-val">$1,800</div></div>
+                      <div class="mac-legend-item"><div class="mac-legend-label"><div class="mac-legend-dot" style="background:#8EB69B"></div>Food</div><div class="mac-legend-val">$420</div></div>
+                      <div class="mac-legend-item"><div class="mac-legend-label"><div class="mac-legend-dot" style="background:#163832"></div>Transport</div><div class="mac-legend-val">$280</div></div>
+                      <div class="mac-legend-item"><div class="mac-legend-label"><div class="mac-legend-dot" style="background:#DAF1DE"></div>Other</div><div class="mac-legend-val">$442</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mac-coach-strip">
+                <div class="mac-coach-copy"><span>Money Coach:</span> Dining is trending high. Move $180 to savings this week.</div>
+                <div class="mac-coach-pill">Action ready</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Stand -->
+      <div class="mac-stand"></div>
+      <div class="mac-base"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GOALS -->
+<section class="goals-section" id="goals">
+  <h2 class="reveal">What will you accomplish<br>with FinTrack?</h2>
+  <p class="goals-italic reveal d1">I want to...</p>
+  <div class="goals-carousel">
+    <div class="goals-page active">
+      <div class="goal-card reveal">
+        <div class="goal-icon-wrap"><svg viewBox="0 0 28 28" width="30" height="30" fill="none" stroke="#235347" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11l12-5 12 5-12 5L2 11z"/><path d="M7 13v6c0 1.8 3.5 3 7 3s7-1.2 7-3v-6"/><path d="M25 11v6"/><path d="M25 17l-1 4h2l-1-4z"/></svg></div>
+        <div class="goal-title">Pay down student loans</div>
+      </div>
+      <div class="goal-card reveal d1">
+        <div class="goal-icon-wrap"><svg viewBox="0 0 28 28" width="30" height="30" fill="none" stroke="#235347" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l9 3v6c0 6-4 10-9 12-5-2-9-6-9-12V7l9-3z"/><path d="M10 14l3 3 5-6"/></svg></div>
+        <div class="goal-title">Build emergency fund</div>
+      </div>
+      <div class="goal-card reveal d2">
+        <div class="goal-icon-wrap"><svg viewBox="0 0 28 28" width="30" height="30" fill="none" stroke="#235347" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l6-7 5 4 8-10"/><path d="M17 7h6v6"/><path d="M5 24h18"/></svg></div>
+        <div class="goal-title">Plan for TFSA/RRSP</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="cta-eyebrow reveal">✦ Ready when you are</span>
+    <h2 class="reveal d1">Get FinTrack. <span>Get Good</span> at Money.</h2>
+    <p class="cta-lede reveal d2">Your money, but make it make sense. FinTrack's AI coach reads your spending like your smartest friend — keeps it real, never preachy. Auto-categorizes every swipe, builds budgets that actually fit your life, and turns saving into something you'll wanna brag about.</p>
+
+    <div class="cta-features reveal d2">
+      <div class="cta-feat">
+        <div class="cta-feat-icon"><svg viewBox="0 0 28 28" width="22" height="22" fill="none" stroke="#F5C842" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h20"/><path d="M7 6v16"/><path d="M21 6v16"/><path d="M4 22h20"/><path d="M10 12h3"/><path d="M15 12h3"/><path d="M10 16h8"/></svg></div>
+        <div class="cta-feat-title">Built bilingual.</div>
+        <div class="cta-feat-sub">Quebec-first French support, English-first elsewhere.</div>
+      </div>
+      <div class="cta-feat">
+        <div class="cta-feat-icon"><svg viewBox="0 0 28 28" width="22" height="22" fill="none" stroke="#F5C842" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h2l1.5-2h5L18 8h2a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/><circle cx="14" cy="15" r="4"/><path d="M20 11h.01"/></svg></div>
+        <div class="cta-feat-title">Snap a receipt, done.</div>
+        <div class="cta-feat-sub">Phone camera → AI categorizes → tracked. No typing.</div>
+      </div>
+      <div class="cta-feat">
+        <div class="cta-feat-icon"><svg viewBox="0 0 28 28" width="22" height="22" fill="none" stroke="#F5C842" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l2.5 6.5L23 12l-6.5 2.5L14 21l-2.5-6.5L5 12l6.5-2.5L14 3z"/><path d="M8 23h12"/><path d="M11 25h6"/></svg></div>
+        <div class="cta-feat-title">Insights that actually help.</div>
+        <div class="cta-feat-sub">Not charts. Your AI coach tells you exactly what to fix.</div>
+      </div>
+    </div>
+
+    <div class="cta-btns reveal d2">
+      <a href="login.html?mode=register" class="btn-white">Start Free Trial</a>
+      <a href="features.html" class="btn-outline-w">See Features</a>
+    </div>
+    <p class="cta-trust reveal d2">Free for 14 days · Cancel anytime · Just <strong>$4.99/mo</strong> after</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <div class="footer-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="fsoc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" class="fsoc" aria-label="TikTok">
+          <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="about.html" data-about-link>About</a></div>
+      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4>App</h4><a href="#">What's New</a><a href="#">Cancellation</a><a href="#">Contact Support</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const goalPages = document.querySelectorAll('.goals-page');
+  const goalDots = document.querySelectorAll('.goals-dot');
+  let currentGoal = 0;
+  function goToGoal(i) {
+    const next = (i + goalPages.length) % goalPages.length;
+    goalPages[currentGoal].classList.remove('active');
+    goalDots[currentGoal].classList.remove('active');
+    goalPages[next].classList.add('active');
+    goalDots[next].classList.add('active');
+    currentGoal = next;
+  }
+  document.querySelectorAll('.goals-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => goToGoal(currentGoal + Number(btn.dataset.dir)));
+  });
+  goalDots.forEach((dot, i) => dot.addEventListener('click', () => goToGoal(i)));
+
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+  document.querySelectorAll('[data-about-link]').forEach(a => a.addEventListener('click', () => { window.location.href = 'about.html'; }));
+  document.querySelectorAll('[data-accessibility-link]').forEach(a => a.addEventListener('click', () => { window.location.href = '/accessibility.html'; }));
+</script>
+</body>
+</html>

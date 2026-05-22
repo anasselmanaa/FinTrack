@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ultimate Get Started Guide – FinTrack</title>
+<meta name="description" content="A practical guide to setting up FinTrack, importing transactions, creating budgets, tracking goals, and using Money Coach.">
+<meta name="theme-color" content="#163832">
+<link rel="canonical" href="https://fintrack.app/guide.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta property="og:site_name" content="FinTrack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FinTrack Get Started Guide">
+<meta property="og:description" content="Set up FinTrack, import transactions, create budgets, track goals, and use Money Coach.">
+<meta property="og:url" content="https://fintrack.app/guide.html">
+<meta property="og:image" content="https://fintrack.app/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinTrack Get Started Guide">
+<meta name="twitter:description" content="Set up FinTrack, import transactions, create budgets, track goals, and use Money Coach.">
+<meta name="twitter:image" content="https://fintrack.app/assets/og-image.png">
+<meta name="twitter:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1:  #163832;
+  --dark2:  #235347;
+  --mid:    #8EB69B;
+  --light:  #DAF1DE;
+  --white:  #ffffff;
+  --text:   #163832;
+  --text2:  #3d6b5f;
+  --f: 'Lato', sans-serif;
+  --fh: 'Caveat', cursive;
+  --fm: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+/* ══ NAV ══ */
+.nav { position: fixed; top:0; left:0; right:0; z-index:200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; gap: 0; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.nav-menu a.is-current { color: #fff; background: rgba(218,241,222,0.14); }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: #F5C842; color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+/* ══ HERO ══ */
+.g-hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(700px 420px at 14% 14%, rgba(245,200,66,0.14), transparent 70%),
+    radial-gradient(900px 520px at 92% 86%, rgba(142,182,155,0.20), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 50%, var(--dark2) 100%);
+  padding: 96px 80px 86px;
+  position: relative;
+  overflow: hidden;
+}
+.g-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 22px);
+  mix-blend-mode: overlay; pointer-events: none;
+}
+.g-hero-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; }
+.g-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
+  color: #F5C842; background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30);
+  padding: 8px 16px; border-radius: 999px; margin-bottom: 24px;
+}
+.g-hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #F5C842; }
+.g-hero h1 {
+  font-size: clamp(42px, 6vw, 82px); font-weight: 900;
+  line-height: 1.02; letter-spacing: -1.8px; color: #fff;
+  margin-bottom: 22px; max-width: 22ch;
+}
+.g-hero h1 em { font-style: italic; background: linear-gradient(135deg, #DAF1DE 0%, #F5C842 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.g-hero p { font-size: clamp(15px, 1.4vw, 18px); color: rgba(255,255,255,0.78); line-height: 1.65; max-width: 64ch; margin-bottom: 32px; }
+.g-hero p b { color: #fff; font-weight: 700; }
+
+.g-toc {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+  max-width: 980px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(218,241,222,0.16);
+  border-radius: 14px; padding: 8px;
+}
+.g-toc a {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  padding: 12px 14px; border-radius: 10px;
+  text-decoration: none;
+  background: rgba(255,255,255,0.04);
+  transition: all 0.15s;
+}
+.g-toc a:hover { background: rgba(245,200,66,0.10); transform: translateY(-2px); }
+.g-toc-num { font-family: var(--fh); font-size: 22px; font-weight: 700; color: #F5C842; line-height: 0.9; }
+.g-toc-label { font-size: 12.5px; font-weight: 800; color: #DAF1DE; line-height: 1.3; letter-spacing: -0.1px; }
+
+/* ══ TL;DR ══ */
+.g-tldr { background: #fff; padding: 88px 80px 40px; }
+.g-tldr-inner { max-width: 980px; margin: 0 auto; }
+.g-eyebrow {
+  display: inline-block;
+  font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dark2); margin-bottom: 12px;
+}
+.g-tldr h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 900; line-height: 1.08; color: var(--dark1); letter-spacing: -0.8px; margin-bottom: 14px; }
+.g-tldr h2 em { font-style: italic; color: var(--dark2); }
+.g-tldr p { font-size: 16px; line-height: 1.65; color: var(--text2); margin-bottom: 20px; max-width: 70ch; }
+.g-tldr p b { color: var(--dark1); font-weight: 800; }
+
+.g-tldr-card {
+  background: linear-gradient(135deg, #fffbef 0%, #fff 60%);
+  border: 1px solid rgba(245,200,66,0.45);
+  border-left: 4px solid #F5C842;
+  border-radius: 14px;
+  padding: 22px 26px;
+}
+.g-tldr-card-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.g-tldr-card-head h3 { font-size: 17px; font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; }
+.g-tldr-card-head .scribble { font-family: var(--fh); font-size: 24px; color: #c0392b; font-weight: 700; letter-spacing: 0.5px; line-height: 1; transform: rotate(-3deg); }
+.g-tldr-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+.g-tldr-list li {
+  list-style: none;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--text);
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 4px 0;
+}
+.g-tldr-list li::before {
+  content: '';
+  width: 18px; height: 18px;
+  border: 2px solid var(--dark2);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.g-tldr-list li b { font-weight: 800; color: var(--dark1); }
+
+/* ══ DAY 1 SETUP ══ */
+.g-day1 { background: #f6faf7; padding: 100px 80px; border-top: 1px solid rgba(142,182,155,0.22); border-bottom: 1px solid rgba(142,182,155,0.22); }
+.g-day1-inner { max-width: 1080px; margin: 0 auto; }
+.g-day1-head { margin-bottom: 48px; text-align: center; }
+.g-day1-head h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.06; color: var(--dark1); letter-spacing: -1px; margin-bottom: 12px; }
+.g-day1-head h2 em { font-style: italic; color: var(--dark2); }
+.g-day1-head p { font-size: 16px; line-height: 1.65; color: var(--text2); max-width: 660px; margin: 0 auto; }
+.g-day1-head .time {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.8px;
+  color: var(--dark2); background: var(--light);
+  padding: 6px 14px; border-radius: 999px;
+  margin-top: 14px;
+}
+.g-day1-head .time::before { content: '⏱'; }
+
+.g-steps { display: flex; flex-direction: column; gap: 22px; }
+.g-step {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(142,182,155,0.28);
+  box-shadow: 0 8px 24px rgba(22,56,50,0.05);
+  display: grid;
+  grid-template-columns: 90px 1fr 360px;
+  gap: 24px;
+  overflow: hidden;
+}
+.g-step-num {
+  background: linear-gradient(180deg, var(--dark2), var(--dark1));
+  display: grid; place-items: center;
+  color: #DAF1DE;
+  font-family: var(--fh); font-size: 64px; font-weight: 700;
+  letter-spacing: -1px;
+  position: relative;
+}
+.g-step.critical .g-step-num {
+  background: linear-gradient(180deg, #F5C842, #e6b22d);
+  color: var(--dark1);
+}
+.g-step-num::after {
+  content: ''; position: absolute; right: 0; top: 14px; bottom: 14px;
+  width: 1px; background: rgba(218,241,222,0.18);
+}
+.g-step-body { padding: 24px 4px 24px 0; }
+.g-step-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 900; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+.g-step.critical .g-step-tag { color: #c08210; }
+.g-step.critical .g-step-tag::before { content: '★'; color: #F5C842; font-size: 14px; }
+.g-step h3 { font-size: 19px; font-weight: 900; color: var(--dark1); letter-spacing: -0.3px; margin-bottom: 8px; }
+.g-step p { font-size: 14.5px; line-height: 1.6; color: var(--text2); margin-bottom: 10px; }
+.g-step p b { color: var(--dark1); font-weight: 800; }
+.g-step .path {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--fm); font-size: 12px;
+  background: #f5fbf6;
+  border: 1px solid rgba(142,182,155,0.3);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--dark1);
+  font-weight: 700;
+  margin-top: 4px;
+}
+.g-step .path::before { content: '▸'; color: var(--mid); }
+.g-step .why {
+  margin-top: 12px;
+  background: linear-gradient(90deg, rgba(218,241,222,0.45), transparent);
+  border-left: 3px solid var(--mid);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13.5px; line-height: 1.55; color: var(--dark1);
+}
+.g-step .why b { font-weight: 800; }
+.g-step.critical .why { border-left-color: #F5C842; background: linear-gradient(90deg, rgba(245,200,66,0.18), transparent); }
+
+.g-step-mock {
+  background: #f4faf6;
+  border-left: 1px solid rgba(142,182,155,0.24);
+  padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.g-mock-title { font-size: 10px; font-weight: 900; letter-spacing: 1.4px; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; }
+
+/* Mock 1: signup form */
+.gm-form-row { background: #fff; border: 1px solid rgba(142,182,155,0.30); border-radius: 8px; padding: 8px 11px; font-size: 12px; color: var(--text2); }
+.gm-form-row.filled { color: var(--dark1); font-weight: 600; }
+.gm-form-btn { background: var(--dark2); color: #DAF1DE; padding: 9px 0; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 0.3px; margin-top: 4px; }
+
+/* Mock 2: currency picker */
+.gm-currency-list { background: #fff; border: 1px solid rgba(142,182,155,0.30); border-radius: 10px; padding: 6px; }
+.gm-currency-list div { padding: 8px 11px; border-radius: 6px; font-size: 12.5px; display: flex; justify-content: space-between; color: var(--text2); }
+.gm-currency-list div.sel { background: var(--light); color: var(--dark1); font-weight: 800; }
+.gm-currency-list div .code { font-family: var(--fm); font-size: 10.5px; opacity: 0.7; }
+
+/* Mock 3: CSV upload */
+.gm-upload {
+  background: #fff; border: 2px dashed var(--mid); border-radius: 12px;
+  padding: 20px; text-align: center;
+}
+.gm-upload-ico { font-size: 24px; }
+.gm-upload-title { font-size: 13px; font-weight: 800; color: var(--dark1); margin-top: 6px; }
+.gm-upload-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.gm-upload-rows { margin-top: 10px; background: #f5fbf6; border-radius: 6px; padding: 7px 10px; font-family: var(--fm); font-size: 10.5px; color: var(--dark1); text-align: left; line-height: 1.5; }
+
+/* Mock 4: recurring */
+.gm-rec { background: #fff; border: 1px solid rgba(142,182,155,0.30); border-radius: 10px; padding: 10px 12px; }
+.gm-rec-row { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(142,182,155,0.18); }
+.gm-rec-row:last-child { border-bottom: 0; }
+.gm-rec-ico { width: 30px; height: 30px; border-radius: 8px; background: var(--light); display: grid; place-items: center; font-size: 14px; }
+.gm-rec-name { font-size: 12.5px; font-weight: 800; color: var(--dark1); }
+.gm-rec-freq { font-size: 10.5px; color: var(--text2); }
+.gm-rec-amt { font-size: 12.5px; font-weight: 800; color: var(--dark2); }
+
+/* Mock 5: budget */
+.gm-bud-chip {
+  background: #fff; border: 1px solid rgba(142,182,155,0.3);
+  border-radius: 8px; padding: 8px 10px;
+  display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center;
+  font-size: 12px; color: var(--dark1);
+}
+.gm-bud-chip .ico { width: 22px; height: 22px; border-radius: 6px; background: var(--light); display: grid; place-items: center; font-size: 11px; }
+.gm-bud-chip b { font-weight: 800; color: var(--dark2); }
+
+/* Mock 6: dashboard preview */
+.gm-dash {
+  background: #fff; border: 1px solid rgba(142,182,155,0.3);
+  border-radius: 10px; padding: 12px;
+}
+.gm-dash-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(142,182,155,0.16); font-size: 12px; }
+.gm-dash-row:last-child { border-bottom: 0; }
+.gm-dash-k { color: var(--text2); }
+.gm-dash-v { color: var(--dark1); font-weight: 800; }
+
+/* ══ WEEK 1 DAILY ROUTINE ══ */
+.g-routine { background: #fff; padding: 110px 80px; }
+.g-routine-inner { max-width: 1080px; margin: 0 auto; }
+.g-routine-head { text-align: center; margin-bottom: 48px; }
+.g-routine-head h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.06; color: var(--dark1); letter-spacing: -1px; margin-bottom: 12px; }
+.g-routine-head h2 em { font-style: italic; color: var(--dark2); }
+.g-routine-head p { font-size: 16px; line-height: 1.65; color: var(--text2); max-width: 660px; margin: 0 auto; }
+
+.g-routine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.g-habit {
+  background: #fff; border-radius: 16px; padding: 22px 20px;
+  border: 1px solid rgba(142,182,155,0.28);
+  display: flex; flex-direction: column; gap: 8px;
+  transition: all 0.18s;
+}
+.g-habit:hover { transform: translateY(-4px); border-color: var(--mid); box-shadow: 0 14px 30px rgba(22,56,50,0.08); }
+.g-habit-when {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--fm);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--dark2); background: var(--light);
+  padding: 4px 8px; border-radius: 6px;
+  width: max-content;
+}
+.g-habit-ico { font-size: 24px; margin-top: 4px; }
+.g-habit h3 { font-size: 15px; font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; line-height: 1.3; }
+.g-habit p { font-size: 13.5px; line-height: 1.55; color: var(--text2); }
+.g-habit p b { color: var(--dark1); font-weight: 800; }
+.g-habit-time { margin-top: auto; padding-top: 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--mid); }
+
+/* ══ APP TOUR ══ */
+.g-tour { background: #f6faf7; padding: 110px 80px; border-top: 1px solid rgba(142,182,155,0.22); }
+.g-tour-inner { max-width: 1180px; margin: 0 auto; }
+.g-tour-head { margin-bottom: 48px; max-width: 660px; }
+.g-tour-head h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.06; color: var(--dark1); letter-spacing: -1px; margin-bottom: 12px; }
+.g-tour-head h2 em { font-style: italic; color: var(--dark2); }
+.g-tour-head p { font-size: 16px; line-height: 1.65; color: var(--text2); }
+
+.g-tour-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.g-tour-card {
+  background: #fff; border-radius: 16px; padding: 24px 22px;
+  border: 1px solid rgba(142,182,155,0.28);
+  position: relative;
+  transition: all 0.18s;
+}
+.g-tour-card:hover { transform: translateY(-3px); border-color: var(--mid); box-shadow: 0 14px 30px rgba(22,56,50,0.08); }
+.g-tour-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.g-tour-ico {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--light);
+  display: grid; place-items: center;
+  font-size: 18px;
+}
+.g-tour-name { font-size: 16px; font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; line-height: 1.2; }
+.g-tour-name small { display: block; font-family: var(--fm); font-size: 10.5px; font-weight: 700; color: var(--mid); margin-top: 3px; letter-spacing: 0.3px; }
+.g-tour-card p { font-size: 14px; line-height: 1.6; color: var(--text2); }
+.g-tour-card p b { color: var(--dark1); font-weight: 800; }
+.g-tour-when { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(142,182,155,0.3); font-size: 12.5px; color: var(--dark2); font-style: italic; }
+.g-tour-when b { font-style: normal; font-weight: 800; }
+
+/* ══ POWER MOVES ══ */
+.g-power { background: #fff; padding: 110px 80px; }
+.g-power-inner { max-width: 1080px; margin: 0 auto; }
+.g-power-head { text-align: center; margin-bottom: 48px; }
+.g-power-head h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.06; color: var(--dark1); letter-spacing: -1px; margin-bottom: 12px; }
+.g-power-head h2 em { font-style: italic; color: var(--dark2); }
+.g-power-head p { font-size: 16px; line-height: 1.65; color: var(--text2); max-width: 640px; margin: 0 auto; }
+
+.g-power-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.g-power-card {
+  background: linear-gradient(135deg, #fff, #f6faf7);
+  border-radius: 14px; padding: 22px 24px;
+  border: 1px solid rgba(142,182,155,0.28);
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: all 0.18s;
+}
+.g-power-card:hover { transform: translateY(-2px); border-color: var(--mid); box-shadow: 0 10px 26px rgba(22,56,50,0.06); }
+.g-power-num {
+  font-family: var(--fh); font-size: 38px; font-weight: 700;
+  color: #F5C842;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  width: 38px;
+}
+.g-power-text h4 { font-size: 16.5px; font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; margin-bottom: 6px; }
+.g-power-text p { font-size: 14px; line-height: 1.6; color: var(--text2); }
+.g-power-text p b { color: var(--dark1); font-weight: 800; }
+
+/* ══ MISTAKES ══ */
+.g-mistakes {
+  background: linear-gradient(135deg, var(--dark1) 0%, #1d4a40 50%, var(--dark2) 100%);
+  padding: 110px 80px;
+  position: relative; overflow: hidden;
+}
+.g-mistakes::before {
+  content: ''; position: absolute;
+  top: -160px; left: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(192,57,43,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+.g-mistakes-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; }
+.g-mistakes-head { text-align: center; max-width: 720px; margin: 0 auto 56px; }
+.g-mistakes-head .g-eyebrow { color: #F5C842; }
+.g-mistakes-head h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.05; color: #fff; letter-spacing: -1px; margin-bottom: 14px; }
+.g-mistakes-head h2 em { font-style: italic; background: linear-gradient(135deg, #DAF1DE 0%, #F5C842 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.g-mistakes-head p { font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.65; }
+
+.g-mistakes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.g-mistake {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(218,241,222,0.16);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.18s;
+}
+.g-mistake:hover { border-color: rgba(245,200,66,0.4); background: rgba(255,255,255,0.07); transform: translateY(-3px); }
+.g-mistake-bad {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 900; letter-spacing: 1.4px; text-transform: uppercase;
+  color: #f0a89b;
+  background: rgba(192,57,43,0.18);
+  border: 1px solid rgba(192,57,43,0.35);
+  padding: 4px 10px; border-radius: 999px;
+  margin-bottom: 12px;
+}
+.g-mistake-bad::before { content: '×'; font-weight: 900; font-size: 14px; }
+.g-mistake h3 { font-size: 16.5px; font-weight: 900; color: #fff; letter-spacing: -0.2px; line-height: 1.3; margin-bottom: 8px; }
+.g-mistake p { font-size: 13.5px; line-height: 1.6; color: rgba(255,255,255,0.72); }
+.g-mistake p b { color: #DAF1DE; font-weight: 800; }
+.g-mistake-fix {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(218,241,222,0.12);
+  font-size: 13px; color: #DAF1DE;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.g-mistake-fix::before {
+  content: '→';
+  font-weight: 900; color: #F5C842;
+  flex-shrink: 0;
+}
+.g-mistake-fix b { color: #fff; font-weight: 800; }
+
+/* ══ 30-DAY MILESTONE ══ */
+.g-30 { background: #fff; padding: 110px 80px; }
+.g-30-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
+.g-30-copy h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.06; color: var(--dark1); letter-spacing: -1px; margin-bottom: 18px; }
+.g-30-copy h2 em { font-style: italic; color: var(--dark2); }
+.g-30-copy p { font-size: 16px; line-height: 1.7; color: var(--text2); margin-bottom: 14px; }
+.g-30-copy p b { color: var(--dark1); font-weight: 800; }
+.g-30-list { display: flex; flex-direction: column; gap: 12px; }
+.g-30-row {
+  display: grid; grid-template-columns: 30px 1fr;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #f6faf7;
+  border-radius: 10px;
+  border-left: 3px solid var(--dark2);
+}
+.g-30-row .check {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--dark2); color: #DAF1DE;
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 14px;
+  flex-shrink: 0;
+}
+.g-30-row strong { display: block; font-size: 14.5px; color: var(--dark1); font-weight: 800; margin-bottom: 2px; letter-spacing: -0.2px; }
+.g-30-row span { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+/* ══ HELP ══ */
+.g-help { background: #DAF1DE; padding: 90px 80px; }
+.g-help-inner { max-width: 980px; margin: 0 auto; text-align: center; }
+.g-help-inner h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 900; line-height: 1.08; color: var(--dark1); letter-spacing: -0.8px; margin-bottom: 14px; }
+.g-help-inner h2 em { font-style: italic; color: var(--dark2); }
+.g-help-inner > p { font-size: 16px; line-height: 1.65; color: var(--text2); max-width: 620px; margin: 0 auto 28px; }
+.g-help-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.g-help-card {
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(35,83,71,0.16);
+  border-radius: 12px;
+  padding: 20px 18px;
+  text-align: left;
+}
+.g-help-card h4 { font-size: 14.5px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; }
+.g-help-card p { font-size: 13.5px; line-height: 1.55; color: var(--text2); }
+.g-help-card p b { color: var(--dark1); font-weight: 800; }
+
+/* ══ CTA ══ */
+.cta-section { background: linear-gradient(135deg, var(--dark1) 0%, #1d4a40 40%, var(--dark2) 100%); padding: 110px 80px 100px; position: relative; overflow: hidden; text-align: center; }
+.cta-section::before { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 720px; height: 420px; background: radial-gradient(ellipse at center, rgba(245,200,66,0.14) 0%, transparent 65%); pointer-events: none; }
+.cta-inner { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+.cta-eyebrow { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #F5C842; background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.25); padding: 8px 16px; border-radius: 999px; margin-bottom: 22px; }
+.cta-section h2 { font-size: clamp(42px, 6vw, 76px); font-weight: 900; line-height: 1.04; color: #fff; margin: 0 0 22px; letter-spacing: -1.5px; }
+.cta-section h2 span { background: linear-gradient(135deg, #DAF1DE 0%, #F5C842 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cta-lede { font-size: 17px; color: rgba(255,255,255,0.78); line-height: 1.7; max-width: 680px; margin: 0 auto 50px; }
+.cta-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn-white { background: #F5C842; color: var(--dark1); font-size: 17px; font-weight: 900; padding: 18px 38px; border-radius: 12px; text-decoration: none; transition: all 0.18s; box-shadow: 0 10px 32px rgba(245,200,66,0.4); }
+.btn-white:hover { background: #DAF1DE; transform: translateY(-2px); box-shadow: 0 14px 36px rgba(245,200,66,0.5); }
+.btn-outline-w { border: 2px solid rgba(255,255,255,0.55); color: #fff; font-size: 17px; font-weight: 900; padding: 18px 38px; border-radius: 12px; text-decoration: none; transition: all 0.18s; }
+.btn-outline-w:hover { border-color: #fff; background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.cta-trust { font-size: 13px; color: rgba(255,255,255,0.55); margin: 22px 0 0; }
+.cta-trust strong { color: #DAF1DE; font-weight: 800; }
+
+/* ══ FOOTER ══ */
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-search { display: flex; align-items: center; background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.4); border-radius: 10px; padding: 9px 14px; gap: 8px; margin-bottom: 20px; }
+.footer-search input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+.footer-search input::placeholder { color: rgba(255,255,255,0.4); }
+.footer-socials { display: flex; gap: 10px; }
+.fsoc { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 14px; text-decoration: none; transition: all 0.15s; }
+.fsoc:hover { background: #F5C842; color: var(--dark1); }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+/* ══ Reveal ══ */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal.d1 { transition-delay: 0.1s; }
+.reveal.d2 { transition-delay: 0.2s; }
+.reveal.d3 { transition-delay: 0.3s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ══ Responsive ══ */
+@media (max-width: 1080px) {
+  .g-toc { grid-template-columns: repeat(2, 1fr); }
+  .g-tldr-list { grid-template-columns: 1fr; }
+  .g-step { grid-template-columns: 70px 1fr; }
+  .g-step-mock { grid-column: 1 / -1; border-left: 0; border-top: 1px solid rgba(142,182,155,0.24); }
+  .g-routine-grid { grid-template-columns: repeat(2, 1fr); }
+  .g-tour-grid { grid-template-columns: 1fr; }
+  .g-power-grid { grid-template-columns: 1fr; }
+  .g-mistakes-grid { grid-template-columns: 1fr; }
+  .g-30-inner { grid-template-columns: 1fr; gap: 32px; }
+  .g-help-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; }
+  .nav-menu { display: none; }
+  .g-hero, .g-tldr, .g-day1, .g-routine, .g-tour, .g-power, .g-mistakes, .g-30, .g-help, .cta-section { padding-left: 22px; padding-right: 22px; }
+  .g-routine-grid { grid-template-columns: 1fr; }
+  footer { padding: 60px 22px 30px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-cols { flex-wrap: wrap; gap: 32px; }
+}
+</style>
+</head>
+<body id="top">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="guide.html" class="is-current">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="nav-login">Log In</a>
+    <a href="login.html?mode=register" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="g-hero">
+  <div class="g-hero-inner">
+    <span class="g-hero-eyebrow reveal">From signup to clarity, in one weekend</span>
+    <h1 class="reveal d1">The ultimate <em>get-started</em> guide.</h1>
+    <p class="reveal d2">Most "get started" pages are six bullet points and a happy graphic. This one isn't. It's a Saturday-morning walkthrough — fifteen minutes of setup, a week of small habits, and the five mistakes that quietly waste people's first month. <b>Read it in order. Skip nothing.</b></p>
+    <div class="g-toc reveal d3">
+      <a href="#day1">
+        <span class="g-toc-num">01</span>
+        <span class="g-toc-label">15-min setup</span>
+      </a>
+      <a href="#routine">
+        <span class="g-toc-num">02</span>
+        <span class="g-toc-label">Week-one routine</span>
+      </a>
+      <a href="#tour">
+        <span class="g-toc-num">03</span>
+        <span class="g-toc-label">Tour of the app</span>
+      </a>
+      <a href="#power">
+        <span class="g-toc-num">04</span>
+        <span class="g-toc-label">Power moves</span>
+      </a>
+      <a href="#mistakes">
+        <span class="g-toc-num">05</span>
+        <span class="g-toc-label">Common mistakes</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TL;DR -->
+<section class="g-tldr">
+  <div class="g-tldr-inner">
+    <span class="g-eyebrow reveal">If you read nothing else</span>
+    <h2 class="reveal d1">The five-thing TL;DR. <em>That's the whole guide, if you're in a hurry.</em></h2>
+    <p class="reveal d2">Most users who get the most out of FinTrack do these five things in their first hour. Everything else in this guide is detail — these five are non-negotiable.</p>
+
+    <div class="g-tldr-card reveal d3">
+      <div class="g-tldr-card-head">
+        <h3>Start here</h3>
+        <span class="scribble">do all five!</span>
+      </div>
+      <ul class="g-tldr-list">
+        <li><b>Import 90 days of CSV</b> from your bank on day one. Without history, the AI has nothing to read.</li>
+        <li><b>Set your monthly income</b> as a recurring payment. The forecast needs to know payday.</li>
+        <li><b>Create exactly 3 budgets</b>, not ten. Top categories only: Groceries, Dining, Subscriptions.</li>
+        <li><b>Ask the Money Coach a real question</b> within your first session. Don't just window-shop the UI.</li>
+        <li><b>Scan one paper receipt</b> on your phone before you forget the feature exists.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DAY 1 SETUP -->
+<section class="g-day1" id="day1">
+  <div class="g-day1-inner">
+    <div class="g-day1-head reveal">
+      <span class="g-eyebrow">Step one</span>
+      <h2>The 15-minute setup, <em>step by step.</em></h2>
+      <p>Open FinTrack, work top to bottom. By the end of this section you'll have a working dashboard, three budgets, your paycheck on file, and 90 days of imported history.</p>
+      <span class="time">~15 minutes if you have your bank's CSV ready</span>
+    </div>
+
+    <div class="g-steps">
+
+      <div class="g-step reveal">
+        <div class="g-step-num">1</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">~30 seconds</span>
+          <h3>Sign up with email and password.</h3>
+          <p>No credit card is needed for the 14-day trial. Use the email you actually read — the one reminder email on day 12 of your trial goes there.</p>
+          <span class="path">Landing page → Start Your Free Trial</span>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Sign up form</div>
+          <div class="gm-form-row filled">you@example.com</div>
+          <div class="gm-form-row">••••••••</div>
+          <div class="gm-form-btn">Create my account</div>
+        </div>
+      </div>
+
+      <div class="g-step reveal">
+        <div class="g-step-num">2</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">~1 minute</span>
+          <h3>Pick your currency, then your language.</h3>
+          <p>Set this once and the entire app — every screen, every AI answer, every email — uses it. Switching later works but reformats your historical totals, so get it right now.</p>
+          <span class="path">Settings → Preferences → Currency</span>
+          <div class="why"><b>Why it matters:</b> The cash flow forecast and budget projections format every number in your chosen currency. Don't show CN¥ to a USD user.</div>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Pick currency</div>
+          <div class="gm-currency-list">
+            <div class="sel">Canadian Dollar <span class="code">CAD</span></div>
+            <div>US Dollar <span class="code">USD</span></div>
+            <div>Euro <span class="code">EUR</span></div>
+            <div>British Pound <span class="code">GBP</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="g-step critical reveal">
+        <div class="g-step-num">3</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">Critical · ~5 minutes</span>
+          <h3>Import 90 days of CSV from your bank.</h3>
+          <p>This is <b>the single most important thing you'll do in this guide.</b> Without historical data, the AI has nothing to read, the budget suggestions can't compute, and the forecast can't project. Even if you only have one bank, even if it feels tedious — do it now.</p>
+          <span class="path">Transactions → Import CSV → drag & drop</span>
+          <div class="why"><b>Where to get the CSV:</b> Your bank's web portal → Statements (or Activity, or Transactions) → Export → CSV. FinTrack auto-maps the columns; you don't need a specific format.</div>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Import CSV</div>
+          <div class="gm-upload">
+            <div class="gm-upload-ico">📄</div>
+            <div class="gm-upload-title">Drop your file here</div>
+            <div class="gm-upload-sub">or click to browse</div>
+            <div class="gm-upload-rows">date,description,amount<br>2026-05-14,STARBUCKS #4129,-6.50<br>2026-05-13,PAYDAY DEPOSIT,2450.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="g-step reveal">
+        <div class="g-step-num">4</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">~2 minutes</span>
+          <h3>Add your income as a recurring payment.</h3>
+          <p>FinTrack needs to know when your paycheck lands to forecast your balance. Add it once with the cadence (monthly, biweekly, every Friday) and amount. Same for rent, utilities, and any subscriptions you already know about.</p>
+          <span class="path">Recurring Payments → + Add → Income</span>
+          <div class="why"><b>Why it matters:</b> The 30-day Cash Flow Forecast pulls every recurring entry to draw payday and bill spikes on the chart. Skip this and the forecast line will look flat and wrong.</div>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Recurring payments</div>
+          <div class="gm-rec">
+            <div class="gm-rec-row">
+              <div class="gm-rec-ico">💼</div>
+              <div><div class="gm-rec-name">Paycheck</div><div class="gm-rec-freq">Biweekly · Fridays</div></div>
+              <div class="gm-rec-amt">+$2,450</div>
+            </div>
+            <div class="gm-rec-row">
+              <div class="gm-rec-ico">🏠</div>
+              <div><div class="gm-rec-name">Rent</div><div class="gm-rec-freq">Monthly · 1st</div></div>
+              <div class="gm-rec-amt">−$1,200</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="g-step reveal">
+        <div class="g-step-num">5</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">~3 minutes</span>
+          <h3>Create exactly three budgets — not ten.</h3>
+          <p>The temptation on day one is to set a budget for every category. <b>Don't.</b> Three budgets you can actually pay attention to beat ten you'll ignore by Friday. Pick your three biggest discretionary spend categories — typically Groceries, Dining, and Subscriptions.</p>
+          <span class="path">Budgets → tap a suggestion chip → adjust → Save</span>
+          <div class="why"><b>If you imported CSV in step 3</b>, suggested amounts show up automatically. Tap a suggestion to pre-fill the budget form, then save.</div>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Suggestions</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="gm-bud-chip"><span class="ico">🛒</span><span>Groceries</span><b>$420/mo</b></div>
+            <div class="gm-bud-chip"><span class="ico">🍽️</span><span>Dining out</span><b>$280/mo</b></div>
+            <div class="gm-bud-chip"><span class="ico">🔁</span><span>Subscriptions</span><b>$60/mo</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="g-step reveal">
+        <div class="g-step-num">6</div>
+        <div class="g-step-body">
+          <span class="g-step-tag">~2 minutes</span>
+          <h3>Ask the Money Coach one real question.</h3>
+          <p>Don't ease in with "what can you do?" — ask the actual money question you've been mulling over. <i>"Can I afford a $400 flight on the 28th?"</i> or <i>"Where did $300 go last weekend?"</i> If you imported history in step 3, the answer will be specific to your numbers.</p>
+          <span class="path">Sidebar → Money Coach → type a question</span>
+          <div class="why"><b>The trick:</b> Phrasing matters. "Should I do X?" gets you a verdict pill. "Tell me about my spending" gets a fuzzy summary. Ask binary questions.</div>
+        </div>
+        <div class="g-step-mock">
+          <div class="gm-title">Money Coach</div>
+          <div class="gm-dash">
+            <div class="gm-dash-row"><span class="gm-dash-k">Can I afford a $400 jacket?</span></div>
+            <div class="gm-dash-row" style="background:rgba(245,200,66,0.10);border-radius:6px;padding:6px 8px;margin-top:4px;">
+              <span class="gm-dash-v" style="color:var(--dark1);">Yes — with $280 to spare</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WEEK 1 DAILY ROUTINE -->
+<section class="g-routine" id="routine">
+  <div class="g-routine-inner">
+    <div class="g-routine-head reveal">
+      <span class="g-eyebrow">Step two</span>
+      <h2>The week-one routine, <em>two minutes a day.</em></h2>
+      <p>Setup is done. Now the small habits that make it pay off. None of these take more than two minutes. None of them require willpower. They just need to happen.</p>
+    </div>
+    <div class="g-routine-grid">
+      <div class="g-habit reveal">
+        <span class="g-habit-when">Mon–Sun</span>
+        <div class="g-habit-ico">☀️</div>
+        <h3>Morning glance at Daily Insights</h3>
+        <p>Three cards land on your dashboard at 6 AM your time. <b>Skim them while the coffee brews.</b> Dismiss any that don't apply. The whole thing takes 20 seconds.</p>
+        <div class="g-habit-time">~20 sec</div>
+      </div>
+      <div class="g-habit reveal d1">
+        <span class="g-habit-when">Before any >$50 buy</span>
+        <div class="g-habit-ico">💬</div>
+        <h3>Ask the Coach first</h3>
+        <p>Type the purchase as a question. <i>"Should I get the $89 jacket?"</i> The verdict pill is your gut check. If it says "wait," it usually means wait.</p>
+        <div class="g-habit-time">~30 sec</div>
+      </div>
+      <div class="g-habit reveal d2">
+        <span class="g-habit-when">After cash buys</span>
+        <div class="g-habit-ico">📸</div>
+        <h3>Scan the receipt now</h3>
+        <p>Paper receipts in your pocket are tomorrow's mystery transactions. Open FinTrack on your phone, tap the floating "+", point your camera. <b>Done in 15 seconds.</b></p>
+        <div class="g-habit-time">~15 sec</div>
+      </div>
+      <div class="g-habit reveal d2">
+        <span class="g-habit-when">Sunday evening</span>
+        <div class="g-habit-ico">🔁</div>
+        <h3>Sweep your subscriptions</h3>
+        <p>The Detected Subscriptions card on the Recurring page is your kill list. <b>Cancel one a week.</b> Over a year that's 50 leaks closed.</p>
+        <div class="g-habit-time">~2 min</div>
+      </div>
+      <div class="g-habit reveal d3">
+        <span class="g-habit-when">Sunday evening</span>
+        <div class="g-habit-ico">📈</div>
+        <h3>Read the forecast</h3>
+        <p>Open the Cash Flow Forecast card. Note the lowest point in the next 30 days. <b>If it's a number that worries you, deal with it on Monday</b>, not on the 28th.</p>
+        <div class="g-habit-time">~1 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP TOUR -->
+<section class="g-tour" id="tour">
+  <div class="g-tour-inner">
+    <div class="g-tour-head reveal">
+      <span class="g-eyebrow">Step three</span>
+      <h2>A map of every page, <em>and what each is for.</em></h2>
+      <p>Six pages. That's the whole app. Memorize what each one does and you'll never feel lost.</p>
+    </div>
+    <div class="g-tour-grid">
+      <div class="g-tour-card reveal">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">🏠</div>
+          <div class="g-tour-name">Dashboard<small>/dashboard</small></div>
+        </div>
+        <p>Your morning glance. Daily Insights, Cash Flow Forecast, Quick Actions (Add Transaction, Scan Receipt, Import CSV), and the monthly Income vs. Expenses chart. <b>If you only open one page a day, this is it.</b></p>
+        <div class="g-tour-when">Open it: <b>every morning, twenty seconds.</b></div>
+      </div>
+      <div class="g-tour-card reveal d1">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">📋</div>
+          <div class="g-tour-name">Transactions<small>/transactions</small></div>
+        </div>
+        <p>Every transaction in one searchable list. Add manually, import CSV, or scan a receipt via the floating "+". Filter by category, date range, or merchant. <b>The page you visit when "where did that go?" hits.</b></p>
+        <div class="g-tour-when">Open it: <b>when you need to add or hunt.</b></div>
+      </div>
+      <div class="g-tour-card reveal d2">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">🎯</div>
+          <div class="g-tour-name">Budgets<small>/budgets</small></div>
+        </div>
+        <p>Your monthly caps and the yellow projection line on each bar that predicts the day you'll go over. AI suggestion chips appear after 30 days of history. <b>The page that turns "I'm doing fine" into a number.</b></p>
+        <div class="g-tour-when">Open it: <b>twice a week, mid-month and month-end.</b></div>
+      </div>
+      <div class="g-tour-card reveal">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">🔁</div>
+          <div class="g-tour-name">Recurring<small>/recurring</small></div>
+        </div>
+        <p>Your subscriptions and bills. Manually-added ones at the top, FinTrack-detected ones in their own card below. <b>The page where the silent four-figure annual leaks live.</b></p>
+        <div class="g-tour-when">Open it: <b>once a week on Sunday.</b></div>
+      </div>
+      <div class="g-tour-card reveal d1">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">💬</div>
+          <div class="g-tour-name">Money Coach<small>/coach</small></div>
+        </div>
+        <p>Ask any money question. Each answer starts with a Yes/Wait/No verdict pill and cites your actual numbers from the last 90 days. History collapses below so you can revisit past answers.</p>
+        <div class="g-tour-when">Open it: <b>before any decision over $50.</b></div>
+      </div>
+      <div class="g-tour-card reveal d2">
+        <div class="g-tour-card-head">
+          <div class="g-tour-ico">⚙️</div>
+          <div class="g-tour-name">Settings<small>/settings</small></div>
+        </div>
+        <p>Currency, language, billing, account, export. <b>The CSV export button lives here</b> — pull a full backup any time. The "delete everything" button does too. Both are one click, both are honest.</p>
+        <div class="g-tour-when">Open it: <b>at the start, and at the end.</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POWER MOVES -->
+<section class="g-power" id="power">
+  <div class="g-power-inner">
+    <div class="g-power-head reveal">
+      <span class="g-eyebrow">Step four</span>
+      <h2>Five power moves <em>most users miss.</em></h2>
+      <p>None of these are buried — they're all one click from where you already are. But almost nobody finds them in their first month. So.</p>
+    </div>
+    <div class="g-power-grid">
+      <div class="g-power-card reveal">
+        <div class="g-power-num">01</div>
+        <div class="g-power-text">
+          <h4>Use What-If before any purchase over $200.</h4>
+          <p>Below the Cash Flow Forecast, the <b>What If?</b> button takes a hypothetical amount and re-runs the 30-day projection. Yes/Wait/No verdict, plus the lowest your balance gets. <b>Two-second sanity check.</b></p>
+        </div>
+      </div>
+      <div class="g-power-card reveal d1">
+        <div class="g-power-num">02</div>
+        <div class="g-power-text">
+          <h4>Re-import older CSVs to feed the AI.</h4>
+          <p>If you have 6 or 12 months of bank statements lying around, drop them in. FinTrack dedupes by date+amount, so re-importing is safe. <b>More history = sharper Money Coach.</b></p>
+        </div>
+      </div>
+      <div class="g-power-card reveal d2">
+        <div class="g-power-num">03</div>
+        <div class="g-power-text">
+          <h4>Pin Money Coach as a phone home-screen shortcut.</h4>
+          <p>On iOS Safari, tap Share → Add to Home Screen. Now Money Coach is two taps away from your lock screen. <b>Use it like a calculator that has opinions.</b></p>
+        </div>
+      </div>
+      <div class="g-power-card reveal">
+        <div class="g-power-num">04</div>
+        <div class="g-power-text">
+          <h4>Rename categories to match your life.</h4>
+          <p>The defaults are decent. Yours will be better. Settings → Categories → rename, recolor, or invent new ones. Existing transactions update everywhere automatically.</p>
+        </div>
+      </div>
+      <div class="g-power-card reveal d1">
+        <div class="g-power-num">05</div>
+        <div class="g-power-text">
+          <h4>Export a CSV backup once a month.</h4>
+          <p>Settings → Export → Download all transactions. Stash it in iCloud Drive or Google Drive. <b>Your data, even if FinTrack disappears tomorrow.</b> (We won't. But still.)</p>
+        </div>
+      </div>
+      <div class="g-power-card reveal d2">
+        <div class="g-power-num">06</div>
+        <div class="g-power-text">
+          <h4>Don't trust the receipt scan for tiny coffees.</h4>
+          <p>The scanner is gold for restaurants, groceries, and gas pumps. For a $3.40 espresso, <b>typing the amount manually is faster than waiting for vision OCR.</b> Use the right tool.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMON MISTAKES -->
+<section class="g-mistakes" id="mistakes">
+  <div class="g-mistakes-inner">
+    <div class="g-mistakes-head reveal">
+      <span class="g-eyebrow">Step five</span>
+      <h2>The mistakes that <em>quietly waste month one.</em></h2>
+      <p>We've watched a lot of new accounts. These five patterns are the ones we see most often — and they all cost real value. The good news: the fix for each is one sentence.</p>
+    </div>
+    <div class="g-mistakes-grid">
+      <div class="g-mistake reveal">
+        <span class="g-mistake-bad">Mistake 01</span>
+        <h3>Starting with an empty account.</h3>
+        <p>You sign up and want to "try it clean." But Money Coach with no data is a chatbot that knows nothing about you. Daily Insights are quiet. Forecasts are flat.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Import 90 days of CSV from your bank on day one. It's the difference between a useful AI and a confused one.</div></div>
+      </div>
+      <div class="g-mistake reveal d1">
+        <span class="g-mistake-bad">Mistake 02</span>
+        <h3>Setting ten budgets on day one.</h3>
+        <p>Enthusiasm budget. By Friday you'll be ignoring nine of them. Once you ignore one, you ignore all of them, and Budgets becomes a dead page.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Start with three. Add a fourth only after you've gone two months under cap on the first three.</div></div>
+      </div>
+      <div class="g-mistake reveal d2">
+        <span class="g-mistake-bad">Mistake 03</span>
+        <h3>Treating Daily Insights as alarms.</h3>
+        <p>They're not alarms. They're notes from a friend who's seen your activity. If you panic at every yellow card, you'll stop opening the dashboard within a week.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Read each card as one question — <i>"is this still true tomorrow?"</i> — then dismiss or act.</div></div>
+      </div>
+      <div class="g-mistake reveal">
+        <span class="g-mistake-bad">Mistake 04</span>
+        <h3>Ignoring the Recurring page.</h3>
+        <p>People love the AI and the budgets. They forget the Subscription Detector. Meanwhile a free trial from January is still charging $14.99 every month and the answer to "where did $300/mo go?" is sitting there waiting to be cancelled.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Sunday subscription sweep. Cancel one a week.</div></div>
+      </div>
+      <div class="g-mistake reveal d1">
+        <span class="g-mistake-bad">Mistake 05</span>
+        <h3>Asking the Coach vague questions.</h3>
+        <p>"Tell me about my spending" gets a fuzzy paragraph. "How am I doing this month?" gets a polite hedge.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Ask binary, specific, with a number. <i>"Can I afford $620 for the Portland trip on the 28th?"</i> That gets a real verdict.</div></div>
+      </div>
+      <div class="g-mistake reveal d2">
+        <span class="g-mistake-bad">Mistake 06</span>
+        <h3>Forgetting to add your paycheck.</h3>
+        <p>You can do everything else right — budgets, history import, daily glance — and the Cash Flow Forecast will still look catastrophic because there's no income line. People panic and bounce.</p>
+        <div class="g-mistake-fix"><div><b>Fix:</b> Recurring Payments → Add Income. One minute. Forecast goes from terrifying to honest.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 30-DAY MILESTONE -->
+<section class="g-30">
+  <div class="g-30-inner">
+    <div class="g-30-copy reveal">
+      <span class="g-eyebrow">Day 30 — the milestone</span>
+      <h2>What "good" looks like, <em>at the one-month mark.</em></h2>
+      <p>Here's the honest check-in. If your account looks like this at day 30, FinTrack is working as intended and the $4.99 is paying for itself. <b>If something on this list isn't true yet, scroll back to the relevant section</b> — chances are you skipped a step.</p>
+      <p style="margin-top:18px;font-size:14px;color:var(--mid);font-style:italic;">Day 30 is when several features that need a 30-day data window quietly turn on — budget suggestions, sharper forecasts, subscription detection. It's a real threshold, not a marketing number.</p>
+    </div>
+    <div class="g-30-list reveal d2">
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>Money Coach knows your patterns.</strong>
+          <span>Answers reference real numbers — "your average grocery week is $84" — not generic personal-finance advice.</span>
+        </div>
+      </div>
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>Budget bars show yellow projection lines.</strong>
+          <span>For each budget, FinTrack can now predict the day you'll go over — usually 5-7 days in advance.</span>
+        </div>
+      </div>
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>Subscription Detector has flagged real recurring charges.</strong>
+          <span>Netflix, Spotify, gym, cloud storage — all auto-grouped with cadence and lifetime totals.</span>
+        </div>
+      </div>
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>Cash Flow Forecast looks two to four weeks ahead.</strong>
+          <span>With enough activity, the line gets confident. Lowest-point and end-of-period numbers stabilize.</span>
+        </div>
+      </div>
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>Daily Insights know normal vs. abnormal.</strong>
+          <span>The morning cards stop flagging routine spend and start surfacing actual anomalies.</span>
+        </div>
+      </div>
+      <div class="g-30-row">
+        <div class="check">✓</div>
+        <div>
+          <strong>You've cancelled at least one zombie subscription.</strong>
+          <span>If the Sunday sweep is happening, this is almost guaranteed.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HELP -->
+<section class="g-help">
+  <div class="g-help-inner">
+    <h2>Stuck somewhere along the way? <em>That's normal.</em></h2>
+    <p>Three real places to get unstuck. We answer everything personally for the first year — there's no "tier 2 support" because there's no tier 2.</p>
+    <div class="g-help-cards">
+      <div class="g-help-card">
+        <h4>📩 Email us directly</h4>
+        <p><a href="mailto:help@fintrack.app">help@fintrack.app</a> — replies usually within 12 hours, faster during weekdays. Tell us what you tried, paste a screenshot if you can.</p>
+      </div>
+      <div class="g-help-card">
+        <h4>🧰 The Help Center</h4>
+        <p>Searchable articles for every feature on this guide. <b>Linked from the bottom-right of every page</b> in the app once you're signed in.</p>
+      </div>
+      <div class="g-help-card">
+        <h4>💬 Ask the Coach</h4>
+        <p>Yes, really. Money Coach handles meta questions too. <i>"How do I export my CSV?"</i> — it'll tell you the exact path.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="cta-eyebrow reveal">Now go do it</span>
+    <h2 class="reveal d1">Fifteen minutes today. <span>A working money brain by Sunday.</span></h2>
+    <p class="cta-lede reveal d1">Start the trial, follow this guide top to bottom, and by the time the weekend ends you'll have done everything that matters. Then it's just two minutes a day.</p>
+    <div class="cta-btns reveal d2">
+      <a href="login.html?mode=register" class="btn-white">Start Free Trial</a>
+      <a href="features.html" class="btn-outline-w">See every feature</a>
+    </div>
+    <p class="cta-trust reveal d2">Free for 14 days · Cancel anytime · Just <strong>$4.99/mo</strong> after</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <div class="footer-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="fsoc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" class="fsoc" aria-label="TikTok">
+          <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="about.html" data-about-link>About</a></div>
+      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+  document.querySelectorAll('[data-about-link]').forEach(a => a.addEventListener('click', () => { window.location.href = 'about.html'; }));
+  document.querySelectorAll('[data-accessibility-link]').forEach(a => a.addEventListener('click', () => { window.location.href = '/accessibility.html'; }));
+</script>
+</body>
+</html>

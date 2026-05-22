@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility Statement – FinTrack</title>
+<meta name="description" content="Read FinTrack's accessibility statement, standards, known limitations, and contact options for accessibility feedback.">
+<meta name="theme-color" content="#163832">
+<link rel="canonical" href="https://fintrack.app/accessibility.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta property="og:site_name" content="FinTrack">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FinTrack Accessibility Statement">
+<meta property="og:description" content="FinTrack's accessibility commitment, standards, known limitations, and support contact options.">
+<meta property="og:url" content="https://fintrack.app/accessibility.html">
+<meta property="og:image" content="https://fintrack.app/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinTrack Accessibility Statement">
+<meta name="twitter:description" content="FinTrack's accessibility commitment, standards, known limitations, and support contact options.">
+<meta name="twitter:image" content="https://fintrack.app/assets/og-image.png">
+<meta name="twitter:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1: #163832;
+  --dark2: #235347;
+  --mid: #8EB69B;
+  --light: #DAF1DE;
+  --white: #ffffff;
+  --text: #163832;
+  --text2: #3d6b5f;
+  --gold: #F5C842;
+  --f: 'Lato', sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; gap: 0; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.14); }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: var(--gold); color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+.hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(820px 420px at 12% 12%, rgba(245,200,66,0.15), transparent 70%),
+    radial-gradient(720px 460px at 90% 86%, rgba(142,182,155,0.23), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 50%, var(--dark2) 100%);
+  padding: 94px 80px 82px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 22px);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; text-align: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase; color: var(--gold); background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30); padding: 8px 16px; border-radius: 999px; margin-bottom: 22px; }
+.eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: var(--gold); }
+.hero h1 { font-size: clamp(42px, 6vw, 78px); font-weight: 900; line-height: 1.03; letter-spacing: -1.8px; margin-bottom: 20px; }
+.hero h1 em { font-style: italic; background: linear-gradient(135deg, #DAF1DE 0%, var(--gold) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { font-size: clamp(16px, 1.45vw, 19px); color: rgba(255,255,255,0.78); line-height: 1.7; max-width: 720px; margin: 0 auto; }
+
+.content { padding: 78px 80px; background: #fff; }
+.content-inner { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: minmax(220px, 0.34fr) minmax(0, 0.66fr); gap: 56px; align-items: start; }
+.summary { position: sticky; top: 92px; background: #f6faf7; border: 1px solid rgba(142,182,155,0.24); border-radius: 8px; padding: 22px; }
+.summary h2 { color: var(--dark1); font-size: 17px; font-weight: 900; margin-bottom: 12px; }
+.summary a { display: block; color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 700; padding: 8px 0; border-bottom: 1px solid rgba(142,182,155,0.20); }
+.summary a:last-child { border-bottom: 0; }
+.summary a:hover { color: var(--dark1); }
+.statement { display: grid; gap: 34px; }
+.statement section { scroll-margin-top: 92px; }
+.statement h2 { color: var(--dark1); font-size: clamp(24px, 3vw, 34px); line-height: 1.12; letter-spacing: -0.6px; margin-bottom: 12px; }
+.statement p, .statement li { color: var(--text2); font-size: 16px; line-height: 1.75; }
+.statement p + p { margin-top: 12px; }
+.statement ul { margin: 12px 0 0 20px; display: grid; gap: 8px; }
+.statement strong { color: var(--dark1); font-weight: 900; }
+.notice { background: var(--light); border-left: 4px solid var(--dark2); padding: 18px 20px; border-radius: 8px; color: var(--dark1); }
+.notice p { color: var(--dark1); margin: 0; }
+.contact-box { background: var(--dark1); color: #fff; border-radius: 8px; padding: 24px; }
+.contact-box h2 { color: #fff; }
+.contact-box p { color: rgba(255,255,255,0.74); }
+.contact-box a { color: #DAF1DE; font-weight: 900; }
+
+footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px solid rgba(218,241,222,0.18); }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-search { display: flex; align-items: center; background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.4); border-radius: 10px; padding: 9px 14px; gap: 8px; margin-bottom: 20px; }
+.footer-search input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+.footer-search input::placeholder { color: rgba(255,255,255,0.4); }
+.footer-socials { display: flex; gap: 10px; }
+.fsoc { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); display: grid; place-items: center; color: rgba(255,255,255,0.6); text-decoration: none; transition: all 0.15s; }
+.fsoc:hover { background: var(--mid); color: var(--dark1); }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover, .footer-col a.is-current { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 980px) {
+  .hero, .content, footer { padding-left: 28px; padding-right: 28px; }
+  .content-inner { grid-template-columns: 1fr; gap: 32px; }
+  .summary { position: static; }
+  .footer-top { flex-direction: column; gap: 36px; }
+  .footer-cols { flex-wrap: wrap; gap: 28px; }
+}
+
+@media (max-width: 760px) {
+  .nav { padding: 0 18px; }
+  .nav-menu { display: none; }
+  .nav-brand { flex: 1; }
+  .nav-login { display: none; }
+  .hero { padding-top: 72px; padding-bottom: 62px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="landing.html" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">Features <span class="chevron">▼</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html#budgeting">Budgeting</a>
+        <a href="features.html#insights">Insights</a>
+        <a href="features.html#goals">Goals</a>
+        <a href="features.html#receipt-scanning">Receipt Scanning</a>
+      </div>
+    </div>
+    <a href="different.html">Why we're different</a>
+    <a href="trial.html">Trial</a>
+    <a href="guide.html">Guide</a>
+    <a href="help.html">Help Center</a>
+    <a href="about.html">About</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="nav-login">Log in</a>
+    <a href="login.html?mode=register" class="nav-cta">Start Free</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">Accessibility</span>
+      <h1>FinTrack should work for <em>everyone.</em></h1>
+      <p>We are committed to making FinTrack usable by as many people as possible, including people who use assistive technologies, keyboard navigation, captions, zoom, high contrast settings, or screen readers.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="content-inner">
+      <aside class="summary" aria-label="Accessibility statement sections">
+        <h2>Statement</h2>
+        <a href="#commitment">Commitment</a>
+        <a href="#standards">Standards</a>
+        <a href="#features">Accessibility Features</a>
+        <a href="#limitations">Known Limitations</a>
+        <a href="#feedback">Feedback</a>
+      </aside>
+
+      <div class="statement">
+        <section id="commitment">
+          <h2>Our Commitment</h2>
+          <p><strong>FinTrack is built to help people understand their money with less stress and more clarity.</strong> Accessibility is part of that promise. We want the website and app experience to be perceivable, operable, understandable, and robust for users with different abilities and different ways of navigating software.</p>
+          <p>This statement applies to the FinTrack public website and web app experiences available through `fintrack.app` and local preview builds of the same pages.</p>
+        </section>
+
+        <section id="standards">
+          <h2>Standards We Aim To Meet</h2>
+          <p>Our goal is to substantially conform with the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA. These guidelines cover areas such as keyboard access, text contrast, visible focus, readable structure, form labels, error messages, and compatibility with assistive technologies.</p>
+          <div class="notice">
+            <p>This page is an accessibility statement, not a legal guarantee. We review and improve the product over time as the app changes.</p>
+          </div>
+        </section>
+
+        <section id="features">
+          <h2>Accessibility Features</h2>
+          <p>FinTrack is designed with practical accessibility in mind, including:</p>
+          <ul>
+            <li>Semantic page structure with headings, links, buttons, forms, and labels where appropriate.</li>
+            <li>Keyboard-operable navigation and controls for core workflows.</li>
+            <li>Readable text sizes, responsive layouts, and support for browser zoom.</li>
+            <li>Color contrast targets suitable for normal and large text.</li>
+            <li>Clear support channels for reporting accessibility barriers.</li>
+          </ul>
+        </section>
+
+        <section id="limitations">
+          <h2>Known Limitations</h2>
+          <p>FinTrack is actively evolving. Some newer or experimental areas may need additional review, especially interactive charts, AI-generated content, file upload states, and third-party services such as checkout or email flows.</p>
+          <p>When we identify an accessibility issue, we prioritize fixes based on severity, user impact, and how often the affected workflow is used.</p>
+        </section>
+
+        <section id="feedback" class="contact-box">
+          <h2>Feedback And Assistance</h2>
+          <p>If you experience an accessibility barrier, need information in another format, or have trouble using any part of FinTrack, email us at <a href="mailto:help@fintrack.app">help@fintrack.app</a>.</p>
+          <p>For the fastest response, include the page URL, what you were trying to do, your browser/device, and any assistive technology you were using. You can also report defects to <a href="mailto:bugs@fintrack.app">bugs@fintrack.app</a>.</p>
+          <p>Last updated: May 21, 2026.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <div class="footer-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="fsoc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" class="fsoc" aria-label="TikTok">
+          <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a></div>
+      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" class="is-current">Accessibility</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+</script>
+
+</body>
+</html>

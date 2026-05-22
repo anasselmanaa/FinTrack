@@ -2,8 +2,13 @@ Flask
 flask-cors
 flask-login
 bcrypt
-psycopg2
+psycopg2-binary
 pandas
 python-dotenv
-groq
+anthropic
+stripe
 yfinance
+gunicorn
+pytest
+APScheduler
+resend

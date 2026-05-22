@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center – FinTrack</title>
+<meta name="description" content="Find FinTrack help articles for accounts, billing, CSV imports, receipts, budgets, goals, privacy, and support.">
+<meta name="theme-color" content="#163832">
+<link rel="canonical" href="https://fintrack.app/help.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta property="og:site_name" content="FinTrack">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FinTrack Help Center">
+<meta property="og:description" content="Help for accounts, billing, CSV imports, receipts, budgets, goals, privacy, and support.">
+<meta property="og:url" content="https://fintrack.app/help.html">
+<meta property="og:image" content="https://fintrack.app/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinTrack Help Center">
+<meta name="twitter:description" content="Help for accounts, billing, CSV imports, receipts, budgets, goals, privacy, and support.">
+<meta name="twitter:image" content="https://fintrack.app/assets/og-image.png">
+<meta name="twitter:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1:  #163832;
+  --dark2:  #235347;
+  --mid:    #8EB69B;
+  --light:  #DAF1DE;
+  --white:  #ffffff;
+  --text:   #163832;
+  --text2:  #3d6b5f;
+  --f: 'Lato', sans-serif;
+  --fm: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+/* ══ NAV ══ */
+.nav { position: fixed; top:0; left:0; right:0; z-index:200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; gap: 0; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.nav-menu a.is-current { color: #fff; background: rgba(218,241,222,0.14); }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: #F5C842; color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+/* ══ HERO ══ */
+.h-hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(560px 320px at 10% 16%, rgba(245,200,66,0.10), transparent 70%),
+    radial-gradient(800px 460px at 92% 90%, rgba(142,182,155,0.18), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 55%, var(--dark2) 100%);
+  padding: 78px 80px 62px;
+  position: relative; overflow: hidden;
+  text-align: center;
+}
+.h-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 22px);
+  mix-blend-mode: overlay; pointer-events: none;
+}
+.h-hero-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+.h-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
+  color: #F5C842; background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30);
+  padding: 7px 14px; border-radius: 999px; margin-bottom: 22px;
+}
+.h-hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #F5C842; }
+.h-hero h1 {
+  font-size: clamp(36px, 5.4vw, 64px); font-weight: 900;
+  line-height: 1.04; letter-spacing: -1.4px; color: #fff;
+  margin-bottom: 18px;
+}
+.h-hero h1 em { font-style: italic; background: linear-gradient(135deg, #DAF1DE 0%, #F5C842 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.h-hero p { font-size: 15px; color: rgba(255,255,255,0.74); line-height: 1.6; margin-bottom: 26px; max-width: 56ch; margin-left: auto; margin-right: auto; }
+
+.h-search {
+  position: relative;
+  max-width: 640px; margin: 0 auto;
+}
+.h-search input {
+  width: 100%; padding: 16px 18px 16px 50px;
+  font-size: 16px; font-family: var(--f);
+  background: #fff;
+  border: 1px solid rgba(218,241,222,0.20);
+  border-radius: 14px;
+  outline: none;
+  color: var(--dark1);
+  font-weight: 500;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.25), 0 0 0 1px rgba(218,241,222,0.10);
+  transition: box-shadow 0.18s;
+}
+.h-search input:focus { box-shadow: 0 14px 38px rgba(0,0,0,0.30), 0 0 0 3px rgba(245,200,66,0.35); }
+.h-search input::placeholder { color: var(--mid); font-weight: 500; }
+.h-search-icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--mid);
+}
+.h-search-kbd {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  font-family: var(--fm); font-size: 10.5px; font-weight: 700;
+  color: var(--mid);
+  background: var(--light);
+  padding: 4px 7px; border-radius: 5px;
+  border: 1px solid rgba(142,182,155,0.35);
+  pointer-events: none;
+}
+.h-search-meta {
+  margin-top: 16px;
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  font-size: 12px; color: rgba(255,255,255,0.55);
+}
+.h-search-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.h-search-meta b { color: #DAF1DE; font-weight: 700; }
+.h-search-empty {
+  display: none;
+  margin: 16px auto 0;
+  max-width: 560px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(218,241,222,0.20);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px; color: rgba(255,255,255,0.85);
+  text-align: left;
+}
+
+/* ══ POPULAR ══ */
+.h-popular { background: #fff; padding: 60px 80px 32px; }
+.h-popular-inner { max-width: 1180px; margin: 0 auto; }
+.h-eyebrow {
+  display: inline-block;
+  font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dark2); margin-bottom: 14px;
+}
+.h-popular h2 { font-size: 22px; font-weight: 900; color: var(--dark1); margin-bottom: 18px; letter-spacing: -0.4px; }
+.h-popular-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.h-pop {
+  background: #f6faf7;
+  border: 1px solid rgba(142,182,155,0.28);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; color: inherit;
+  transition: all 0.15s;
+}
+.h-pop:hover { background: #fff; border-color: var(--mid); transform: translateX(2px); box-shadow: 0 8px 22px rgba(22,56,50,0.06); }
+.h-pop-ico {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  background: var(--light); color: var(--dark2);
+  display: grid; place-items: center; font-size: 16px;
+}
+.h-pop-text { font-size: 14px; font-weight: 800; color: var(--dark1); line-height: 1.35; letter-spacing: -0.2px; }
+.h-pop-arrow { margin-left: auto; color: var(--mid); font-weight: 900; transition: transform 0.15s; }
+.h-pop:hover .h-pop-arrow { transform: translateX(3px); color: var(--dark2); }
+
+/* ══ CATEGORIES ══ */
+.h-cats { background: #fff; padding: 32px 80px 80px; }
+.h-cats-inner { max-width: 1180px; margin: 0 auto; }
+.h-cats h2 { font-size: 22px; font-weight: 900; color: var(--dark1); margin-bottom: 18px; letter-spacing: -0.4px; }
+.h-cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.h-cat {
+  background: #fff;
+  border: 1px solid rgba(142,182,155,0.28);
+  border-radius: 14px;
+  padding: 22px;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: all 0.18s;
+}
+.h-cat:hover { transform: translateY(-3px); border-color: var(--mid); box-shadow: 0 14px 30px rgba(22,56,50,0.08); }
+.h-cat-ico {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--light); color: var(--dark2);
+  display: grid; place-items: center;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.h-cat-title { font-size: 15px; font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; }
+.h-cat-count { font-size: 12px; color: var(--mid); font-weight: 800; letter-spacing: 0.4px; }
+.h-cat-desc { font-size: 13px; color: var(--text2); line-height: 1.5; margin-top: 2px; }
+
+/* ══ ARTICLES ══ */
+.h-articles { background: #f6faf7; padding: 80px 80px 80px; border-top: 1px solid rgba(142,182,155,0.22); }
+.h-articles-inner { max-width: 980px; margin: 0 auto; }
+.h-cat-section { margin-bottom: 56px; scroll-margin-top: 80px; }
+.h-cat-section:last-of-type { margin-bottom: 0; }
+.h-cat-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(142,182,155,0.30);
+}
+.h-cat-header .ico {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--dark2); color: #DAF1DE;
+  display: grid; place-items: center; font-size: 16px;
+}
+.h-cat-header h2 { font-size: 24px; font-weight: 900; color: var(--dark1); letter-spacing: -0.5px; flex: 1; }
+.h-cat-header .count { font-size: 12px; font-weight: 800; color: var(--mid); letter-spacing: 0.6px; text-transform: uppercase; }
+
+.h-art {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(142,182,155,0.22);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  scroll-margin-top: 80px;
+}
+.h-art:hover { border-color: var(--mid); }
+.h-art[open] { border-color: var(--mid); box-shadow: 0 6px 18px rgba(22,56,50,0.06); }
+.h-art > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 22px;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--dark1);
+  letter-spacing: -0.2px;
+  display: flex; align-items: center; gap: 14px;
+  position: relative;
+}
+.h-art > summary::-webkit-details-marker { display: none; }
+.h-art > summary::after {
+  content: '+';
+  margin-left: auto;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--light);
+  color: var(--dark2);
+  display: grid; place-items: center;
+  font-weight: 900;
+  font-size: 18px;
+  transition: transform 0.18s, background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.h-art[open] > summary::after { content: '−'; background: var(--dark2); color: #DAF1DE; }
+.h-art-body { padding: 0 22px 20px 22px; }
+.h-art-body p { font-size: 14.5px; line-height: 1.65; color: var(--text2); margin-bottom: 10px; }
+.h-art-body p:last-child { margin-bottom: 0; }
+.h-art-body p b { color: var(--dark1); font-weight: 800; }
+.h-art-body code, .h-art-body .kbd, .h-art-body .path {
+  font-family: var(--fm); font-size: 12.5px;
+  background: #f6faf7;
+  border: 1px solid rgba(142,182,155,0.30);
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: var(--dark1);
+  font-weight: 700;
+}
+.h-art-body ul { margin: 8px 0 12px 8px; padding-left: 16px; }
+.h-art-body ul li { font-size: 14px; line-height: 1.65; color: var(--text2); margin-bottom: 4px; }
+.h-art-body ul li b { color: var(--dark1); font-weight: 800; }
+.h-art-body .callout {
+  background: linear-gradient(90deg, rgba(245,200,66,0.14), transparent);
+  border-left: 3px solid #F5C842;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 13.5px; line-height: 1.55;
+  color: var(--dark1);
+}
+.h-art-body .callout b { font-weight: 800; }
+.h-art-body .meta {
+  display: flex; gap: 14px; align-items: center;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px dashed rgba(142,182,155,0.30);
+  font-size: 11.5px; color: var(--mid); font-weight: 700; letter-spacing: 0.3px;
+}
+.h-art-body .meta a { color: var(--dark2); text-decoration: none; font-weight: 800; }
+.h-art-body .meta a:hover { text-decoration: underline; }
+
+.h-noresults {
+  display: none;
+  max-width: 620px; margin: 0 auto;
+  background: #fff;
+  border: 1px solid rgba(142,182,155,0.30);
+  border-radius: 14px;
+  padding: 32px 28px;
+  text-align: center;
+}
+.h-noresults h3 { font-size: 18px; font-weight: 900; color: var(--dark1); margin-bottom: 8px; }
+.h-noresults p { font-size: 14.5px; color: var(--text2); line-height: 1.6; }
+.h-noresults a { color: var(--dark2); font-weight: 800; text-decoration: none; }
+.h-noresults a:hover { text-decoration: underline; }
+body.is-empty .h-noresults { display: block; }
+body.is-empty .h-cat-section { display: none; }
+
+/* ══ STILL NEED HELP ══ */
+.h-contact { background: #DAF1DE; padding: 80px 80px; }
+.h-contact-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center; }
+.h-contact-left h2 { font-size: clamp(28px, 3.6vw, 38px); font-weight: 900; line-height: 1.08; color: var(--dark1); letter-spacing: -0.8px; margin-bottom: 10px; }
+.h-contact-left h2 em { font-style: italic; color: var(--dark2); }
+.h-contact-left p { font-size: 15px; line-height: 1.65; color: var(--text2); }
+.h-contact-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.h-contact-card {
+  background: rgba(255,255,255,0.66);
+  border: 1px solid rgba(35,83,71,0.18);
+  border-radius: 14px;
+  padding: 20px;
+}
+.h-contact-card h4 { font-size: 14.5px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.h-contact-card p { font-size: 13px; line-height: 1.55; color: var(--text2); }
+.h-contact-card p b { color: var(--dark1); font-weight: 800; }
+.h-contact-card a { color: var(--dark2); font-weight: 800; text-decoration: none; }
+.h-contact-card a:hover { text-decoration: underline; }
+
+/* ══ FOOTER ══ */
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-search { display: flex; align-items: center; background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.4); border-radius: 10px; padding: 9px 14px; gap: 8px; margin-bottom: 20px; }
+.footer-search input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+.footer-search input::placeholder { color: rgba(255,255,255,0.4); }
+.footer-socials { display: flex; gap: 10px; }
+.fsoc { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 14px; text-decoration: none; transition: all 0.15s; }
+.fsoc:hover { background: #F5C842; color: var(--dark1); }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+/* ══ Responsive ══ */
+@media (max-width: 1080px) {
+  .h-popular-grid { grid-template-columns: 1fr 1fr; }
+  .h-cats-grid { grid-template-columns: 1fr 1fr; }
+  .h-contact-inner { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; }
+  .nav-menu { display: none; }
+  .h-hero, .h-popular, .h-cats, .h-articles, .h-contact { padding-left: 22px; padding-right: 22px; }
+  .h-popular-grid, .h-cats-grid { grid-template-columns: 1fr; }
+  .h-contact-cards { grid-template-columns: 1fr; }
+  footer { padding: 60px 22px 30px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-cols { flex-wrap: wrap; gap: 32px; }
+}
+</style>
+</head>
+<body id="top">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html" class="is-current">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="nav-login">Log In</a>
+    <a href="login.html?mode=register" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="h-hero">
+  <div class="h-hero-inner">
+    <span class="h-hero-eyebrow">Help Center</span>
+    <h1>Honest answers, <em>fast.</em></h1>
+    <p>31 articles across 7 topics. Search what you need, or browse by category below. If you can't find it, the contact box at the bottom is real — we read every message.</p>
+    <form class="h-search" onsubmit="event.preventDefault();">
+      <span class="h-search-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input id="hSearch" type="search" autocomplete="off" placeholder="Search articles — e.g. ‘CSV import’ or ‘cancel my trial’">
+      <span class="h-search-kbd">/</span>
+    </form>
+    <div class="h-search-meta">
+      <span>📅 Last updated <b>May 2026</b></span>
+      <span>🟢 We reply to email within <b>12 hours</b></span>
+      <span>🇺🇸🇨🇦 Support in <b>EN / FR / ES</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR -->
+<section class="h-popular">
+  <div class="h-popular-inner">
+    <h2>Most-asked this month</h2>
+    <div class="h-popular-grid">
+      <a href="#art-csv-format" class="h-pop">
+        <div class="h-pop-ico">📄</div>
+        <div class="h-pop-text">How do I import my bank's CSV?</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+      <a href="#art-cancel" class="h-pop">
+        <div class="h-pop-ico">✕</div>
+        <div class="h-pop-text">How do I cancel my subscription?</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+      <a href="#art-coach-vague" class="h-pop">
+        <div class="h-pop-ico">💬</div>
+        <div class="h-pop-text">Why is the Money Coach giving vague answers?</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+      <a href="#art-projection-line" class="h-pop">
+        <div class="h-pop-ico">📊</div>
+        <div class="h-pop-text">What's the yellow line on my budget bar?</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+      <a href="#art-no-bank" class="h-pop">
+        <div class="h-pop-ico">🔒</div>
+        <div class="h-pop-text">Why doesn't FinTrack connect to my bank?</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+      <a href="#art-receipt-wrong" class="h-pop">
+        <div class="h-pop-ico">📸</div>
+        <div class="h-pop-text">The receipt scanner read the wrong amount</div>
+        <div class="h-pop-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="h-cats">
+  <div class="h-cats-inner">
+    <h2>Browse by topic</h2>
+    <div class="h-cats-grid">
+      <a href="#cat-start" class="h-cat">
+        <div class="h-cat-ico">🚀</div>
+        <div class="h-cat-title">Getting started</div>
+        <div class="h-cat-count">5 articles</div>
+        <div class="h-cat-desc">Signup, CSV import, your first session.</div>
+      </a>
+      <a href="#cat-billing" class="h-cat">
+        <div class="h-cat-ico">💳</div>
+        <div class="h-cat-title">Account &amp; billing</div>
+        <div class="h-cat-count">5 articles</div>
+        <div class="h-cat-desc">Trial, subscription, cancellation, refunds.</div>
+      </a>
+      <a href="#cat-coach" class="h-cat">
+        <div class="h-cat-ico">💬</div>
+        <div class="h-cat-title">Money Coach</div>
+        <div class="h-cat-count">4 articles</div>
+        <div class="h-cat-desc">How the AI works, what to ask, what it can't see.</div>
+      </a>
+      <a href="#cat-receipt" class="h-cat">
+        <div class="h-cat-ico">📸</div>
+        <div class="h-cat-title">Receipt scanner</div>
+        <div class="h-cat-count">4 articles</div>
+        <div class="h-cat-desc">Phone vs. web, formats, error cases.</div>
+      </a>
+      <a href="#cat-budgets" class="h-cat">
+        <div class="h-cat-ico">🎯</div>
+        <div class="h-cat-title">Budgets &amp; Forecasts</div>
+        <div class="h-cat-count">5 articles</div>
+        <div class="h-cat-desc">Suggestions, projection line, What-If math.</div>
+      </a>
+      <a href="#cat-privacy" class="h-cat">
+        <div class="h-cat-ico">🔒</div>
+        <div class="h-cat-title">Privacy &amp; data</div>
+        <div class="h-cat-count">4 articles</div>
+        <div class="h-cat-desc">What we store, export, delete, no bank linking.</div>
+      </a>
+      <a href="#cat-trouble" class="h-cat">
+        <div class="h-cat-ico">🛠️</div>
+        <div class="h-cat-title">Troubleshooting</div>
+        <div class="h-cat-count">4 articles</div>
+        <div class="h-cat-desc">Pages won't load, AI silent, currency wrong.</div>
+      </a>
+      <a href="mailto:help@fintrack.app" class="h-cat" style="background:linear-gradient(135deg,var(--dark1),var(--dark2));color:#fff;border-color:var(--dark2);">
+        <div class="h-cat-ico" style="background:rgba(245,200,66,0.18);color:#F5C842;">✉</div>
+        <div class="h-cat-title" style="color:#fff;">Ask a human</div>
+        <div class="h-cat-count" style="color:#F5C842;">help@fintrack.app</div>
+        <div class="h-cat-desc" style="color:rgba(255,255,255,0.7);">Can't find it? Email us. Replies in 12 hours.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="h-articles">
+  <div class="h-articles-inner">
+
+    <!-- NO RESULTS -->
+    <div class="h-noresults" id="hNoresults">
+      <h3>No articles match your search.</h3>
+      <p>Try a different word, or <a href="mailto:help@fintrack.app">email help@fintrack.app</a> — we'll usually answer within 12 hours.</p>
+    </div>
+
+    <!-- Getting started -->
+    <div class="h-cat-section" id="cat-start">
+      <div class="h-cat-header">
+        <div class="ico">🚀</div>
+        <h2>Getting started</h2>
+        <span class="count">5 articles</span>
+      </div>
+
+      <details class="h-art" id="art-signup">
+        <summary>How do I sign up for FinTrack?</summary>
+        <div class="h-art-body">
+          <p>From the landing page, click <b>Start Your Free Trial</b> in the top right. You'll be asked for an email and password — that's it. No credit card is collected at signup; you'll only be asked to add one if you decide to continue past day 14.</p>
+          <p>Use the email you actually read — the one reminder email on day 12 of your trial goes there.</p>
+          <div class="meta">Updated May 2026 · See also: <a href="trial.html">14-day trial mechanics</a></div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-first-thing">
+        <summary>What's the first thing I should do after signing up?</summary>
+        <div class="h-art-body">
+          <p>Import 90 days of CSV history from your bank. This is the single highest-leverage action you can take on day one.</p>
+          <p>Without history, the Money Coach has nothing to read, the budget suggestions can't compute, and the Cash Flow Forecast will look flat. With 90 days, every AI feature works from your very first session.</p>
+          <div class="callout"><b>Then:</b> set your currency, add your paycheck as a recurring payment, and create exactly three budgets — not ten. The full step-by-step is in the <a href="guide.html">Get Started Guide</a>.</div>
+          <div class="meta">Updated May 2026 · See also: <a href="guide.html">Get Started Guide</a></div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-csv-format">
+        <summary>How do I import my bank's CSV, and what format does it need to be in?</summary>
+        <div class="h-art-body">
+          <p>Go to <span class="path">Transactions → Import CSV</span> and drag your file onto the drop zone. FinTrack auto-detects the columns, so you don't need a specific format.</p>
+          <p>That said, the most reliable columns are: <code>date</code>, <code>description</code> (or merchant), and <code>amount</code> (negative for expenses, positive for income). Most Canadian and US banks export exactly this from their "Statements" or "Activity" page.</p>
+          <ul>
+            <li><b>RBC, TD, BMO, CIBC:</b> Online Banking → Statements → Export → CSV</li>
+            <li><b>Chase, Wells Fargo, Capital One:</b> Activity → Download → CSV</li>
+            <li><b>Wise:</b> Account → Statement → Download CSV</li>
+          </ul>
+          <p>FinTrack dedupes rows by date + amount + merchant, so re-importing the same file is safe.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-csv-unrecognized">
+        <summary>FinTrack didn't recognize my CSV format. What do I do?</summary>
+        <div class="h-art-body">
+          <p>Open the CSV in any spreadsheet app and check that the first row is a header (column names like <code>Date, Description, Amount</code>). If your bank gave you a file with text above the actual data, delete those rows.</p>
+          <p>If the amount column uses two separate columns for "money in" and "money out" instead of one signed amount, merge them: positive values for money in, negative for money out. Save as a new CSV and try again.</p>
+          <div class="callout"><b>Still stuck?</b> Email the file to <a href="mailto:help@fintrack.app">help@fintrack.app</a>. We'll send back a normalized version and add your bank's format to the auto-detector.</div>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-no-history">
+        <summary>Can I use FinTrack without importing any past data?</summary>
+        <div class="h-art-body">
+          <p>Yes, but you'll feel the cost. With an empty account, the Money Coach has no context to give specific answers, the Cash Flow Forecast can't project, budget suggestions stay hidden, and Daily Insights have nothing to compare against.</p>
+          <p>If you start clean, expect the AI to feel useful around day 7 and genuinely sharp around day 30 — that's when several features cross their data-window thresholds.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Account & billing -->
+    <div class="h-cat-section" id="cat-billing">
+      <div class="h-cat-header">
+        <div class="ico">💳</div>
+        <h2>Account &amp; billing</h2>
+        <span class="count">5 articles</span>
+      </div>
+
+      <details class="h-art" id="art-pricing">
+        <summary>How much does FinTrack cost after the trial?</summary>
+        <div class="h-art-body">
+          <p><b>$4.99 USD/month</b> if you're billed in US dollars, or <b>$6.99 CAD/month</b> if you're billed in Canadian dollars. The difference covers Stripe's cross-border fee and the exchange rate — not a markup.</p>
+          <p>One plan, one price, monthly billing. There's no "Pro" tier, no AI upgrade, no annual lock-in. If we ever raise the price for new users, your old price is locked.</p>
+          <div class="meta">Updated May 2026 · See also: <a href="trial.html">Trial details</a></div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-cad-vs-usd">
+        <summary>Why is the Canadian price different from the US price?</summary>
+        <div class="h-art-body">
+          <p>$6.99 CAD is roughly equivalent to $4.99 USD after Stripe's cross-border fee (~2.5%) and the current CAD/USD exchange rate. We pass that cost through at-cost instead of marking up the Canadian price.</p>
+          <p>If the exchange rate moves significantly, we may adjust — but existing subscribers are grandfathered into whatever they signed up at.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-cancel">
+        <summary>How do I cancel my subscription?</summary>
+        <div class="h-art-body">
+          <p>Sign in, then go to <span class="path">Settings → Billing → Cancel subscription</span>. Two clicks, no retention flow, no "are you sure?" video.</p>
+          <p>You'll keep paid access until the end of your current billing month, then your account automatically drops to read-only. <b>Your data is never deleted automatically</b> — you can come back any time.</p>
+          <div class="callout"><b>Want to delete everything?</b> That's a different button: <span class="path">Settings → Account → Delete account</span>. You'll be asked to type <code>delete</code> to confirm.</div>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-refund">
+        <summary>Will I get a refund if I cancel mid-month?</summary>
+        <div class="h-art-body">
+          <p>No automatic refund — your access continues until the end of the billing period you already paid for. But if you cancel within 48 hours of the most recent charge and haven't actively used the AI features that month, email <a href="mailto:help@fintrack.app">help@fintrack.app</a> and we'll usually issue one as a one-time goodwill refund.</p>
+          <p>If FinTrack charged you after you'd already cancelled (we've seen it happen with Stripe webhook delays), email us — that's an unconditional refund, no judgment call.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-pause">
+        <summary>Can I pause my subscription instead of cancelling?</summary>
+        <div class="h-art-body">
+          <p>Not yet. Pause isn't built — if you need a break, cancel from <span class="path">Settings → Billing</span> and re-subscribe later. Your data stays in your account, and you'll skip the trial since you've already used it.</p>
+          <p>We're considering pause for next quarter. If it'd help you, email <a href="mailto:help@fintrack.app">help@fintrack.app</a> — those notes really do influence the roadmap.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Money Coach -->
+    <div class="h-cat-section" id="cat-coach">
+      <div class="h-cat-header">
+        <div class="ico">💬</div>
+        <h2>Money Coach</h2>
+        <span class="count">4 articles</span>
+      </div>
+
+      <details class="h-art" id="art-coach-vague">
+        <summary>Why is the Money Coach giving vague or generic answers?</summary>
+        <div class="h-art-body">
+          <p>The Coach is only as good as the data it can see. Three usual causes for vague answers:</p>
+          <ul>
+            <li><b>Not enough history.</b> The Coach reads your last 90 days. If you've only got 14 days in the account, expect hedged answers.</li>
+            <li><b>Vague question.</b> "How am I doing?" gets a soft summary. "Can I afford $620 for a Portland flight on the 28th?" gets a verdict pill.</li>
+            <li><b>No recurring income on file.</b> Without a paycheck entry, the Coach can't reason about your forward cash flow.</li>
+          </ul>
+          <p>Fix one of these and answers usually sharpen by the next question.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-coach-questions">
+        <summary>What kinds of questions work best?</summary>
+        <div class="h-art-body">
+          <p>Binary, specific, with a number. Some examples that consistently produce strong answers:</p>
+          <ul>
+            <li><i>"Can I afford a $400 jacket today?"</i></li>
+            <li><i>"Where did $300 go last weekend?"</i></li>
+            <li><i>"Is $250/month realistic for a vacation fund?"</i></li>
+            <li><i>"Did I overspend on dining this month?"</i></li>
+          </ul>
+          <p>Questions to avoid: "tell me about my finances," "give me advice," "what should I do?" — these get fuzzy because there's no specific thing to check.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-coach-credentials">
+        <summary>Can the Money Coach see my bank password or login?</summary>
+        <div class="h-art-body">
+          <p>No. FinTrack never holds your bank credentials. The Coach reads only the transactions you've imported via CSV or entered manually — there's no live connection to your bank, so there's nothing for it to leak even if it wanted to.</p>
+          <p>The Coach also doesn't talk to other users' data. Each account is isolated.</p>
+          <div class="meta">Updated May 2026 · See also: <a href="different.html">Why no bank linking</a></div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-coach-data-window">
+        <summary>How recent is the data the Coach uses?</summary>
+        <div class="h-art-body">
+          <p>Every Coach answer pulls from your <b>last 90 days</b> of transactions, plus your active recurring payments and current budgets. Newer data is weighted more heavily — what happened yesterday matters more than what happened in February.</p>
+          <p>If you just imported old transactions, give it 30 seconds and refresh — the Coach picks up new history automatically.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Receipt scanner -->
+    <div class="h-cat-section" id="cat-receipt">
+      <div class="h-cat-header">
+        <div class="ico">📸</div>
+        <h2>Receipt scanner</h2>
+        <span class="count">4 articles</span>
+      </div>
+
+      <details class="h-art" id="art-receipt-phone">
+        <summary>How do I scan a receipt on my phone?</summary>
+        <div class="h-art-body">
+          <p>Open FinTrack in your phone's browser, go to the <b>Transactions</b> page, and tap the floating <code>+</code> button in the bottom-right corner. Your camera will open. Point it at the receipt, tap the shutter, and confirm or edit the fields the AI extracted.</p>
+          <p>The whole flow takes about 15 seconds for a typical receipt.</p>
+          <div class="callout">📱 <b>Tip:</b> On iOS Safari, tap Share → Add to Home Screen so FinTrack opens like a native app. Camera permissions only need to be granted once.</div>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-receipt-wrong">
+        <summary>The scanner read the wrong amount. What now?</summary>
+        <div class="h-art-body">
+          <p>Every scan goes through a review step before saving. If the AI got something wrong, edit any field — merchant, amount, date, category — and tap save. The transaction lands corrected.</p>
+          <p>If the receipt is genuinely unreadable (faded thermal print, severe glare), the scanner refuses to save rather than guess. That's by design — wrong amounts in your data poison everything downstream.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-receipt-best">
+        <summary>What kinds of receipts work best?</summary>
+        <div class="h-art-body">
+          <p>Almost all of them. Specifically:</p>
+          <ul>
+            <li><b>Printed receipts</b> from groceries, restaurants, retail — even crumpled ones — read reliably.</li>
+            <li><b>Gas pump receipts</b> work, including bilingual ones from Canadian stations.</li>
+            <li><b>Phone screenshots</b> of emailed receipts work — you can scan a screenshot just like a paper receipt.</li>
+            <li><b>Faded thermal receipts</b> sometimes fail. If you can't read it with your eyes, the AI probably can't either.</li>
+          </ul>
+          <p>Tiny $3-5 purchases like coffee are often <b>faster to enter manually</b> than to scan. Use the right tool.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-receipt-desktop">
+        <summary>Can I scan receipts on desktop too?</summary>
+        <div class="h-art-body">
+          <p>Yes. On desktop, click the floating <code>+</code> on the Transactions page and you'll get an upload dialog instead of a camera. Drag a photo, a screenshot, or a PDF of an emailed receipt — the AI handles all three.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Budgets & Forecasts -->
+    <div class="h-cat-section" id="cat-budgets">
+      <div class="h-cat-header">
+        <div class="ico">🎯</div>
+        <h2>Budgets &amp; Forecasts</h2>
+        <span class="count">5 articles</span>
+      </div>
+
+      <details class="h-art" id="art-projection-line">
+        <summary>What's the yellow line on my budget bar?</summary>
+        <div class="h-art-body">
+          <p>That's the <b>projection line</b> — the day FinTrack predicts you'll cross the budget cap if you keep spending at your current rate.</p>
+          <p>It's drawn from real math: your spending in this category divided by days elapsed, projected over the rest of the month. If the line lands inside the bar (under 100%), you're on pace. If it lands past the end of the bar, you're projected to go over — and the date is shown in the warning below.</p>
+          <p>The line only appears after at least 7 days have passed in the budget period, since shorter windows are too noisy to extrapolate from.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-suggestions-missing">
+        <summary>Why don't I see any suggested budgets?</summary>
+        <div class="h-art-body">
+          <p>Budget suggestions require <b>at least 30 days of transaction history</b> with at least 2 transactions per category. Three usual reasons they don't show up yet:</p>
+          <ul>
+            <li>You haven't imported CSV history yet — fix this first, suggestions kick in immediately.</li>
+            <li>You've only used FinTrack for under 30 days. Suggestions appear automatically once you cross the threshold.</li>
+            <li>Most of your transactions are categorized as "Other." The suggestion engine deliberately skips "Other" because it's a catch-all — re-categorize a few transactions and useful suggestions appear.</li>
+          </ul>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-suggestions-math">
+        <summary>How are suggested budget amounts calculated?</summary>
+        <div class="h-art-body">
+          <p>FinTrack takes the total you've spent in each category over the last <b>90 days</b>, divides by the number of months covered, and rounds to a friendly number (nearest $10 below $200, nearest $50 above).</p>
+          <p>It's deliberately conservative — the suggestion reflects what you actually spend, not a generic "50/30/20" rule that ignores your reality. You can adjust before saving.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-forecast-math">
+        <summary>How is the 30-day Cash Flow Forecast calculated?</summary>
+        <div class="h-art-body">
+          <p>It's plain arithmetic, not AI. The math:</p>
+          <ul>
+            <li><b>Starting balance</b> = your current balance, computed from imported transactions.</li>
+            <li><b>+ Income events</b> = each recurring income (paychecks) added on their scheduled day.</li>
+            <li><b>− Recurring bills</b> = each recurring expense subtracted on its scheduled day.</li>
+            <li><b>− Daily discretionary spend</b> = the <i>smaller</i> of your 30-day and 60-day daily averages, applied to every other day. Taking the smaller is deliberate — it stops the forecast from over-promising.</li>
+          </ul>
+          <p>You could check it on paper. That's the point — forecasts are too important to leave to a model that might hallucinate.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-whatif">
+        <summary>What does the What-If button do?</summary>
+        <div class="h-art-body">
+          <p>Type in a hypothetical purchase amount and date. FinTrack re-runs the 30-day forecast with that purchase included and shows you the lowest your balance gets and the day it happens.</p>
+          <p>The result comes with a verdict pill — <b>Yes</b>, <b>Wait</b>, or <b>No</b> — based on whether the lowest point stays comfortably above zero, dips uncomfortably close, or crosses into red.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Privacy & data -->
+    <div class="h-cat-section" id="cat-privacy">
+      <div class="h-cat-header">
+        <div class="ico">🔒</div>
+        <h2>Privacy &amp; data</h2>
+        <span class="count">4 articles</span>
+      </div>
+
+      <details class="h-art" id="art-no-bank">
+        <summary>Why doesn't FinTrack connect to my bank?</summary>
+        <div class="h-art-body">
+          <p>On purpose. Three reasons:</p>
+          <ul>
+            <li><b>Privacy:</b> No bank credentials means there's nothing for FinTrack — or anyone who breaches FinTrack — to steal.</li>
+            <li><b>Reliability:</b> Auto-sync apps quietly break every few weeks when banks rotate their auth screens. CSV import is boring and never fails silently.</li>
+            <li><b>Control:</b> With CSV you can redact a sensitive row or skip a month. With live sync, every charge is visible immediately.</li>
+          </ul>
+          <p>Live connections are on the roadmap once we hit 1,000 paying users — until then, CSV.</p>
+          <div class="meta">Updated May 2026 · See also: <a href="different.html">Privacy stance in full</a></div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-data-storage">
+        <summary>Where is my data stored?</summary>
+        <div class="h-art-body">
+          <p>Transactions, budgets, and account data live in a PostgreSQL database we operate. Receipt images are processed in-memory by Claude's vision model and not retained on disk after extraction. Stripe handles payment data — we never see your card number.</p>
+          <p>We don't share data with advertisers, brokers, or "anonymized" aggregators. We don't sell exports. The business model is the $4.99 subscription. That's it.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-export">
+        <summary>How do I export everything I've got in FinTrack?</summary>
+        <div class="h-art-body">
+          <p>Go to <span class="path">Settings → Export → Download CSV</span>. You get a single CSV with every transaction you've imported or added, including categories, notes, and dates.</p>
+          <p>Budgets and recurring payments export separately from the same screen. <b>Stash a copy in iCloud Drive or Google Drive once a month</b> — your data, even if FinTrack disappeared tomorrow.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-delete">
+        <summary>How do I permanently delete my account?</summary>
+        <div class="h-art-body">
+          <p>From <span class="path">Settings → Account → Delete account</span>. You'll be asked to type the word <code>delete</code> to confirm — this is intentional, because deletion is irreversible.</p>
+          <p>Within 30 days, all of your transactions, budgets, recurring entries, and account metadata are removed from the database. The only thing we keep is a hashed record that you previously held an account, so a future trial can't be opened with the same email.</p>
+          <div class="callout"><b>Want a backup first?</b> Export a CSV before clicking delete. Once you confirm, the data is gone.</div>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="h-cat-section" id="cat-trouble">
+      <div class="h-cat-header">
+        <div class="ico">🛠️</div>
+        <h2>Troubleshooting</h2>
+        <span class="count">4 articles</span>
+      </div>
+
+      <details class="h-art" id="art-cant-load">
+        <summary>The dashboard won't load — what should I try?</summary>
+        <div class="h-art-body">
+          <p>In order of likelihood:</p>
+          <ul>
+            <li><b>Hard refresh.</b> Cmd-Shift-R on Mac, Ctrl-Shift-R on Windows. Solves about 60% of "blank page" reports.</li>
+            <li><b>Sign out, sign back in.</b> Settings → Account → Sign Out. Clears stale session state.</li>
+            <li><b>Try a different browser.</b> If it works in Chrome but not Safari, the issue is browser-specific — email us with the browser version.</li>
+            <li><b>Check your trial status.</b> If you're past day 14 without a card on file, the dashboard goes read-only and most cards hide. <span class="path">Settings → Billing</span> shows where you stand.</li>
+          </ul>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-coach-silent">
+        <summary>The Money Coach isn't responding to my question.</summary>
+        <div class="h-art-body">
+          <p>The Coach has a rate limit of 30 questions per hour per account, to prevent abuse. If you've asked a lot of questions rapidly, that's the most likely cause — wait a few minutes and try again.</p>
+          <p>Other possibilities: a temporary outage at our AI provider (rare, usually resolved within 10-15 minutes), or your trial has ended without a card on file. Both will show a banner on the page explaining what's happening.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-currency-wrong">
+        <summary>My currency is showing wrong on some screens.</summary>
+        <div class="h-art-body">
+          <p>Currency is set once in <span class="path">Settings → Preferences → Currency</span>. After changing it, refresh the page — most screens recompute immediately, but the Money Coach starts using the new currency in its next response, not retroactively.</p>
+          <p>If you imported CSV with amounts in a different currency than your account setting, FinTrack treats them as raw numbers in your set currency — it doesn't auto-convert. If you need to merge multi-currency data, email <a href="mailto:help@fintrack.app">help@fintrack.app</a> and we'll help convert before import.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+
+      <details class="h-art" id="art-trial-error">
+        <summary>I'm getting a "subscription required" error during my trial.</summary>
+        <div class="h-art-body">
+          <p>This usually means your trial expired while the session was still open. Sign out, sign back in, and check the banner at the top of the dashboard.</p>
+          <p>If you're certain you're still inside your 14 days and seeing this error, it's likely a billing system glitch on our end. Email <a href="mailto:help@fintrack.app">help@fintrack.app</a> with your account email and we'll reset the trial state usually within an hour during weekdays.</p>
+          <div class="meta">Updated May 2026</div>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</section>
+
+<!-- STILL NEED HELP -->
+<section class="h-contact">
+  <div class="h-contact-inner">
+    <div class="h-contact-left">
+      <h2>Still stuck? <em>Talk to a human.</em></h2>
+      <p>Every email is read by an actual person on the FinTrack team. We answer in plain English, usually within 12 hours on weekdays. There's no tier 2 support because there's no tier 1 — just us.</p>
+    </div>
+    <div class="h-contact-cards">
+      <div class="h-contact-card">
+        <h4>📩 Email</h4>
+        <p><a href="mailto:help@fintrack.app">help@fintrack.app</a> — tell us what you tried, paste a screenshot if useful. Replies usually within 12 hours, faster during weekdays.</p>
+      </div>
+      <div class="h-contact-card">
+        <h4>💬 Ask the Coach</h4>
+        <p>Money Coach handles meta-questions too. Ask <i>"how do I export my CSV?"</i> — it'll give you the exact path.</p>
+      </div>
+      <div class="h-contact-card">
+        <h4>🐛 Report a bug</h4>
+        <p><a href="mailto:bugs@fintrack.app">bugs@fintrack.app</a> — for anything broken. Include the page URL and what you were doing. Patches usually ship within a week.</p>
+      </div>
+      <div class="h-contact-card">
+        <h4>💡 Suggest a feature</h4>
+        <p><a href="mailto:ideas@fintrack.app">ideas@fintrack.app</a> — every suggestion goes into the roadmap doc. We won't always build it, but we'll read it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <div class="footer-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="fsoc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" class="fsoc" aria-label="TikTok">
+          <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="about.html" data-about-link>About</a></div>
+      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+  </div>
+</footer>
+
+<script>
+  // Search filter
+  const searchInput = document.getElementById('hSearch');
+  const articles = document.querySelectorAll('.h-art');
+  const sections = document.querySelectorAll('.h-cat-section');
+
+  function applySearch() {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) {
+      // Reset
+      document.body.classList.remove('is-empty');
+      articles.forEach(a => { a.style.display = ''; a.removeAttribute('open'); });
+      sections.forEach(s => s.style.display = '');
+      return;
+    }
+    let anyMatch = false;
+    sections.forEach(section => {
+      const sectionArts = section.querySelectorAll('.h-art');
+      let sectionAnyMatch = false;
+      sectionArts.forEach(art => {
+        const text = art.textContent.toLowerCase();
+        if (text.includes(q)) {
+          art.style.display = '';
+          art.setAttribute('open', '');
+          sectionAnyMatch = true;
+          anyMatch = true;
+        } else {
+          art.style.display = 'none';
+          art.removeAttribute('open');
+        }
+      });
+      section.style.display = sectionAnyMatch ? '' : 'none';
+    });
+    document.body.classList.toggle('is-empty', !anyMatch);
+  }
+
+  searchInput.addEventListener('input', applySearch);
+
+  // Focus search on `/` keypress
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== searchInput && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Open the article matching the URL hash on load
+  if (window.location.hash) {
+    const target = document.querySelector(window.location.hash);
+    if (target && target.classList.contains('h-art')) {
+      target.setAttribute('open', '');
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+  }
+
+  document.querySelectorAll('[data-about-link]').forEach(a => {
+    a.addEventListener('click', () => { window.location.href = 'about.html'; });
+  });
+  document.querySelectorAll('[data-accessibility-link]').forEach(a => {
+    a.addEventListener('click', () => { window.location.href = '/accessibility.html'; });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy – FinTrack</title>
+<meta name="description" content="What FinTrack collects, why, who else processes it, and how to export or delete your data. PIPEDA-compliant.">
+<meta name="theme-color" content="#163832">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root { --dark1:#163832; --dark2:#235347; --mid:#8EB69B; --light:#DAF1DE; --white:#fff; --text:#163832; --text2:#3d6b5f; --f:'Lato',sans-serif; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+.nav { position: fixed; top:0; left:0; right:0; z-index:200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: #F5C842; color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+.lh-hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(560px 320px at 12% 16%, rgba(245,200,66,0.10), transparent 70%),
+    radial-gradient(700px 420px at 92% 88%, rgba(142,182,155,0.18), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 55%, var(--dark2) 100%);
+  padding: 80px 80px 70px; position: relative; overflow: hidden;
+}
+.lh-hero::before { content:''; position: absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 14px), repeating-linear-gradient(90deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 22px); mix-blend-mode: overlay; pointer-events: none; }
+.lh-hero-inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
+.lh-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase; color: #F5C842; background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30); padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
+.lh-hero h1 { font-size: clamp(32px, 4.5vw, 48px); font-weight: 900; line-height: 1.06; letter-spacing: -1px; color: #fff; margin-bottom: 14px; }
+.lh-hero p { font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.6; max-width: 60ch; }
+.lh-hero .meta { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); }
+.lh-hero .meta b { color: #DAF1DE; font-weight: 700; }
+
+.lh-doc { background: #fff; padding: 60px 80px 80px; }
+.lh-doc-inner { max-width: 880px; margin: 0 auto; }
+
+.lh-tldr { background: #f6faf7; border: 1px solid rgba(142,182,155,0.28); border-left: 4px solid var(--mid); border-radius: 10px; padding: 20px 24px; margin-bottom: 40px; }
+.lh-tldr h3 { font-size: 14px; font-weight: 900; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dark2); margin-bottom: 10px; }
+.lh-tldr ul { padding-left: 20px; }
+.lh-tldr li { font-size: 14.5px; line-height: 1.6; color: var(--dark1); margin-bottom: 6px; }
+
+.lh-toc { background: #f6faf7; border: 1px solid rgba(142,182,155,0.22); border-radius: 10px; padding: 18px 22px; margin-bottom: 40px; }
+.lh-toc h4 { font-size: 11px; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+.lh-toc ol { padding-left: 22px; column-count: 2; column-gap: 36px; }
+.lh-toc li { font-size: 14px; color: var(--text2); margin-bottom: 4px; line-height: 1.45; break-inside: avoid; }
+.lh-toc li a { color: var(--text2); text-decoration: none; }
+.lh-toc li a:hover { color: var(--dark2); text-decoration: underline; }
+
+.lh-section { margin-bottom: 36px; }
+.lh-section h2 { font-size: 22px; font-weight: 900; color: var(--dark1); letter-spacing: -0.4px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(142,182,155,0.30); }
+.lh-section h2 .num { color: var(--mid); margin-right: 10px; font-weight: 800; }
+.lh-section h3 { font-size: 15px; font-weight: 800; color: var(--dark1); margin: 16px 0 6px; }
+.lh-section p, .lh-section li { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.lh-section ul, .lh-section ol { padding-left: 22px; margin-bottom: 10px; }
+.lh-section a { color: var(--dark2); font-weight: 700; }
+.lh-section code { background: #f6faf7; border: 1px solid rgba(142,182,155,0.28); padding: 1px 6px; border-radius: 4px; font-size: 13px; font-family: SFMono-Regular, Consolas, monospace; }
+
+.lh-callout { background: linear-gradient(90deg, rgba(245,200,66,0.10), transparent); border-left: 3px solid #F5C842; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; line-height: 1.55; color: var(--dark1); }
+
+/* Data table */
+.lh-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; border: 1px solid rgba(142,182,155,0.32); border-radius: 10px; overflow: hidden; }
+.lh-table th { background: var(--dark1); color: #DAF1DE; padding: 10px 14px; text-align: left; font-weight: 800; letter-spacing: 0.4px; font-size: 12.5px; text-transform: uppercase; }
+.lh-table td { padding: 12px 14px; border-top: 1px solid rgba(142,182,155,0.20); vertical-align: top; color: var(--text); line-height: 1.55; }
+.lh-table tr:nth-child(even) td { background: #f6faf7; }
+.lh-table td:first-child { font-weight: 800; color: var(--dark1); }
+
+.lh-contact-box { background: var(--light); border: 1px solid rgba(142,182,155,0.30); border-radius: 12px; padding: 22px; margin-top: 48px; text-align: center; }
+.lh-contact-box h3 { font-size: 16px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; }
+.lh-contact-box p { font-size: 14px; color: var(--text2); margin-bottom: 10px; }
+.lh-contact-box a { color: var(--dark2); font-weight: 800; }
+
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; } .nav-menu { display: none; }
+  .lh-hero, .lh-doc { padding-left: 22px; padding-right: 22px; }
+  .lh-toc ol { column-count: 1; }
+  .lh-table th, .lh-table td { padding: 8px 10px; font-size: 13px; }
+  footer { padding: 60px 22px 30px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-cols { flex-wrap: wrap; gap: 32px; }
+}
+</style>
+</head>
+<body id="top">
+
+<nav class="nav">
+  <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-login">Log In</a>
+    <a href="index.html" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<section class="lh-hero">
+  <div class="lh-hero-inner">
+    <span class="lh-eyebrow">Legal · Privacy Policy</span>
+    <h1>FinTrack Privacy Policy</h1>
+    <p>What we collect, why, who else sees it, and how to get it all back or wipe it. Written for a real person to read once and understand.</p>
+    <p class="meta"><b>Effective date:</b> May 22, 2026 · <b>Last updated:</b> May 22, 2026 · <b>Compliance:</b> PIPEDA (Canada), GDPR-aligned where applicable</p>
+  </div>
+</section>
+
+<section class="lh-doc">
+  <div class="lh-doc-inner">
+
+    <div class="lh-tldr">
+      <h3>The short version</h3>
+      <ul>
+        <li>We collect what you give us — email, password (hashed), transactions, budgets — to provide the service. Nothing else.</li>
+        <li>We share data with <strong>only</strong> the third parties we need to run FinTrack: Stripe (payments), Resend (email), Anthropic (AI), and our database/hosting provider.</li>
+        <li>We don't sell your data. We don't run ads. We don't use cross-site tracking or analytics beyond what's needed to operate the app.</li>
+        <li>You can export everything as CSV any time, and permanently delete your account from Settings.</li>
+        <li>You have rights under PIPEDA (Canada) and similar laws. We honor them.</li>
+      </ul>
+    </div>
+
+    <div class="lh-toc">
+      <h4>What's in here</h4>
+      <ol>
+        <li><a href="#s1">Who's collecting your data</a></li>
+        <li><a href="#s2">What we collect &amp; why</a></li>
+        <li><a href="#s3">How long we keep it</a></li>
+        <li><a href="#s4">Where it lives</a></li>
+        <li><a href="#s5">Who else processes it</a></li>
+        <li><a href="#s6">Cookies &amp; tracking</a></li>
+        <li><a href="#s7">How we protect it</a></li>
+        <li><a href="#s8">Your rights</a></li>
+        <li><a href="#s9">Children's privacy</a></li>
+        <li><a href="#s10">International transfers</a></li>
+        <li><a href="#s11">Updates to this policy</a></li>
+        <li><a href="#s12">Contact &amp; complaints</a></li>
+      </ol>
+    </div>
+
+    <div class="lh-section" id="s1">
+      <h2><span class="num">1.</span>Who's collecting your data</h2>
+      <p>FinTrack ("we", "us") is the operator of <a href="https://fintrack.app">fintrack.app</a>, based in the Province of Quebec, Canada, and currently operated as a sole proprietorship. For the purpose of Canadian privacy law (PIPEDA) and applicable provincial law, FinTrack is the data controller.</p>
+      <p>If you're an individual in the EU/EEA or the UK, the legal basis for processing your data is your <strong>contract</strong> with us (to deliver the service you signed up for) and our <strong>legitimate interests</strong> (running the business, preventing abuse).</p>
+    </div>
+
+    <div class="lh-section" id="s2">
+      <h2><span class="num">2.</span>What we collect &amp; why</h2>
+      <p>This is the full list. We don't collect anything not on it.</p>
+
+      <table class="lh-table">
+        <thead>
+          <tr><th>Category</th><th>Examples</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Account info</td>
+            <td>Email, name (first/last), hashed password, preferred currency, preferred language, optional phone number, optional profile picture</td>
+            <td>To log you in, talk to you, and personalize the app</td>
+          </tr>
+          <tr>
+            <td>Financial data you import</td>
+            <td>Transactions, budgets, recurring payments, savings goals, categories, account labels</td>
+            <td>To provide the core FinTrack service</td>
+          </tr>
+          <tr>
+            <td>AI Money Coach exchanges</td>
+            <td>Questions you ask, FinTrack's answers, your feedback (thumbs up/down)</td>
+            <td>To show your conversation history; helps us improve answer quality</td>
+          </tr>
+          <tr>
+            <td>Receipts you scan</td>
+            <td>Photos you upload from the receipt scanner</td>
+            <td>Processed in-memory only — not stored on disk after the AI extracts the fields</td>
+          </tr>
+          <tr>
+            <td>Subscription &amp; billing</td>
+            <td>Stripe customer ID, Stripe subscription ID, billing currency, billing status</td>
+            <td>To run your subscription. <strong>We never store your card number, CVC, or full card details — Stripe does.</strong></td>
+          </tr>
+          <tr>
+            <td>Service logs</td>
+            <td>Request timestamps, IP address (briefly, for abuse prevention), error logs</td>
+            <td>To keep the service running and to detect/prevent abuse</td>
+          </tr>
+          <tr>
+            <td>Abuse-prevention hash</td>
+            <td>A one-way SHA-256 hash of your canonical email, kept after account deletion</td>
+            <td>So a closed account can't open a new free trial. We can't reverse the hash to recover the email.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="lh-callout">
+        <strong>What we explicitly don't collect:</strong> we don't use Plaid, Yodlee, or any bank-aggregation service, so we never see your bank credentials. We don't have third-party analytics (Google Analytics, Mixpanel, Segment, etc.). We don't have ad networks, retargeting pixels, or cross-site tracking. We don't request location, contacts, or microphone access.
+      </div>
+    </div>
+
+    <div class="lh-section" id="s3">
+      <h2><span class="num">3.</span>How long we keep it</h2>
+      <ul>
+        <li><strong>While your account is active:</strong> we keep all your data so the app works.</li>
+        <li><strong>If you cancel your subscription:</strong> data stays in read-only access. You can come back any time. No deletion.</li>
+        <li><strong>If you delete your account</strong> via <code>Settings → Account → Delete account</code>: all your personal data, transactions, budgets, goals, recurring entries, AI exchanges, and email events are removed from the production database within <strong>30 days</strong>. Backups holding the same data are overwritten on their normal rotation cycle within a further 60 days.</li>
+        <li><strong>The canonical-email hash</strong> (Section 2 above) is kept indefinitely so deleted accounts can't reopen new trials. It is a one-way hash — we cannot recover your email from it.</li>
+        <li><strong>Payment records</strong> kept by Stripe follow Stripe's own retention policies, which are subject to Canadian and US tax-record laws (typically 7 years).</li>
+      </ul>
+    </div>
+
+    <div class="lh-section" id="s4">
+      <h2><span class="num">4.</span>Where it lives</h2>
+      <p>Production data is stored in a PostgreSQL database operated on our behalf by our hosting provider. Until FinTrack moves to a permanent production deployment, this is a North-American-region cloud database. Once we publish a fixed primary region (planned for our v1 production launch), we'll update this section with the exact location.</p>
+      <p>Transit between you and our servers uses HTTPS/TLS. Passwords are stored as one-way <strong>bcrypt</strong> hashes — we cannot recover your password, only reset it.</p>
+    </div>
+
+    <div class="lh-section" id="s5">
+      <h2><span class="num">5.</span>Who else processes it</h2>
+      <p>To run FinTrack we share specific data with these <strong>sub-processors</strong>. We've vetted each one and require they meet at least our own standards.</p>
+
+      <table class="lh-table">
+        <thead>
+          <tr><th>Sub-processor</th><th>What they process</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stripe, Inc.</td>
+            <td>Your name, email, billing address, payment method (card details handled directly by Stripe — never by us)</td>
+            <td>Subscription payments</td>
+          </tr>
+          <tr>
+            <td>Resend (email infrastructure)</td>
+            <td>Your email address + the contents of transactional emails we send you</td>
+            <td>Delivering welcome, trial-reminder, payment-receipt, password-reset, and account-event emails</td>
+          </tr>
+          <tr>
+            <td>Anthropic (Claude AI)</td>
+            <td>The text of your Money Coach questions + a summary of recent transaction data we attach as context</td>
+            <td>Generating AI-powered answers and daily insights</td>
+          </tr>
+          <tr>
+            <td>Hosting / database provider</td>
+            <td>All FinTrack application data, stored encrypted at rest</td>
+            <td>Running the FinTrack servers</td>
+          </tr>
+          <tr>
+            <td>Cloudflare</td>
+            <td>Inbound HTTP requests, IP addresses (briefly)</td>
+            <td>DNS, DDoS protection, TLS termination</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>We don't share data with advertisers, brokers, "anonymized" aggregators, or any third party not on this list. If we add a sub-processor we'll update this page at least 14 days before the change takes effect.</p>
+    </div>
+
+    <div class="lh-section" id="s6">
+      <h2><span class="num">6.</span>Cookies &amp; tracking</h2>
+      <p>FinTrack uses <strong>one cookie</strong>: a session cookie that keeps you logged in. It's strictly necessary for the service to function and is not used for tracking. It expires when you log out or close your browser session.</p>
+      <p>We also store a few non-sensitive preferences (your chosen currency, language, and onboarding completion status) in your browser's <code>localStorage</code> so the app feels consistent between visits. None of these leave your device.</p>
+      <p>We do not use marketing pixels, fingerprinting libraries, or cross-site tracking technology.</p>
+    </div>
+
+    <div class="lh-section" id="s7">
+      <h2><span class="num">7.</span>How we protect it</h2>
+      <ul>
+        <li>All traffic between you and FinTrack uses HTTPS/TLS.</li>
+        <li>Passwords are stored as <strong>bcrypt</strong> hashes with a per-user salt.</li>
+        <li>Production database is encrypted at rest.</li>
+        <li>Access to production systems is restricted and authenticated.</li>
+        <li>We monitor for anomalous activity (mass exports, repeated login failures, etc.) and rate-limit accordingly.</li>
+        <li>We've removed the most common security footguns (no plaintext password storage, no shared admin accounts, no third-party JS we can't audit).</li>
+      </ul>
+      <p>No security program is bulletproof. If we discover a breach affecting your personal information, we will notify you and the appropriate regulators as required by PIPEDA and other applicable laws, generally within <strong>72 hours</strong> of confirming the incident.</p>
+    </div>
+
+    <div class="lh-section" id="s8">
+      <h2><span class="num">8.</span>Your rights</h2>
+      <p>Under PIPEDA (Canada), GDPR (EU/UK), and similar privacy laws elsewhere, you have rights over your personal data. We honor all of them:</p>
+
+      <h3>Access</h3>
+      <p>You can see every transaction, budget, goal, and recurring entry inside the app at any time. For account metadata (created_at, login history, email events sent), email <a href="mailto:help@fintrack.app">help@fintrack.app</a> and we'll send the full record within 30 days.</p>
+
+      <h3>Portability</h3>
+      <p>From <code>Settings → Export</code> you can download every transaction as a portable CSV file at any point — while subscribed, in read-only mode, or after cancellation.</p>
+
+      <h3>Correction</h3>
+      <p>You can edit any data you've entered directly in the app. For things you can't edit (your email address, account creation date), email us.</p>
+
+      <h3>Deletion</h3>
+      <p>From <code>Settings → Account → Delete account</code> you can permanently erase everything. The deletion is irreversible — you'll be asked to type the word "delete" to confirm. See Section 3 for retention specifics.</p>
+
+      <h3>Withdraw consent</h3>
+      <p>You can withdraw consent to our processing at any time by deleting your account. We can't continue providing the service without processing the data, so withdrawal of consent ends our relationship.</p>
+
+      <h3>Object &amp; restrict</h3>
+      <p>If you want us to stop using your data for a specific purpose without deleting the account, email <a href="mailto:help@fintrack.app">help@fintrack.app</a>. We'll comply unless we have a legal reason not to.</p>
+
+      <h3>Complain</h3>
+      <p>If you think we've mishandled your data, please write to <a href="mailto:help@fintrack.app">help@fintrack.app</a> first — we'd like a chance to fix it. If we can't resolve it, you can file a complaint with the <a href="https://www.priv.gc.ca/">Office of the Privacy Commissioner of Canada</a>, or your local data-protection authority.</p>
+    </div>
+
+    <div class="lh-section" id="s9">
+      <h2><span class="num">9.</span>Children's privacy</h2>
+      <p>FinTrack is not directed to children under 13. We don't knowingly collect personal information from anyone under 13. If you believe a child has created a FinTrack account, please email us at <a href="mailto:help@fintrack.app">help@fintrack.app</a> and we'll delete it.</p>
+    </div>
+
+    <div class="lh-section" id="s10">
+      <h2><span class="num">10.</span>International transfers</h2>
+      <p>FinTrack is operated from Canada. If you're in the EU/UK or elsewhere, your personal data may be transferred to and processed in Canada, the United States (where our payment processor Stripe and our AI provider Anthropic operate), and our hosting provider's regions.</p>
+      <p>Where required, we rely on the European Commission's <strong>Standard Contractual Clauses</strong> (SCCs) or equivalent legal mechanisms in our contracts with these sub-processors to ensure your data is protected at a level equivalent to GDPR.</p>
+    </div>
+
+    <div class="lh-section" id="s11">
+      <h2><span class="num">11.</span>Updates to this policy</h2>
+      <p>We may update this Privacy Policy from time to time. For material changes we will email active users at the email on file at least <strong>14 days before</strong> the change takes effect. Non-material updates (clarifications, formatting) take effect when posted. The "Last updated" date at the top is always current.</p>
+    </div>
+
+    <div class="lh-section" id="s12">
+      <h2><span class="num">12.</span>Contact &amp; complaints</h2>
+      <p>Questions, requests to exercise your rights, or complaints:</p>
+      <ul>
+        <li>Email: <a href="mailto:help@fintrack.app">help@fintrack.app</a></li>
+        <li>Subject line tip: starting with <code>[PRIVACY]</code> helps us route it correctly</li>
+      </ul>
+      <p>We aim to respond within 12 hours on business days and to resolve substantive requests within <strong>30 calendar days</strong>.</p>
+    </div>
+
+    <div class="lh-contact-box">
+      <h3>Specific questions?</h3>
+      <p>Common privacy and data questions are answered in our Help Center.</p>
+      <p><a href="help.html#cat-privacy">Privacy &amp; data FAQ →</a></p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="#">About</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund policy</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refunds</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

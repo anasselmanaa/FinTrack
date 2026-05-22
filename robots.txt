@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Private application and authentication surfaces.
+Disallow: /api/
+Disallow: /auth/
+Disallow: /index.html
+Disallow: /login.html
+Disallow: /forgot-password.html
+Disallow: /reset-password.html
+Disallow: /verify-email.html
+Disallow: /frontend/index.html
+Disallow: /frontend/login.html
+Disallow: /frontend/forgot-password.html
+Disallow: /frontend/reset-password.html
+Disallow: /frontend/verify-email.html
+
+Sitemap: https://fintrack.app/sitemap.xml

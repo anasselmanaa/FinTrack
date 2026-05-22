@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service – FinTrack</title>
+<meta name="description" content="The full FinTrack Terms of Service, in plain English. Subscription, cancellation, refunds, and your rights.">
+<meta name="theme-color" content="#163832">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1:  #163832;
+  --dark2:  #235347;
+  --mid:    #8EB69B;
+  --light:  #DAF1DE;
+  --white:  #ffffff;
+  --text:   #163832;
+  --text2:  #3d6b5f;
+  --f: 'Lato', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* ═════ NAV ═════ */
+.nav { position: fixed; top:0; left:0; right:0; z-index:200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; gap: 0; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: #F5C842; color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+/* ═════ HERO ═════ */
+.lh-hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(560px 320px at 12% 16%, rgba(245,200,66,0.10), transparent 70%),
+    radial-gradient(700px 420px at 92% 88%, rgba(142,182,155,0.18), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 55%, var(--dark2) 100%);
+  padding: 80px 80px 70px;
+  position: relative; overflow: hidden;
+  text-align: left;
+}
+.lh-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 22px);
+  mix-blend-mode: overlay; pointer-events: none;
+}
+.lh-hero-inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
+.lh-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
+  color: #F5C842; background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30);
+  padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
+}
+.lh-hero h1 {
+  font-size: clamp(32px, 4.5vw, 48px); font-weight: 900;
+  line-height: 1.06; letter-spacing: -1px; color: #fff; margin-bottom: 14px;
+}
+.lh-hero p { font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.6; max-width: 60ch; }
+.lh-hero .meta { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); }
+.lh-hero .meta b { color: #DAF1DE; font-weight: 700; }
+
+/* ═════ CONTENT ═════ */
+.lh-doc { background: #fff; padding: 60px 80px 80px; }
+.lh-doc-inner { max-width: 880px; margin: 0 auto; }
+
+.lh-tldr {
+  background: #f6faf7;
+  border: 1px solid rgba(142,182,155,0.28);
+  border-left: 4px solid var(--mid);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+.lh-tldr h3 { font-size: 14px; font-weight: 900; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dark2); margin-bottom: 10px; }
+.lh-tldr ul { padding-left: 20px; }
+.lh-tldr li { font-size: 14.5px; line-height: 1.6; color: var(--dark1); margin-bottom: 6px; }
+
+.lh-section { margin-bottom: 36px; }
+.lh-section h2 {
+  font-size: 22px; font-weight: 900; color: var(--dark1);
+  letter-spacing: -0.4px; margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(142,182,155,0.30);
+}
+.lh-section h2 .num { color: var(--mid); margin-right: 10px; font-weight: 800; }
+.lh-section h3 { font-size: 15px; font-weight: 800; color: var(--dark1); margin: 16px 0 6px; }
+.lh-section p, .lh-section li { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.lh-section ul, .lh-section ol { padding-left: 22px; margin-bottom: 10px; }
+.lh-section a { color: var(--dark2); font-weight: 700; }
+.lh-section code {
+  background: #f6faf7; border: 1px solid rgba(142,182,155,0.28);
+  padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  font-family: SFMono-Regular, Consolas, monospace;
+}
+
+.lh-callout {
+  background: linear-gradient(90deg, rgba(245,200,66,0.10), transparent);
+  border-left: 3px solid #F5C842;
+  padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 14px 0;
+  font-size: 14px; line-height: 1.55; color: var(--dark1);
+}
+
+.lh-toc {
+  background: #f6faf7;
+  border: 1px solid rgba(142,182,155,0.22);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 40px;
+}
+.lh-toc h4 { font-size: 11px; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+.lh-toc ol { padding-left: 22px; column-count: 2; column-gap: 36px; }
+.lh-toc li { font-size: 14px; color: var(--text2); margin-bottom: 4px; line-height: 1.45; break-inside: avoid; }
+.lh-toc li a { color: var(--text2); text-decoration: none; }
+.lh-toc li a:hover { color: var(--dark2); text-decoration: underline; }
+
+.lh-contact-box {
+  background: var(--light);
+  border: 1px solid rgba(142,182,155,0.30);
+  border-radius: 12px;
+  padding: 22px;
+  margin-top: 48px;
+  text-align: center;
+}
+.lh-contact-box h3 { font-size: 16px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; }
+.lh-contact-box p { font-size: 14px; color: var(--text2); margin-bottom: 10px; }
+.lh-contact-box a { color: var(--dark2); font-weight: 800; }
+
+/* ═════ FOOTER (matches landing) ═════ */
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; } .nav-menu { display: none; }
+  .lh-hero, .lh-doc { padding-left: 22px; padding-right: 22px; }
+  .lh-toc ol { column-count: 1; }
+  footer { padding: 60px 22px 30px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-cols { flex-wrap: wrap; gap: 32px; }
+}
+</style>
+</head>
+<body id="top">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-login">Log In</a>
+    <a href="index.html" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="lh-hero">
+  <div class="lh-hero-inner">
+    <span class="lh-eyebrow">Legal · Terms of Service</span>
+    <h1>FinTrack Terms of Service</h1>
+    <p>These are the rules of using FinTrack — written in plain English, kept short on purpose. By creating an account or paying for a subscription, you agree to them.</p>
+    <p class="meta"><b>Effective date:</b> May 22, 2026 · <b>Last updated:</b> May 22, 2026 · <b>Governing law:</b> Province of Quebec, Canada</p>
+  </div>
+</section>
+
+<!-- DOC -->
+<section class="lh-doc">
+  <div class="lh-doc-inner">
+
+    <!-- Quick summary -->
+    <div class="lh-tldr">
+      <h3>The short version</h3>
+      <ul>
+        <li>FinTrack is a personal-finance app you pay <strong>$4.99 USD / $6.99 CAD</strong> per month for, with a 14-day free trial first.</li>
+        <li>You own your data. You can export it any time. You can delete your account permanently in Settings.</li>
+        <li>We're a software tool, not a financial advisor. We don't move your money. Use at your own discretion.</li>
+        <li>Cancel any time. Your access continues until the end of the month you've already paid for.</li>
+        <li>If you abuse the service (fraud, scraping, multiple trials, harassment), we can suspend or close the account.</li>
+      </ul>
+    </div>
+
+    <!-- TOC -->
+    <div class="lh-toc">
+      <h4>What's in here</h4>
+      <ol>
+        <li><a href="#s1">Who runs FinTrack</a></li>
+        <li><a href="#s2">What FinTrack does (and doesn't do)</a></li>
+        <li><a href="#s3">Your account</a></li>
+        <li><a href="#s4">The 14-day free trial</a></li>
+        <li><a href="#s5">Subscription &amp; payment</a></li>
+        <li><a href="#s6">Cancellation</a></li>
+        <li><a href="#s7">Refunds</a></li>
+        <li><a href="#s8">Your data &amp; export</a></li>
+        <li><a href="#s9">Acceptable use</a></li>
+        <li><a href="#s10">Suspension &amp; termination</a></li>
+        <li><a href="#s11">Disclaimers</a></li>
+        <li><a href="#s12">Limit of liability</a></li>
+        <li><a href="#s13">Changes to these terms</a></li>
+        <li><a href="#s14">Disputes &amp; governing law</a></li>
+        <li><a href="#s15">Contact</a></li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <div class="lh-section" id="s1">
+      <h2><span class="num">1.</span>Who runs FinTrack</h2>
+      <p>"FinTrack," "we," "us," or "our" refers to the operator of the FinTrack personal-finance application available at <a href="https://fintrack.app">fintrack.app</a>. We're based in the Province of Quebec, Canada, and FinTrack is currently operated as a sole proprietorship doing business under the name "FinTrack."</p>
+      <p>"You" or "the user" means the person who creates a FinTrack account.</p>
+    </div>
+
+    <!-- 2 -->
+    <div class="lh-section" id="s2">
+      <h2><span class="num">2.</span>What FinTrack does (and doesn't do)</h2>
+      <h3>What FinTrack is</h3>
+      <p>FinTrack is a personal-finance software-as-a-service application. You import your own transactions (via CSV from your bank, by scanning a receipt with your phone camera, or by entering them manually), and FinTrack helps you categorize, budget, set savings goals, see forecasts, and ask questions about your spending.</p>
+      <h3>What FinTrack is not</h3>
+      <ul>
+        <li><strong>Not a financial advisor.</strong> FinTrack does not provide investment, legal, accounting, or tax advice. Anything our AI Money Coach says is educational, not regulated advice.</li>
+        <li><strong>Not a payment processor or bank.</strong> FinTrack does not hold, move, transfer, or store your money. Payments for your subscription are processed by Stripe; FinTrack never stores your card details.</li>
+        <li><strong>Not connected to your bank.</strong> FinTrack does not use Plaid, Yodlee, or any other bank-aggregation service. You manually import data.</li>
+        <li><strong>Not a tax preparer.</strong> Reports from FinTrack are not official tax records and should not be the sole basis for tax filings.</li>
+      </ul>
+    </div>
+
+    <!-- 3 -->
+    <div class="lh-section" id="s3">
+      <h2><span class="num">3.</span>Your account</h2>
+      <p>To use FinTrack you need an account. You agree to provide a real email address you control and to choose a password that's reasonably strong. You're responsible for keeping your password secret and for any activity that happens under your account.</p>
+      <p>You must be at least <strong>13 years old</strong> to use FinTrack. If you're under the age of majority in your jurisdiction, your parent or legal guardian must agree to these terms on your behalf. FinTrack is not directed at children under 13 and we don't knowingly collect their information.</p>
+      <p>One person, one account. You may not open multiple FinTrack accounts to circumvent trial limits or other restrictions. We use canonical-email matching (including Gmail aliases) to detect this; see also our <a href="#s10">Suspension &amp; termination</a> section.</p>
+    </div>
+
+    <!-- 4 -->
+    <div class="lh-section" id="s4">
+      <h2><span class="num">4.</span>The 14-day free trial</h2>
+      <p>Every new FinTrack account starts with a <strong>14-day free trial</strong> that begins the moment you sign up. During the trial:</p>
+      <ul>
+        <li>No credit card is required to start.</li>
+        <li>Every paid feature is unlocked.</li>
+        <li>We will not charge you anything.</li>
+        <li>You'll receive one reminder email approximately two days before the trial ends.</li>
+      </ul>
+      <p>When the trial ends, you have three choices: add a payment method to continue, do nothing (your account drops to read-only with all data preserved), or delete your account permanently from Settings.</p>
+      <p>The free trial is offered once per person. If you've already used a trial under any email that canonicalizes to the same address (for example, the same Gmail mailbox via aliases or dots), opening a second trial is a breach of these terms.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="lh-section" id="s5">
+      <h2><span class="num">5.</span>Subscription &amp; payment</h2>
+      <p>FinTrack Pro costs <strong>USD $4.99 per month</strong> if you are billed in US dollars, or <strong>CAD $6.99 per month</strong> if you are billed in Canadian dollars. The price you see at checkout is the price you pay. Applicable taxes are added at checkout where required by law.</p>
+      <p>Subscriptions auto-renew each month on the same calendar day. By providing a payment method, you authorize FinTrack to charge that payment method through our payment processor, <strong>Stripe</strong>, on each renewal date until you cancel.</p>
+      <p>If a payment fails, Stripe will attempt automatic retries over approximately seven days. You'll be emailed each time a retry fails. If all retries fail, your account drops to read-only access until you provide a working payment method.</p>
+      <p>If we change our pricing for new users, your existing subscription price is <strong>locked</strong>. We will not raise your monthly rate without explicit notice and an opportunity to cancel.</p>
+    </div>
+
+    <!-- 6 -->
+    <div class="lh-section" id="s6">
+      <h2><span class="num">6.</span>Cancellation</h2>
+      <p>You can cancel your subscription any time. There is no cancellation fee, retention call, or extra friction.</p>
+      <p>To cancel, sign in and go to <code>Settings → Billing → Cancel subscription</code>. Cancellation takes effect at the <strong>end of the billing period you have already paid for</strong>. Until then, you keep full access to FinTrack Pro features.</p>
+      <p>After cancellation, your account stays alive in read-only mode. You can still see and export your data. To remove everything permanently, use <code>Settings → Account → Delete account</code> (which requires you to type the word "delete" to confirm).</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="lh-section" id="s7">
+      <h2><span class="num">7.</span>Refunds</h2>
+      <p>Our full refund policy is on a separate page: <a href="refund.html">Refund Policy</a>.</p>
+      <p>In short: subscriptions are paid monthly and we don't automatically refund the unused portion of the current month. If you believe you were charged in error, write to <a href="mailto:help@fintrack.app">help@fintrack.app</a> within 14 days of the charge and we'll generally make it right.</p>
+    </div>
+
+    <!-- 8 -->
+    <div class="lh-section" id="s8">
+      <h2><span class="num">8.</span>Your data &amp; export</h2>
+      <p>Your transaction data belongs to you. We collect it only to provide the service.</p>
+      <p>You can export every transaction, budget, goal, and recurring entry as a CSV file from <code>Settings → Export</code>, at any time, for as long as your account is active or in read-only mode.</p>
+      <p>For complete details on how we handle personal information — what we collect, where it lives, who else processes it, how to exercise your privacy rights under PIPEDA (Canada) and similar laws — see our <a href="privacy.html">Privacy Policy</a>.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="lh-section" id="s9">
+      <h2><span class="num">9.</span>Acceptable use</h2>
+      <p>Most users will never read this section because none of it applies to them. It's here for the few cases where it does.</p>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use FinTrack for any unlawful purpose, including laundering money or evading taxes.</li>
+        <li>Try to bypass paywalls, rate limits, or trial-period limits — including by opening multiple accounts under different email aliases.</li>
+        <li>Scrape, mirror, or systematically copy the FinTrack site or our internal data.</li>
+        <li>Probe, scan, or test the vulnerability of our systems, or attempt to circumvent any authentication or security feature.</li>
+        <li>Submit data on behalf of someone else without their consent.</li>
+        <li>Use FinTrack to harass anyone, including our support staff.</li>
+        <li>Resell, sublicense, or whitelabel FinTrack without our written permission.</li>
+      </ul>
+    </div>
+
+    <!-- 10 -->
+    <div class="lh-section" id="s10">
+      <h2><span class="num">10.</span>Suspension &amp; termination</h2>
+      <p>We can suspend or close your account if you breach these terms, if your payment fails for an extended period, or if continuing to provide service to you would expose FinTrack to legal risk. We will use proportionate judgment: most situations get a warning first; serious abuse (fraud, threats, illegal activity) can be immediate.</p>
+      <p>If we close your account for cause, you may not be entitled to a refund of unused subscription time.</p>
+      <p>You can close your own account any time. See <a href="#s6">Section 6</a> for the procedure.</p>
+    </div>
+
+    <!-- 11 -->
+    <div class="lh-section" id="s11">
+      <h2><span class="num">11.</span>Disclaimers</h2>
+      <p>FinTrack is provided <strong>"as is" and "as available."</strong> We try hard to make the service useful, accurate, and available, but we don't promise it will be perfect or uninterrupted.</p>
+      <p>To the maximum extent permitted by law, we disclaim all implied warranties — including merchantability, fitness for a particular purpose, and non-infringement.</p>
+      <p>The AI Money Coach answers questions based on the data you've imported. Its responses are <strong>educational guidance, not financial, tax, legal, or investment advice</strong>. Always check important numbers yourself and consult a licensed professional for material financial decisions.</p>
+    </div>
+
+    <!-- 12 -->
+    <div class="lh-section" id="s12">
+      <h2><span class="num">12.</span>Limit of liability</h2>
+      <p>To the maximum extent permitted by Canadian law:</p>
+      <ul>
+        <li>FinTrack's total liability to you for any claim arising from these terms or your use of the service is limited to the amount you have paid us in the <strong>twelve months</strong> preceding the claim, or CAD $100, whichever is greater.</li>
+        <li>We are not liable for indirect, incidental, consequential, special, punitive, or exemplary damages — including lost profits, lost data, or business interruption — even if we were advised that those damages might occur.</li>
+      </ul>
+      <p>Some jurisdictions don't allow some of these limitations. In that case, the limitations apply to the maximum extent legally permitted.</p>
+    </div>
+
+    <!-- 13 -->
+    <div class="lh-section" id="s13">
+      <h2><span class="num">13.</span>Changes to these terms</h2>
+      <p>We can update these terms over time. When we make a material change (anything that meaningfully changes your rights or our obligations), we will email active subscribers at the email address on file <strong>at least 14 days before the change takes effect</strong>. Continuing to use FinTrack after the effective date means you accept the updated terms; if you don't, you can cancel or delete your account.</p>
+      <p>Non-material updates (typo fixes, formatting, clarifications) take effect when posted. The "Last updated" date at the top of this page is always current.</p>
+    </div>
+
+    <!-- 14 -->
+    <div class="lh-section" id="s14">
+      <h2><span class="num">14.</span>Disputes &amp; governing law</h2>
+      <p>These terms are governed by the laws of the <strong>Province of Quebec, Canada</strong>, without regard to its conflict-of-laws rules. Any dispute that we can't resolve by good-faith email exchange will be brought exclusively in the courts of Montreal, Quebec.</p>
+      <div class="lh-callout">
+        <strong>Before you sue us</strong>, please email <a href="mailto:help@fintrack.app">help@fintrack.app</a> with a clear description of the issue and what you'd like to see happen. We read every email and resolve most concerns within a few days. Litigation is slow, expensive, and almost always avoidable.
+      </div>
+    </div>
+
+    <!-- 15 -->
+    <div class="lh-section" id="s15">
+      <h2><span class="num">15.</span>Contact</h2>
+      <p>Questions about these terms?</p>
+      <ul>
+        <li>General support: <a href="mailto:help@fintrack.app">help@fintrack.app</a></li>
+        <li>Bug reports: <a href="mailto:bugs@fintrack.app">bugs@fintrack.app</a></li>
+        <li>Feature ideas: <a href="mailto:ideas@fintrack.app">ideas@fintrack.app</a></li>
+      </ul>
+      <p>We aim to respond within 12 hours on business days.</p>
+    </div>
+
+    <div class="lh-contact-box">
+      <h3>Still have questions?</h3>
+      <p>Plain-English answers to specific scenarios are in our Help Center.</p>
+      <p><a href="help.html">Open the Help Center →</a></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="#">About</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund policy</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refunds</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

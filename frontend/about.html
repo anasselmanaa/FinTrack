@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About FinTrack</title>
+<meta name="description" content="Learn what FinTrack is, why it exists, how it handles trust, and how to contact the team.">
+<meta name="theme-color" content="#163832">
+<link rel="canonical" href="https://fintrack.app/about.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta property="og:site_name" content="FinTrack">
+<meta property="og:type" content="website">
+<meta property="og:title" content="About FinTrack">
+<meta property="og:description" content="Learn what FinTrack is, why it exists, how it handles trust, and how to contact the team.">
+<meta property="og:url" content="https://fintrack.app/about.html">
+<meta property="og:image" content="https://fintrack.app/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About FinTrack">
+<meta name="twitter:description" content="Learn what FinTrack is, why it exists, how it handles trust, and how to contact the team.">
+<meta name="twitter:image" content="https://fintrack.app/assets/og-image.png">
+<meta name="twitter:image:alt" content="FinTrack brand preview for personal finance made calmer.">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark1: #163832;
+  --dark2: #235347;
+  --mid: #8EB69B;
+  --light: #DAF1DE;
+  --white: #ffffff;
+  --text: #163832;
+  --text2: #3d6b5f;
+  --gold: #F5C842;
+  --f: 'Lato', sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; gap: 0; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover, .nav-menu a.is-current { color: #fff; background: rgba(218,241,222,0.14); }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: var(--gold); color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+.about-hero {
+  margin-top: 64px;
+  min-height: 620px;
+  background:
+    radial-gradient(780px 420px at 14% 12%, rgba(245,200,66,0.17), transparent 70%),
+    radial-gradient(720px 460px at 94% 82%, rgba(142,182,155,0.24), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 48%, var(--dark2) 100%);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+  padding: 86px 80px 76px;
+}
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(218,241,222,0.030) 0 1px, transparent 1px 22px);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.about-hero-inner { position: relative; z-index: 1; max-width: 1180px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); gap: 64px; align-items: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase; color: var(--gold); background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30); padding: 8px 16px; border-radius: 999px; margin-bottom: 22px; }
+.eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: var(--gold); }
+.about-hero h1 { font-size: clamp(44px, 6.6vw, 86px); font-weight: 900; line-height: 1.02; letter-spacing: -2px; color: #fff; margin-bottom: 24px; max-width: 12ch; }
+.about-hero h1 em { font-style: italic; background: linear-gradient(135deg, #DAF1DE 0%, var(--gold) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.about-hero p { font-size: clamp(16px, 1.55vw, 19px); color: rgba(255,255,255,0.78); line-height: 1.7; max-width: 620px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+.btn-primary, .btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 24px; border-radius: 8px; font-weight: 900; font-size: 14px; text-decoration: none; transition: all 0.16s; }
+.btn-primary { background: var(--gold); color: var(--dark1); box-shadow: 0 14px 34px rgba(245,200,66,0.28); }
+.btn-primary:hover { transform: translateY(-2px); background: #f0bc2a; }
+.btn-secondary { color: #DAF1DE; border: 1px solid rgba(218,241,222,0.34); background: rgba(255,255,255,0.06); }
+.btn-secondary:hover { background: rgba(218,241,222,0.12); color: #fff; }
+
+.product-panel {
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(218,241,222,0.45);
+  border-radius: 16px;
+  box-shadow: 0 34px 80px rgba(0,0,0,0.22);
+  overflow: hidden;
+}
+.panel-top { height: 52px; background: #f6faf7; border-bottom: 1px solid rgba(142,182,155,0.24); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; }
+.panel-logo { font-weight: 900; color: var(--dark1); letter-spacing: -0.2px; }
+.panel-status { font-size: 11px; font-weight: 800; color: var(--dark2); background: var(--light); border-radius: 999px; padding: 6px 10px; }
+.panel-body { padding: 22px; display: grid; gap: 14px; }
+.panel-row { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 15px; border: 1px solid rgba(142,182,155,0.20); border-radius: 10px; background: #fff; }
+.panel-label { font-size: 12px; color: var(--text2); margin-bottom: 7px; }
+.panel-value { font-size: 22px; font-weight: 900; color: var(--dark1); letter-spacing: -0.4px; }
+.panel-pill { align-self: center; font-size: 12px; font-weight: 900; color: var(--dark2); background: rgba(245,200,66,0.18); border: 1px solid rgba(245,200,66,0.38); border-radius: 999px; padding: 7px 11px; white-space: nowrap; }
+.panel-bars { display: grid; gap: 10px; padding: 4px 2px 2px; }
+.bar { height: 9px; border-radius: 999px; background: #e8f3ea; overflow: hidden; }
+.bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--dark2), var(--mid)); }
+
+.section { padding: 82px 80px; }
+.section.alt { background: #f6faf7; border-top: 1px solid rgba(142,182,155,0.18); border-bottom: 1px solid rgba(142,182,155,0.18); }
+.section-inner { max-width: 1180px; margin: 0 auto; }
+.split { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 64px; align-items: start; }
+.section-kicker { font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--dark2); margin-bottom: 14px; }
+.section h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -1px; color: var(--dark1); margin-bottom: 20px; max-width: 13ch; }
+.section p { font-size: 16px; line-height: 1.75; color: var(--text2); margin-bottom: 18px; }
+.section p strong { color: var(--dark1); font-weight: 900; }
+.principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+.principle { background: #fff; border: 1px solid rgba(142,182,155,0.25); border-radius: 8px; padding: 24px; }
+.principle h3 { color: var(--dark1); font-size: 17px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.2px; }
+.principle p { font-size: 14px; line-height: 1.65; margin: 0; }
+.facts { display: grid; gap: 12px; }
+.fact { border-left: 4px solid var(--mid); padding: 2px 0 2px 18px; }
+.fact b { display: block; color: var(--dark1); font-size: 15px; margin-bottom: 4px; }
+.fact span { color: var(--text2); font-size: 14px; line-height: 1.55; display: block; }
+
+.contact-band { background: var(--dark1); padding: 76px 80px; color: #fff; }
+.contact-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.contact-band h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.9px; margin-bottom: 14px; }
+.contact-band p { color: rgba(255,255,255,0.66); line-height: 1.7; font-size: 15px; }
+.contact-links { display: grid; gap: 12px; }
+.contact-links a { color: #fff; background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.22); border-radius: 8px; padding: 16px 18px; text-decoration: none; display: flex; justify-content: space-between; gap: 18px; align-items: center; transition: all 0.16s; }
+.contact-links a:hover { background: rgba(218,241,222,0.13); border-color: rgba(218,241,222,0.42); transform: translateX(2px); }
+.contact-links b { font-size: 15px; }
+.contact-links span { color: rgba(255,255,255,0.58); font-size: 13px; text-align: right; }
+
+footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px solid rgba(218,241,222,0.18); }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-search { display: flex; align-items: center; background: rgba(255,255,255,0.07); border: 1px solid rgba(218,241,222,0.4); border-radius: 10px; padding: 9px 14px; gap: 8px; margin-bottom: 20px; }
+.footer-search input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+.footer-search input::placeholder { color: rgba(255,255,255,0.4); }
+.footer-socials { display: flex; gap: 10px; }
+.fsoc { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); display: grid; place-items: center; color: rgba(255,255,255,0.6); text-decoration: none; transition: all 0.15s; }
+.fsoc:hover { background: var(--mid); color: var(--dark1); }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover, .footer-col a.is-current { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 980px) {
+  .about-hero { padding: 72px 28px 60px; }
+  .about-hero-inner, .split, .contact-inner { grid-template-columns: 1fr; gap: 36px; }
+  .product-panel { max-width: 540px; }
+  .section, .contact-band { padding: 64px 28px; }
+  .principles { grid-template-columns: 1fr; }
+  footer { padding: 60px 28px 32px; }
+  .footer-top { flex-direction: column; gap: 36px; }
+  .footer-cols { flex-wrap: wrap; gap: 28px; }
+}
+
+@media (max-width: 760px) {
+  .nav { padding: 0 18px; }
+  .nav-menu { display: none; }
+  .nav-brand { flex: 1; }
+  .nav-login { display: none; }
+  .about-hero { min-height: auto; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .panel-row { grid-template-columns: 1fr; }
+  .panel-pill { justify-self: start; }
+  .contact-links a { flex-direction: column; align-items: flex-start; }
+  .contact-links span { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="landing.html" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">Features <span class="chevron">▼</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html#budgeting">Budgeting</a>
+        <a href="features.html#insights">Insights</a>
+        <a href="features.html#goals">Goals</a>
+        <a href="features.html#receipt-scanning">Receipt Scanning</a>
+      </div>
+    </div>
+    <a href="different.html">Why we're different</a>
+    <a href="trial.html">Trial</a>
+    <a href="guide.html">Guide</a>
+    <a href="help.html">Help Center</a>
+    <a href="about.html" class="is-current">About</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="nav-login">Log in</a>
+    <a href="login.html?mode=register" class="nav-cta">Start Free</a>
+  </div>
+</nav>
+
+<main>
+  <section class="about-hero">
+    <div class="about-hero-inner">
+      <div>
+        <span class="eyebrow">About FinTrack</span>
+        <h1>Money clarity, built for <em>real life.</em></h1>
+        <p>FinTrack is a personal finance app for people who want to understand their money without turning their life into a spreadsheet. It brings spending, budgets, goals, recurring bills, receipts, and AI guidance into one calm workspace.</p>
+        <div class="hero-actions">
+          <a href="login.html?mode=register" class="btn-primary">Start Free</a>
+          <a href="help.html" class="btn-secondary">Contact Support</a>
+        </div>
+      </div>
+
+      <div class="product-panel" aria-label="FinTrack product overview">
+        <div class="panel-top">
+          <span class="panel-logo">FinTrack.</span>
+          <span class="panel-status">Private by design</span>
+        </div>
+        <div class="panel-body">
+          <div class="panel-row">
+            <div>
+              <div class="panel-label">Monthly overview</div>
+              <div class="panel-value">$1,842 tracked</div>
+            </div>
+            <span class="panel-pill">Clearer habits</span>
+          </div>
+          <div class="panel-row">
+            <div>
+              <div class="panel-label">Goals progress</div>
+              <div class="panel-value">68%</div>
+            </div>
+            <span class="panel-pill">On pace</span>
+          </div>
+          <div class="panel-bars">
+            <div class="bar"><span style="width: 78%;"></span></div>
+            <div class="bar"><span style="width: 56%;"></span></div>
+            <div class="bar"><span style="width: 42%;"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner split">
+      <div>
+        <div class="section-kicker">What we build</div>
+        <h2>A finance app that explains, not shames.</h2>
+      </div>
+      <div>
+        <p><strong>FinTrack helps people see what is happening with their money and what to do next.</strong> The product is built around everyday workflows: adding transactions, importing CSVs, scanning receipts, setting budgets, tracking goals, spotting recurring payments, and asking Money Coach for practical guidance.</p>
+        <p>The goal is not to make finance feel complicated or overly polished. The goal is to make it usable on an ordinary Tuesday, when you want a quick answer and a clear next step.</p>
+        <p>We keep the product focused on the things that help users act: plain-language insights, simple controls, and honest feedback about spending patterns without panic or guilt.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="section-kicker">How we work</div>
+      <h2>Our principles</h2>
+      <div class="principles">
+        <div class="principle">
+          <h3>Privacy first</h3>
+          <p>FinTrack does not need bank credentials to be useful. Users can add data manually, import CSV files, and stay in control of what enters the app.</p>
+        </div>
+        <div class="principle">
+          <h3>Plain language</h3>
+          <p>Financial software should not require a finance degree. We write product copy, insights, and support replies in direct everyday language.</p>
+        </div>
+        <div class="principle">
+          <h3>Useful before flashy</h3>
+          <p>Every feature should earn its place by helping people make a better decision, catch a pattern, or feel less lost about their money.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner split">
+      <div>
+        <div class="section-kicker">Company</div>
+        <h2>Small team, clear responsibility.</h2>
+      </div>
+      <div class="facts">
+        <div class="fact">
+          <b>Built independently</b>
+          <span>FinTrack is developed as an independent product with a focus on careful execution, direct support, and fast product improvements.</span>
+        </div>
+        <div class="fact">
+          <b>Support is direct</b>
+          <span>Messages sent to our support addresses are read by the FinTrack team. Bugs, account issues, and product ideas each have a dedicated inbox.</span>
+        </div>
+        <div class="fact">
+          <b>Trust is part of the product</b>
+          <span>Because FinTrack handles sensitive financial information, we prioritize clear data controls, limited access patterns, and honest communication.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-band">
+    <div class="contact-inner">
+      <div>
+        <h2>Need to reach us?</h2>
+        <p>Use the inbox that matches what you need. It helps us respond faster and keeps support, bug reports, and product ideas organized.</p>
+      </div>
+      <div class="contact-links">
+        <a href="mailto:help@fintrack.app"><b>help@fintrack.app</b><span>Account, billing, and general support</span></a>
+        <a href="mailto:bugs@fintrack.app"><b>bugs@fintrack.app</b><span>Broken flows, errors, and regressions</span></a>
+        <a href="mailto:ideas@fintrack.app"><b>ideas@fintrack.app</b><span>Feature requests and product feedback</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <div class="footer-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="fsoc" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" class="fsoc" aria-label="TikTok">
+          <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="about.html" class="is-current">About</a></div>
+      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+  document.querySelectorAll('[data-accessibility-link]').forEach(a => a.addEventListener('click', () => { window.location.href = '/accessibility.html'; }));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refund Policy – FinTrack</title>
+<meta name="description" content="When FinTrack will and won't refund you. Plain English. No mystery.">
+<meta name="theme-color" content="#163832">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root { --dark1:#163832; --dark2:#235347; --mid:#8EB69B; --light:#DAF1DE; --white:#fff; --text:#163832; --text2:#3d6b5f; --f:'Lato',sans-serif; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+.nav { position: fixed; top:0; left:0; right:0; z-index:200; background: var(--dark1); display: flex; align-items: center; height: 64px; padding: 0 32px; }
+.nav-brand { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-right: 28px; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+.nav-brand .dot { color: var(--mid); font-size: 32px; line-height: 0; position: relative; top: 4px; }
+.nav-menu { display: flex; align-items: center; gap: 2px; flex: 1; }
+.nav-menu a { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 400; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+.nav-menu a:hover { color: #fff; background: rgba(218,241,222,0.12); border-left: 2px solid #DAF1DE; }
+.chevron { font-size: 10px; opacity: 0.7; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-login { color: rgba(255,255,255,0.8); font-size: 15px; text-decoration: none; padding: 8px 14px; border-radius: 6px; transition: all 0.15s; }
+.nav-login:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-cta { background: #F5C842; color: var(--dark1); font-size: 14px; font-weight: 700; text-decoration: none; padding: 10px 20px; border-radius: 8px; transition: all 0.15s; white-space: nowrap; }
+.nav-cta:hover { background: #f0bc2a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.4); }
+.nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:hover { background: var(--light); }
+
+.lh-hero {
+  margin-top: 64px;
+  background:
+    radial-gradient(560px 320px at 12% 16%, rgba(245,200,66,0.10), transparent 70%),
+    radial-gradient(700px 420px at 92% 88%, rgba(142,182,155,0.18), transparent 70%),
+    linear-gradient(135deg, var(--dark1) 0%, #1a4339 55%, var(--dark2) 100%);
+  padding: 80px 80px 70px; position: relative; overflow: hidden;
+}
+.lh-hero::before { content:''; position: absolute; inset:0; background: repeating-linear-gradient(0deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 14px), repeating-linear-gradient(90deg, rgba(218,241,222,0.024) 0 1px, transparent 1px 22px); mix-blend-mode: overlay; pointer-events: none; }
+.lh-hero-inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
+.lh-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase; color: #F5C842; background: rgba(245,200,66,0.10); border: 1px solid rgba(245,200,66,0.30); padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
+.lh-hero h1 { font-size: clamp(32px, 4.5vw, 48px); font-weight: 900; line-height: 1.06; letter-spacing: -1px; color: #fff; margin-bottom: 14px; }
+.lh-hero p { font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.6; max-width: 60ch; }
+.lh-hero .meta { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); }
+.lh-hero .meta b { color: #DAF1DE; font-weight: 700; }
+
+.lh-doc { background: #fff; padding: 60px 80px 80px; }
+.lh-doc-inner { max-width: 880px; margin: 0 auto; }
+
+.lh-tldr { background: #f6faf7; border: 1px solid rgba(142,182,155,0.28); border-left: 4px solid var(--mid); border-radius: 10px; padding: 20px 24px; margin-bottom: 40px; }
+.lh-tldr h3 { font-size: 14px; font-weight: 900; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dark2); margin-bottom: 10px; }
+.lh-tldr ul { padding-left: 20px; }
+.lh-tldr li { font-size: 14.5px; line-height: 1.6; color: var(--dark1); margin-bottom: 6px; }
+
+.lh-section { margin-bottom: 36px; }
+.lh-section h2 { font-size: 22px; font-weight: 900; color: var(--dark1); letter-spacing: -0.4px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(142,182,155,0.30); }
+.lh-section h2 .num { color: var(--mid); margin-right: 10px; font-weight: 800; }
+.lh-section h3 { font-size: 15px; font-weight: 800; color: var(--dark1); margin: 16px 0 6px; }
+.lh-section p, .lh-section li { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.lh-section ul, .lh-section ol { padding-left: 22px; margin-bottom: 10px; }
+.lh-section a { color: var(--dark2); font-weight: 700; }
+.lh-section code { background: #f6faf7; border: 1px solid rgba(142,182,155,0.28); padding: 1px 6px; border-radius: 4px; font-size: 13px; font-family: SFMono-Regular, Consolas, monospace; }
+.lh-callout { background: linear-gradient(90deg, rgba(245,200,66,0.10), transparent); border-left: 3px solid #F5C842; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; line-height: 1.55; color: var(--dark1); }
+
+/* Scenario cards */
+.lh-scenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0 24px; }
+.lh-scenario { border: 1px solid rgba(142,182,155,0.28); border-radius: 10px; padding: 18px; background: #fff; }
+.lh-scenario.green { background: linear-gradient(135deg, #f6faf7, #fff); border-color: rgba(142,182,155,0.45); }
+.lh-scenario.amber { background: linear-gradient(135deg, #fffbef, #fff); border-color: rgba(245,200,66,0.42); }
+.lh-scenario.red { background: linear-gradient(135deg, #fff5f5, #fff); border-color: rgba(239,68,68,0.32); }
+.lh-scenario-badge { font-size: 10px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; display: inline-block; margin-bottom: 8px; }
+.lh-scenario.green .lh-scenario-badge { background: var(--light); color: var(--dark2); }
+.lh-scenario.amber .lh-scenario-badge { background: rgba(245,200,66,0.18); color: #8c6914; }
+.lh-scenario.red .lh-scenario-badge { background: rgba(239,68,68,0.12); color: #b03a3a; }
+.lh-scenario h4 { font-size: 14.5px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; }
+.lh-scenario p { font-size: 13.5px; color: var(--text2); line-height: 1.55; }
+
+.lh-contact-box { background: var(--light); border: 1px solid rgba(142,182,155,0.30); border-radius: 12px; padding: 22px; margin-top: 48px; text-align: center; }
+.lh-contact-box h3 { font-size: 16px; font-weight: 900; color: var(--dark1); margin-bottom: 6px; }
+.lh-contact-box p { font-size: 14px; color: var(--text2); margin-bottom: 10px; }
+.lh-contact-box a { color: var(--dark2); font-weight: 800; }
+
+footer { background: var(--dark1); padding: 80px 80px 40px; }
+.footer-top { display: flex; gap: 60px; margin-bottom: 60px; }
+.footer-brand { flex: 0 0 260px; }
+.footer-logo-text { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; display: block; }
+.footer-logo-text span { color: #DAF1DE; }
+.footer-tagline { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 20px; }
+.footer-cols { display: flex; gap: 48px; flex: 1; }
+.footer-col h4 { font-size: 12px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(218,241,222,0.3); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-legal a { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; }
+.footer-legal a:hover { color: rgba(255,255,255,0.8); }
+
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; } .nav-menu { display: none; }
+  .lh-hero, .lh-doc { padding-left: 22px; padding-right: 22px; }
+  .lh-scenarios { grid-template-columns: 1fr; }
+  footer { padding: 60px 22px 30px; }
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-cols { flex-wrap: wrap; gap: 32px; }
+}
+</style>
+</head>
+<body id="top">
+
+<nav class="nav">
+  <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
+  <div class="nav-menu">
+    <div class="nav-dropdown">
+      <a href="features.html">What is FinTrack? <span class="chevron">▾</span></a>
+      <div class="nav-dropdown-menu">
+        <a href="features.html">Features</a>
+        <a href="different.html">Why FinTrack Is Different</a>
+        <a href="trial.html">Our 14-Day Trial</a>
+        <a href="guide.html">The Ultimate Get Started Guide</a>
+      </div>
+    </div>
+    <a href="help.html">Help Center</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-login">Log In</a>
+    <a href="index.html" class="nav-cta">Start Your Free Trial</a>
+  </div>
+</nav>
+
+<section class="lh-hero">
+  <div class="lh-hero-inner">
+    <span class="lh-eyebrow">Legal · Refund Policy</span>
+    <h1>FinTrack Refund Policy</h1>
+    <p>Most software companies bury this. We'd rather just be honest. Here's exactly when you get a refund, when you don't, and how to ask.</p>
+    <p class="meta"><b>Effective date:</b> May 22, 2026 · <b>Last updated:</b> May 22, 2026</p>
+  </div>
+</section>
+
+<section class="lh-doc">
+  <div class="lh-doc-inner">
+
+    <div class="lh-tldr">
+      <h3>The short version</h3>
+      <ul>
+        <li>You're never charged during the 14-day free trial. Cancel before day 14 — no money changes hands.</li>
+        <li>If you're charged and want out, email us within 14 days of the charge. We refund mid-month most of the time, especially if you haven't actively used the AI features that month.</li>
+        <li>If FinTrack charged you after you cancelled (rare Stripe webhook delays), it's an unconditional refund.</li>
+        <li>Beyond 14 days, we generally don't refund the current month — but cancellation is one click and stops all future charges immediately.</li>
+      </ul>
+    </div>
+
+    <div class="lh-section" id="s1">
+      <h2><span class="num">1.</span>Our default refund posture</h2>
+      <p>FinTrack is a monthly subscription at <strong>USD $4.99 / CAD $6.99</strong> per month. By default, when you cancel partway through a month, you keep access until the end of the month you've already paid for, and we don't issue a pro-rated refund for the unused portion.</p>
+      <p>This isn't because we're stingy. It's because:</p>
+      <ul>
+        <li>The amount is small enough that the bookkeeping costs more than the refund.</li>
+        <li>The 14-day free trial already gives you a no-charge window to decide if FinTrack is right for you.</li>
+        <li>Cancellation is one click and stops all future charges immediately, so the cost cap is one month.</li>
+      </ul>
+      <p>That said, we make exceptions all the time — see the next section.</p>
+    </div>
+
+    <div class="lh-section" id="s2">
+      <h2><span class="num">2.</span>When we refund</h2>
+
+      <div class="lh-scenarios">
+        <div class="lh-scenario green">
+          <span class="lh-scenario-badge">Always refund</span>
+          <h4>Stripe charged you after you cancelled</h4>
+          <p>Rare, but Stripe webhook delays can cause it. Email us — unconditional refund, no questions.</p>
+        </div>
+        <div class="lh-scenario green">
+          <span class="lh-scenario-badge">Always refund</span>
+          <h4>Duplicate or accidental charge</h4>
+          <p>Two charges for the same month, or a charge after account deletion. Unconditional refund.</p>
+        </div>
+        <div class="lh-scenario amber">
+          <span class="lh-scenario-badge">Usually refund</span>
+          <h4>You cancelled within 14 days of a charge and barely used the app</h4>
+          <p>Specifically: you haven't asked Money Coach more than a couple of questions, scanned a receipt, or imported a CSV that month. Email us within 14 days. We'll generally make it right.</p>
+        </div>
+        <div class="lh-scenario amber">
+          <span class="lh-scenario-badge">Case-by-case</span>
+          <h4>FinTrack was broken for you for an extended period</h4>
+          <p>If a bug we caused prevented you from using the app for more than a few days in a billing month, write to us with details. We're happy to refund or credit the affected period.</p>
+        </div>
+        <div class="lh-scenario amber">
+          <span class="lh-scenario-badge">Case-by-case</span>
+          <h4>Genuine hardship</h4>
+          <p>Lost your job, medical emergency, life thing. Just ask. Most of these get refunded.</p>
+        </div>
+        <div class="lh-scenario red">
+          <span class="lh-scenario-badge">Usually no refund</span>
+          <h4>You used the AI features heavily this month, then changed your mind</h4>
+          <p>The AI Money Coach + receipt scanner have real per-use cost to us. If you've used them substantially, we typically can't refund the month — but we'll always cancel future charges immediately on request.</p>
+        </div>
+        <div class="lh-scenario red">
+          <span class="lh-scenario-badge">Usually no refund</span>
+          <h4>You forgot to cancel and noticed months later</h4>
+          <p>We'll cancel future charges right away (or you can do it in Settings → Billing yourself). Past months are usually not refundable — but if it's been a long time and you genuinely never logged in, write us and we'll look at the case.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lh-section" id="s3">
+      <h2><span class="num">3.</span>How to ask for a refund</h2>
+      <p>Email <a href="mailto:help@fintrack.app">help@fintrack.app</a>. To make it fast, please include:</p>
+      <ol>
+        <li>The email on your FinTrack account</li>
+        <li>The date and amount of the charge</li>
+        <li>One sentence about what's happening (you don't have to write a story — "cancelled but got charged" is fine)</li>
+      </ol>
+      <p>We aim to respond within <strong>12 hours on business days</strong>. Refunds, once approved, take <strong>5-10 business days</strong> to appear on your statement — that's Stripe's processing window, not ours.</p>
+
+      <div class="lh-callout">
+        <strong>Tip:</strong> You don't have to email first if you just want to cancel. Sign in and go to <code>Settings → Billing → Cancel subscription</code>. Two clicks, no retention call, no refund request needed because no future charges will happen.
+      </div>
+    </div>
+
+    <div class="lh-section" id="s4">
+      <h2><span class="num">4.</span>Chargebacks</h2>
+      <p>If you dispute a FinTrack charge with your card issuer (a "chargeback") instead of emailing us, we'll be told by Stripe. We'll honor the chargeback. We'd just gently encourage you to email us first — it's faster for you, and it doesn't add a dispute to our processor record.</p>
+      <p>If chargebacks are filed in bad faith (e.g., to extract a free month of service), we may close the account and add the canonical-email hash to our no-trial list. See our <a href="terms.html">Terms of Service §10</a>.</p>
+    </div>
+
+    <div class="lh-section" id="s5">
+      <h2><span class="num">5.</span>The free trial</h2>
+      <p>Every account starts with a 14-day free trial, with all features unlocked, <strong>no card required up front</strong>. There's nothing to refund during the trial because we don't charge you anything.</p>
+      <p>You only enter a payment method if you choose to continue past day 14. See our <a href="trial.html">trial mechanics page</a> for the full breakdown.</p>
+    </div>
+
+    <div class="lh-section" id="s6">
+      <h2><span class="num">6.</span>Statutory rights</h2>
+      <p>Nothing in this Refund Policy limits any consumer-protection rights you have by law. If you're a Quebec resident, your rights under the <em>Consumer Protection Act</em> apply. If you're elsewhere in Canada, applicable provincial law applies. If you're in the EU or UK, your right to withdraw from a distance contract within the cooling-off period applies, except where you have already started using the digital service and agreed to waive that right at checkout.</p>
+    </div>
+
+    <div class="lh-section" id="s7">
+      <h2><span class="num">7.</span>Changes to this policy</h2>
+      <p>If we update this Refund Policy, we'll change the "Last updated" date at the top. Material changes (anything that makes the policy stricter) are announced by email to active subscribers at least <strong>14 days</strong> before they take effect.</p>
+    </div>
+
+    <div class="lh-contact-box">
+      <h3>Have a billing question?</h3>
+      <p>Email a human at <a href="mailto:help@fintrack.app">help@fintrack.app</a> — we reply within 12 hours on weekdays.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo-text">FinTrack<span>.</span></span>
+      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Company</h4><a href="#">About</a></div>
+      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund policy</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refunds</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
