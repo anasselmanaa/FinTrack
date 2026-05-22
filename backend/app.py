@@ -372,6 +372,7 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_FRONTEND_PAGES = {
+    "index.html",
     "landing.html",
     "features.html",
     "different.html",
@@ -384,6 +385,9 @@ PUBLIC_FRONTEND_PAGES = {
     "forgot-password.html",
     "reset-password.html",
     "verify-email.html",
+    "terms.html",
+    "privacy.html",
+    "refund.html",
 }
 
 login_manager = LoginManager()
