@@ -136,16 +136,24 @@
           throw new Error("Passwords do not match.");
         }
 
-        await fetch(`${AUTH}/register`, {
+        const body = await fetch(`${AUTH}/register`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }).then((res) => parseResponse(res, "Could not create account"));
 
-        showTab("login");
-        registerForm.reset();
-        setMessage("loginMessage", "Account created. Check your email and click the verification link before logging in.", "success");
+        if (body && body.verification_required) {
+          // Hard email-verification gate: send the user to the dedicated
+          // "check your email" page instead of dropping them on the login tab.
+          const email = encodeURIComponent(body.email || payload.email);
+          window.location.href = `verify-email.html?email=${email}`;
+          return;
+        }
+
+        // Fallback: verification not enforced (test/local dev) — backend
+        // auto-logged the user in, just bounce them to the app.
+        window.location.href = appUrl();
       } catch (error) {
         setMessage("registerMessage", error.message, "error");
       } finally {
@@ -227,31 +235,79 @@
   }
 
   function initVerifyPage() {
-    const message = document.getElementById("verifyMessage");
-    if (!message) return;
+    const tokenState = document.getElementById("verifyTokenState");
+    const checkEmailState = document.getElementById("verifyCheckEmailState");
+    const fallbackState = document.getElementById("verifyFallbackState");
+    if (!tokenState && !checkEmailState && !fallbackState) return;
 
     const params = new URLSearchParams(window.location.search || "");
     const token = params.get("token") || "";
+    const email = params.get("email") || "";
 
-    if (!token) {
-      setMessage("verifyMessage", "This verification link is missing its token.", "error");
+    function showState(el) {
+      [tokenState, checkEmailState, fallbackState].forEach((node) => {
+        if (node) node.style.display = "none";
+      });
+      if (el) el.style.display = "block";
+    }
+
+    // State A — user clicked the verification link in their email
+    if (token) {
+      showState(tokenState);
+      fetch(`${AUTH}/verify-email`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      })
+        .then((res) => parseResponse(res, "Could not verify email"))
+        .then((body) => {
+          setMessage("verifyMessage", body.message || "Email verified! Sending you to login…", "success");
+          setTimeout(() => { window.location.href = "login.html?verified=1"; }, 1400);
+        })
+        .catch((error) => {
+          setMessage("verifyMessage", error.message, "error");
+        });
       return;
     }
 
-    fetch(`${AUTH}/verify-email`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => parseResponse(res, "Could not verify email"))
-      .then((body) => {
-        setMessage("verifyMessage", body.message || "Email verified. You can continue using FinTrack.", "success");
-        setTimeout(() => { window.location.href = "login.html"; }, 1400);
-      })
-      .catch((error) => {
-        setMessage("verifyMessage", error.message, "error");
-      });
+    // State B — user just signed up, we're telling them to check their email
+    if (email) {
+      showState(checkEmailState);
+      const addrEl = document.getElementById("checkEmailAddress");
+      if (addrEl) addrEl.textContent = email;
+
+      const resendBtn = document.getElementById("resendVerifyBtn");
+      if (resendBtn) {
+        resendBtn.addEventListener("click", async () => {
+          resendBtn.disabled = true;
+          resendBtn.textContent = "Sending…";
+          setMessage("resendMessage", "");
+          try {
+            const body = await fetch(`${AUTH}/resend-verification`, {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email }),
+            }).then((res) => parseResponse(res, "Could not resend verification email"));
+            setMessage("resendMessage", body.message || "Verification email sent. Check your inbox.", "success");
+            // Cooldown: re-enable after 30 seconds so users can't spam it
+            setTimeout(() => {
+              resendBtn.disabled = false;
+              resendBtn.textContent = "Resend the email";
+            }, 30000);
+          } catch (error) {
+            setMessage("resendMessage", error.message, "error");
+            resendBtn.disabled = false;
+            resendBtn.textContent = "Resend the email";
+          }
+        });
+      }
+      return;
+    }
+
+    // State C — no token, no email param → show the fallback message
+    showState(fallbackState);
   }
 
   document.addEventListener("DOMContentLoaded", () => {

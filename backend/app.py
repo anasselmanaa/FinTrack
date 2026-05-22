@@ -1213,14 +1213,25 @@ def register():
     cur.close()
     conn.close()
 
-    # Log the new user in immediately. Without this, the session is empty and
-    # the dev_auto_login middleware will hijack subsequent requests as the
-    # local dev user — silently breaking every "my account" endpoint.
-    login_user(User(dict(user)))
-
     send_verification_email_for_user(dict(user))
     send_transactional_email_once(user, "welcome_trial", welcome_trial_email)
 
+    # If email verification is enforced, we deliberately do NOT auto-login.
+    # The frontend must redirect to verify-email.html, the user clicks the
+    # emailed link, then they can log in. This prevents typo signups and
+    # makes email verification a true gate, not a soft banner.
+    if EMAIL_VERIFICATION_REQUIRED and not app.config.get("TESTING"):
+        return jsonify({
+            "message": "Account created. Check your email to verify it before logging in.",
+            "user": public_user_payload(user),
+            "verification_required": True,
+            "email": user.get("email"),
+        }), 201
+
+    # Verification not required (test / local dev): log them in immediately so
+    # the dev_auto_login middleware doesn't hijack the next request as the
+    # local dev user.
+    login_user(User(dict(user)))
     return jsonify({"message": "Registration successful", "user": public_user_payload(user)}), 201
 
 

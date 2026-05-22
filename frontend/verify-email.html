@@ -4,22 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="fintrack-api-base" content="">
-  <title>Verify Email - FinTrack</title>
+  <title>Verify your email — FinTrack</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="auth.css">
+  <style>
+    .verify-icon {
+      width: 64px; height: 64px; margin: 0 auto 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #DAF1DE, #8EB69B);
+      display: grid; place-items: center;
+      font-size: 28px;
+    }
+    .verify-email-pill {
+      display: inline-block;
+      background: rgba(35, 83, 71, 0.08);
+      color: #163832;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      margin: 4px 0 18px;
+      word-break: break-all;
+    }
+    .verify-checklist {
+      text-align: left;
+      list-style: none;
+      padding: 16px 18px;
+      margin: 18px 0;
+      background: #f6faf7;
+      border: 1px solid rgba(142, 182, 155, 0.3);
+      border-radius: 10px;
+    }
+    .verify-checklist li {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #3d6b5f;
+      padding: 3px 0;
+      display: flex; gap: 8px;
+    }
+    .verify-checklist li::before { content: '→'; color: #235347; font-weight: 800; flex-shrink: 0; }
+    .verify-resend-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; font-size: 13.5px; color: #3d6b5f;
+    }
+    .verify-resend-row button {
+      background: none; border: none; color: #235347;
+      font-weight: 700; cursor: pointer; padding: 0;
+      font-size: inherit; text-decoration: underline;
+    }
+    .verify-resend-row button:disabled { color: #8EB69B; cursor: not-allowed; text-decoration: none; }
+  </style>
 </head>
 <body>
   <main class="auth-shell">
     <a class="auth-brand" href="landing.html">FinTrack<span>.</span></a>
 
     <section class="auth-panel">
-      <div class="auth-form active">
+      <!-- State A: confirming an email link (?token=…) -->
+      <div class="auth-form" id="verifyTokenState" style="display:none">
         <div class="auth-heading">
+          <div class="verify-icon">✓</div>
           <h1>Verifying your email</h1>
           <p>Give us a second while we confirm this address.</p>
         </div>
+        <p class="auth-message" id="verifyMessage" role="status">Checking verification link…</p>
+        <a class="auth-back" href="login.html">Back to login</a>
+      </div>
 
-        <p class="auth-message" id="verifyMessage" role="status">Checking verification link...</p>
+      <!-- State B: post-signup "check your email" prompt (?email=…) -->
+      <div class="auth-form" id="verifyCheckEmailState" style="display:none">
+        <div class="auth-heading">
+          <div class="verify-icon">📬</div>
+          <h1>Check your email</h1>
+          <p>We just sent a verification link to:</p>
+          <span class="verify-email-pill" id="checkEmailAddress">your email</span>
+        </div>
+
+        <ul class="verify-checklist">
+          <li>Open the email titled <strong>"Verify your FinTrack email"</strong></li>
+          <li>Click the green <strong>Verify email</strong> button</li>
+          <li>You'll be brought back here, then sent to the login screen</li>
+        </ul>
+
+        <p class="verify-resend-row">
+          Didn't get it?
+          <button type="button" id="resendVerifyBtn">Resend the email</button>
+        </p>
+        <p class="auth-message" id="resendMessage" role="status"></p>
+
+        <a class="auth-back" href="login.html">Back to login</a>
+      </div>
+
+      <!-- State C: no token and no email param — fallback -->
+      <div class="auth-form" id="verifyFallbackState" style="display:none">
+        <div class="auth-heading">
+          <h1>Verification link missing</h1>
+          <p>This page expects either a verification link from your email, or a sign-up redirect.</p>
+        </div>
         <a class="auth-back" href="login.html">Back to login</a>
       </div>
     </section>
