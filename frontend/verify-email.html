@@ -5,193 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="fintrack-api-base" content="">
   <title>Verify your email — FinTrack</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="auth.css">
   <style>
-    /* ── Verify-page polish ─────────────────────────────────── */
-    .verify-form {
-      padding: 30px 28px 26px;
-      animation: verifyRise 0.5s cubic-bezier(0.22, 0.84, 0.36, 1) both;
-    }
-    @keyframes verifyRise {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .verify-form { padding: 36px 30px 30px; }
 
     .verify-icon {
-      width: 76px; height: 76px;
+      width: 44px; height: 44px;
       margin: 0 auto 22px;
-      border-radius: 22px;
-      background:
-        radial-gradient(circle at 28% 28%, rgba(255,255,255,0.55), transparent 55%),
-        linear-gradient(135deg, #DAF1DE 0%, #8EB69B 100%);
+      color: var(--green-dark);
       display: grid; place-items: center;
-      box-shadow:
-        0 14px 32px rgba(35, 83, 71, 0.22),
-        inset 0 1px 0 rgba(255,255,255,0.55);
-      position: relative;
     }
-    .verify-icon::after {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 26px;
-      border: 1px solid rgba(35, 83, 71, 0.10);
-      pointer-events: none;
-    }
-    .verify-icon svg { width: 38px; height: 38px; color: var(--green-dark); }
+    .verify-icon svg { width: 100%; height: 100%; stroke-width: 1.4; }
 
+    .verify-heading { text-align: center; margin-bottom: 0; }
     .verify-heading h1 {
       margin: 0 0 10px;
-      font-size: 28px;
-      line-height: 1.1;
-      letter-spacing: -0.7px;
-      text-align: center;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: -0.4px;
+      font-weight: 800;
     }
     .verify-heading p {
       margin: 0;
       color: var(--muted);
-      font-size: 14.5px;
-      line-height: 1.55;
-      text-align: center;
-    }
-
-    .verify-email-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      margin: 14px auto 0;
-      padding: 9px 16px 9px 12px;
-      background: #fbfcfa;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--green-dark);
       font-size: 14px;
-      font-weight: 800;
-      letter-spacing: -0.1px;
+      line-height: 1.6;
+    }
+    .verify-heading p strong {
+      color: var(--green-dark);
+      font-weight: 700;
       word-break: break-all;
-      box-shadow: 0 1px 0 rgba(20, 61, 53, 0.04);
-    }
-    .verify-email-pill .at-dot {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--green-soft);
-      color: var(--green-dark);
-      display: grid; place-items: center;
-      font-size: 12px;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-    .verify-pill-wrap { text-align: center; }
-
-    .verify-steps {
-      list-style: none;
-      padding: 18px;
-      margin: 22px 0 0;
-      background:
-        linear-gradient(180deg, #f7fbf8, #f1f7f3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: grid;
-      gap: 12px;
-    }
-    .verify-steps li {
-      display: grid;
-      grid-template-columns: 26px 1fr;
-      gap: 12px;
-      align-items: start;
-      color: var(--text);
-      font-size: 13.5px;
-      line-height: 1.55;
-    }
-    .verify-steps .step-num {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: var(--green);
-      color: #fff;
-      display: grid; place-items: center;
-      font-size: 12px;
-      font-weight: 900;
-      box-shadow: 0 2px 6px rgba(35, 83, 71, 0.25);
-    }
-    .verify-steps li strong {
-      color: var(--green-dark);
-      font-weight: 800;
     }
 
-    .verify-resend-row {
-      margin: 22px 0 0;
-      padding: 14px 16px;
-      background: #fbfcfa;
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .verify-resend-row .label {
-      font-size: 13.5px;
+    .verify-actions {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 13px;
       color: var(--muted);
     }
-    .verify-resend-row .label strong {
-      color: var(--green-dark);
-      font-weight: 800;
-    }
-    .verify-resend-row button {
-      border: 1px solid var(--green);
-      background: #fff;
-      color: var(--green-dark);
-      border-radius: 8px;
-      padding: 9px 16px;
+    .verify-actions button {
+      border: 0;
+      background: none;
+      color: var(--green);
       font: inherit;
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, transform 0.05s;
+      padding: 0;
+      margin-left: 4px;
     }
-    .verify-resend-row button:hover {
-      background: var(--green);
-      color: #fff;
-    }
-    .verify-resend-row button:active { transform: translateY(1px); }
-    .verify-resend-row button:disabled {
-      background: #f0f4ef;
-      color: #99a8a1;
-      border-color: var(--border);
-      cursor: not-allowed;
-    }
-
-    .verify-trust {
-      margin: 18px 0 0;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px;
+    .verify-actions button:hover { color: var(--green-dark); text-decoration: underline; }
+    .verify-actions button:disabled {
       color: var(--muted);
-      font-size: 12.5px;
-    }
-    .verify-trust svg {
-      width: 14px; height: 14px;
-      color: var(--green);
-      flex-shrink: 0;
+      cursor: not-allowed;
+      text-decoration: none;
     }
 
-    .verify-footer-row {
-      margin-top: 22px;
+    .verify-message {
+      margin: 12px 0 0;
+      min-height: 18px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--muted);
       text-align: center;
     }
+    .verify-message.error { color: var(--error); }
+    .verify-message.success { color: var(--green); }
 
-    /* State A — verifying token */
+    .verify-footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .verify-footer a {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .verify-footer a:hover { color: var(--green-dark); }
+
+    /* Token-verifying spinner — small, quiet */
     .verify-spinner {
-      width: 38px; height: 38px;
+      width: 28px; height: 28px;
       border-radius: 50%;
-      border: 3px solid var(--green-soft);
+      border: 2px solid var(--border);
       border-top-color: var(--green);
-      animation: verifySpin 0.9s linear infinite;
+      animation: verifySpin 0.8s linear infinite;
     }
     @keyframes verifySpin { to { transform: rotate(360deg); } }
 
     @media (max-width: 480px) {
-      .verify-form { padding: 26px 20px 22px; }
-      .verify-heading h1 { font-size: 24px; }
-      .verify-resend-row { flex-direction: column; align-items: stretch; text-align: center; }
-      .verify-resend-row button { width: 100%; }
+      .verify-form { padding: 30px 22px 24px; }
+      .verify-heading h1 { font-size: 20px; }
     }
   </style>
 </head>
@@ -207,84 +115,53 @@
         </div>
         <div class="verify-heading">
           <h1>Verifying your email</h1>
-          <p>Hang tight — we're confirming this address.</p>
+          <p>One moment — confirming this address.</p>
         </div>
-        <p class="auth-message" id="verifyMessage" role="status" style="text-align:center; margin-top: 18px;">Checking verification link…</p>
-        <div class="verify-footer-row">
-          <a class="auth-back" href="login.html">← Back to login</a>
+        <p class="verify-message" id="verifyMessage" role="status"></p>
+        <div class="verify-footer">
+          <a href="login.html">Back to login</a>
         </div>
       </div>
 
       <!-- State B: post-signup "check your email" prompt (?email=…) -->
       <div class="auth-form verify-form" id="verifyCheckEmailState" style="display:none">
         <div class="verify-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="2.5"/>
-            <path d="M3.5 7.5l8.5 6 8.5-6"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5.5" width="18" height="13" rx="2"/>
+            <path d="M3.5 7l8.5 6 8.5-6"/>
           </svg>
         </div>
 
         <div class="verify-heading">
-          <h1>Check your email</h1>
-          <p>We just sent a verification link to</p>
+          <h1>Check your inbox</h1>
+          <p>We sent a verification link to <strong id="checkEmailAddress">your email</strong>. Open it to finish setting up your account.</p>
         </div>
 
-        <div class="verify-pill-wrap">
-          <span class="verify-email-pill">
-            <span class="at-dot">@</span>
-            <span id="checkEmailAddress">your email</span>
-          </span>
+        <div class="verify-actions">
+          Didn't get it?<button type="button" id="resendVerifyBtn">Resend email</button>
         </div>
+        <p class="verify-message" id="resendMessage" role="status"></p>
 
-        <ol class="verify-steps">
-          <li>
-            <span class="step-num">1</span>
-            <span>Open the email titled <strong>"Verify your FinTrack email"</strong></span>
-          </li>
-          <li>
-            <span class="step-num">2</span>
-            <span>Click the green <strong>Verify email</strong> button</span>
-          </li>
-          <li>
-            <span class="step-num">3</span>
-            <span>You'll be sent to the login screen automatically</span>
-          </li>
-        </ol>
-
-        <div class="verify-resend-row">
-          <span class="label">Didn't get it? Check spam, or <strong>resend</strong>.</span>
-          <button type="button" id="resendVerifyBtn">Resend email</button>
-        </div>
-        <p class="auth-message" id="resendMessage" role="status" style="text-align:center;"></p>
-
-        <p class="verify-trust">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-          Sent securely from <strong style="color: var(--green-dark); font-weight:800; margin-left:2px;">hello@fintrack.art</strong>
-        </p>
-
-        <div class="verify-footer-row">
-          <a class="auth-back" href="login.html">← Back to login</a>
+        <div class="verify-footer">
+          <a href="login.html">Back to login</a>
         </div>
       </div>
 
       <!-- State C: no token and no email param — fallback -->
       <div class="auth-form verify-form" id="verifyFallbackState" style="display:none">
         <div class="verify-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="9"/>
             <path d="M12 8v5"/>
-            <circle cx="12" cy="16" r="0.6" fill="currentColor"/>
+            <circle cx="12" cy="16" r="0.7" fill="currentColor" stroke="none"/>
           </svg>
         </div>
         <div class="verify-heading">
-          <h1>Verification link missing</h1>
-          <p>This page expects either a verification link from your inbox, or a sign-up redirect.</p>
+          <h1>Link missing</h1>
+          <p>This page needs a verification link from your inbox, or a sign-up redirect.</p>
         </div>
-        <div class="verify-footer-row">
-          <a class="auth-back" href="login.html">← Back to login</a>
+        <div class="verify-footer">
+          <a href="login.html">Back to login</a>
         </div>
       </div>
     </section>
