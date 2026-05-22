@@ -1454,6 +1454,43 @@ def logout():
     return jsonify({"message": "Logout successful"}), 200
 
 
+# ─── TEMPORARY DEBUG ENDPOINT — remove after diagnosing email send issue ───
+@app.route('/api/debug/email-status', methods=['GET'])
+def debug_email_status():
+    token = request.args.get("token", "")
+    if token != "fintrack_debug_2026_05_22":
+        return jsonify({"error": "Not found"}), 404
+
+    import email_service as _es
+    client = _es.email_client
+    info = {
+        "has_api_key": bool(client.api_key),
+        "api_key_length": len(client.api_key) if client.api_key else 0,
+        "api_key_prefix": client.api_key[:6] + "..." if client.api_key else None,
+        "from_email": client.from_email,
+        "reply_to": client.reply_to,
+        "enabled": client.enabled,
+        "resend_module_loaded": _es.resend is not None,
+        "configured": client.configured(),
+        "EMAIL_VERIFICATION_REQUIRED": EMAIL_VERIFICATION_REQUIRED,
+    }
+
+    test_to = request.args.get("send_to")
+    if test_to:
+        try:
+            result = _es.send_email(
+                to=test_to,
+                subject="FinTrack debug ping",
+                html_body="<p>Debug send from /api/debug/email-status.</p>",
+                text_body="Debug send from /api/debug/email-status.",
+            )
+            info["test_send"] = {"status": result.status, "message_id": result.message_id}
+        except Exception as exc:
+            info["test_send"] = {"status": "exception", "error": repr(exc)}
+
+    return jsonify(info), 200
+
+
 def _rows_to_csv(rows, fieldnames):
     """Convert a list of dicts to a CSV string. Empty list yields just the
     header row, which is the standard convention for data exports."""
