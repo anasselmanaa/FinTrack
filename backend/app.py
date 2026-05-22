@@ -1414,19 +1414,38 @@ def verify_email():
 
 
 @app.route('/auth/resend-verification', methods=['POST'])
-@login_required
 def resend_verification():
-    user = get_user_email_payload(current_user_id())
-    if not user:
-        return jsonify({"error": "Please log in"}), 401
-    if user.get("email_verified_at"):
-        return jsonify({"message": "Email is already verified.", "email_verified": True}), 200
-
-    send_verification_email_for_user(user)
-    return jsonify({
-        "message": "If email sending is configured, a verification link has been sent.",
-        "email_verified": False,
+    # Public endpoint — a freshly-signed-up user can't be logged in yet because
+    # the verification gate blocks login. We accept the email in the body and
+    # always return a generic 200 to prevent account enumeration.
+    generic_ok = jsonify({
+        "message": "If that email is registered, a verification link has been sent.",
     }), 200
+
+    data = request.get_json(silent=True) or {}
+    email = normalize_email(data.get("email"))
+    if not email:
+        if current_user.is_authenticated:
+            user = get_user_email_payload(current_user_id())
+            if user and not user.get("email_verified_at"):
+                send_verification_email_for_user(user)
+            return generic_ok
+        return generic_ok
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(
+        "SELECT id, email, name, email_verified_at FROM users WHERE email = %s",
+        (email,),
+    )
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if user and not user.get("email_verified_at"):
+        send_verification_email_for_user(dict(user))
+
+    return generic_ok
 
 
 @app.route('/auth/logout', methods=['POST'])
