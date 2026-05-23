@@ -1009,6 +1009,8 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
     width: min(260px, 70vw);
     min-width: 0;
     max-width: 100%;
+    height: auto;
+    aspect-ratio: auto;
     margin: 28px auto 0;
     grid-column: 1;
     grid-row: auto;
@@ -1016,9 +1018,11 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
     animation: none;
     order: 2;
   }
-  /* Trim the iPhone conversation on mobile so the visible chat looks
-     complete inside the smaller screen instead of clipping mid-message. */
-  .hero-phone .ai-chat > .ai-msg-row:nth-of-type(n+6) { display: none; }
+  /* Let the iPhone frame grow to fit all messages on mobile instead of
+     clipping them. Trades realistic phone proportions for full content. */
+  .hero-phone .iphone-frame { height: auto; }
+  .hero-phone .iphone-content { overflow: visible; }
+  .hero-phone .ai-chat { justify-content: flex-start; }
   .btn-hero {
     font-size: 1.05rem;
     padding: 0 1.8rem;
