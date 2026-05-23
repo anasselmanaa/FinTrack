@@ -991,9 +991,10 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 @media (max-width: 960px) {
   nav { padding: 0 18px; }
   .nav-menu { display: none; }
-  .nav-login { font-size: 13px; padding: 6px 10px; }
-  .nav-cta { font-size: 13px; padding: 8px 14px; }
-  .nav-brand { font-size: 22px; margin-right: 12px; }
+  .nav-login { font-size: 13px; padding: 6px 8px; }
+  .nav-cta { font-size: 12px; padding: 7px 11px; }
+  .nav-brand { font-size: 20px; margin-right: 8px; }
+  .nav-right { gap: 6px; }
   .hero {
     margin-top: 64px;
     min-height: calc(100vh - 64px);
@@ -1015,6 +1016,9 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
     animation: none;
     order: 2;
   }
+  /* Trim the iPhone conversation on mobile so the visible chat looks
+     complete inside the smaller screen instead of clipping mid-message. */
+  .hero-phone .ai-chat > .ai-msg-row:nth-of-type(n+6) { display: none; }
   .btn-hero {
     font-size: 1.05rem;
     padding: 0 1.8rem;
