@@ -8214,3 +8214,107 @@ body.no-demo-data .demo-only {
     .onboarding-locale { grid-template-columns: 1fr; }
     .onboarding-step-head h2 { font-size: 21px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   IN-APP MOBILE POLISH
+   Strip horizontal overflow from Transactions, Budgets, Goals,
+   Recurring, Money Coach, and Settings pages on phone-sized screens.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+    /* Prevent any element in the app from pushing the page wider than the viewport */
+    html, body { overflow-x: hidden; }
+    .main { max-width: 100vw; overflow-x: hidden; }
+    .content { padding: 14px; min-width: 0; }
+
+    /* Modals: fit the viewport with a comfortable margin instead of 440-500px fixed */
+    .modal-overlay { padding: 12px; }
+    .modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        border-radius: 14px;
+    }
+    .add-tx-modal .modal { width: 100%; }
+    .modal-header { padding: 16px 18px 0; }
+    .modal-body { padding: 14px 18px 20px; }
+
+    /* Forms inside modals: stack 2-column rows */
+    .form-row,
+    .form-grid-2,
+    .modal-grid-2,
+    .grid-2 { grid-template-columns: 1fr !important; }
+    .modal .form-row { flex-direction: column; align-items: stretch; gap: 10px; }
+
+    /* Filter / search bars: wrap instead of overflowing */
+    .filter-row,
+    .filter-bar,
+    .table-toolbar,
+    .table-filters,
+    .tx-filters,
+    .tx-actions,
+    .recurring-toolbar,
+    .budget-toolbar,
+    .goals-toolbar { flex-wrap: wrap; gap: 8px; }
+    .filter-row > *,
+    .filter-bar > * { flex: 0 1 auto; min-width: 0; }
+
+    /* Tables: contained scroll so the page itself doesn't scroll horizontally */
+    .tx-table-wrap,
+    .recurring-table-wrap,
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+
+    /* Card grids collapse to 1 column on phones */
+    .budgets-grid,
+    .budget-grid,
+    .goals-grid,
+    .goal-grid,
+    .recurring-grid,
+    .recurring-list,
+    .investments-grid,
+    .accounts-grid,
+    .cards-grid { grid-template-columns: 1fr !important; gap: 12px; }
+
+    /* Settings: tabs scroll horizontally without pushing the page */
+    .settings-tabs,
+    .settings-nav,
+    .settings-tablist {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+    }
+    .settings-tabs::-webkit-scrollbar,
+    .settings-nav::-webkit-scrollbar { display: none; }
+    .settings-tabs > *,
+    .settings-nav > * { flex-shrink: 0; white-space: nowrap; }
+    .settings-section { padding: 18px 16px; }
+
+    /* Money Coach: chat thread + composer fit the viewport */
+    .coach-chat,
+    .coach-thread,
+    .coach-messages,
+    .coach-conversation { padding: 12px; min-width: 0; }
+    .coach-message,
+    .coach-bubble { max-width: 92%; word-break: break-word; }
+    .coach-composer,
+    .coach-input-row { flex-wrap: wrap; gap: 8px; }
+    .coach-composer textarea,
+    .coach-input-row textarea { min-width: 0; width: 100%; }
+
+    /* Form inputs: prevent iOS zoom on focus (font must be >=16px) */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    select,
+    textarea { font-size: 16px; }
+
+    /* Long text fields shouldn't overflow */
+    .tx-info, .account-info, .budget-info, .goal-info { min-width: 0; }
+    .tx-info *, .account-info *, .budget-info *, .goal-info * { overflow-wrap: anywhere; }
+
+    /* Sidebar logout button: keep it readable */
+    .sidebar .logout-btn { padding: 10px; }
+}
