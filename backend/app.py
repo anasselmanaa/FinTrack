@@ -2745,9 +2745,14 @@ RECEIPT_SCAN_CATEGORIES = [
     "Other",
 ]
 
-RECEIPT_SCAN_PROMPT = """Extract from this receipt: merchant name, total amount, currency code, date (ISO),
-and best-guess category from this list: [Income, Groceries, Entertainment, Transport,
-Utilities, Housing, Dining, Health, Shopping, Other]. Return JSON only."""
+RECEIPT_SCAN_PROMPT = """Extract receipt data and return JSON only — no prose, no markdown fence.
+Use exactly these JSON field names:
+  "merchant" (string),
+  "amount" (number, total paid),
+  "currency" (3-letter ISO code, e.g. USD, CAD, EUR),
+  "date" (ISO YYYY-MM-DD),
+  "suggested_category" (one of: Income, Groceries, Entertainment, Transport,
+   Utilities, Housing, Dining, Health, Shopping, Other)."""
 
 RECEIPT_SCAN_SCHEMA = {
     "type": "object",
@@ -2829,27 +2834,34 @@ def validate_receipt_scan_output(parsed):
     if not isinstance(parsed, dict):
         return None, "Claude did not return a JSON object"
 
-    merchant = str(parsed.get("merchant") or "").strip() or "Unknown"
+    def pick(*keys):
+        for key in keys:
+            value = parsed.get(key)
+            if value not in (None, ""):
+                return value
+        return None
+
+    merchant = str(pick("merchant", "merchant_name", "store", "vendor") or "").strip() or "Unknown"
 
     try:
-        amount = Decimal(str(parsed.get("amount")))
+        amount = Decimal(str(pick("amount", "total_amount", "total", "grand_total")))
     except (InvalidOperation, TypeError):
         return None, "Receipt scan did not include a valid amount"
 
     if amount <= 0:
         return None, "Receipt scan did not include a valid amount"
 
-    currency = str(parsed.get("currency") or "").strip().upper()
+    currency = str(pick("currency", "currency_code", "iso_currency") or "").strip().upper()
     if not CURRENCY_RE.match(currency):
         return None, "Receipt scan did not include a valid currency code"
 
-    receipt_date = str(parsed.get("date") or "").strip()
+    receipt_date = str(pick("date", "receipt_date", "transaction_date") or "").strip()
     try:
         datetime.strptime(receipt_date, "%Y-%m-%d")
     except (TypeError, ValueError):
         return None, "Receipt scan did not include a valid ISO date"
 
-    suggested_category = str(parsed.get("suggested_category") or "").strip()
+    suggested_category = str(pick("suggested_category", "category", "best_category") or "").strip()
     if suggested_category not in RECEIPT_SCAN_CATEGORIES:
         suggested_category = "Other"
 
