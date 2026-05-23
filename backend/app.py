@@ -394,6 +394,24 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+@app.before_request
+def force_https_in_production():
+    if not IS_PRODUCTION:
+        return
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "")
+    if forwarded_proto == "http":
+        return Response(status=301, headers={"Location": request.url.replace("http://", "https://", 1)})
+
+
+@app.after_request
+def add_security_headers(response):
+    if IS_PRODUCTION:
+        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    return response
+
+
 @app.route('/')
 def serve_landing_page():
     return send_from_directory(FRONTEND_DIR, "landing.html")
@@ -3239,7 +3257,6 @@ def get_budgets():
             bp.start_date,
             bp.days,
             bp.match_keyword,
-            bp.type,
             bp.created_at,
             bp.period_start,
             bp.period_days

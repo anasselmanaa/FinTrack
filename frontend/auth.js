@@ -49,11 +49,11 @@
   function setBusy(button, busyText, busy) {
     if (!button) return;
     if (busy) {
-      button.dataset.label = button.textContent;
-      button.textContent = busyText;
+      button.dataset.label = button.dataset.label || button.textContent;
+      button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${busyText}`;
       button.disabled = true;
     } else {
-      button.textContent = button.dataset.label || button.textContent;
+      button.textContent = button.dataset.label || busyText;
       button.disabled = false;
     }
   }

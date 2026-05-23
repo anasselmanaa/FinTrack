@@ -202,6 +202,19 @@ input:focus {
 .auth-submit:hover { background: var(--green-dark); }
 .auth-submit:disabled { cursor: wait; opacity: 0.72; }
 
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: btn-spin 0.6s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
 .auth-message {
   min-height: 20px;
   margin: 14px 0 0;

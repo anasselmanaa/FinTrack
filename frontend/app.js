@@ -2250,11 +2250,13 @@ function refreshCurrencySensitiveViews() {
 }
 
 function applyCurrentUserProfile(user = {}) {
-    // First-login onboarding gate: if the user has never completed the
-    // 4-step modal, surface it. The modal handles its own first-render guard
-    // so calling this multiple times is safe.
+    // First-login onboarding gate: open the 4-step modal if the user has
+    // never completed it, otherwise force-close it. The close branch defends
+    // against any earlier code path that opened the modal with stale data.
     if (user && !user.onboarding_completed_at && typeof openOnboardingModal === "function") {
         openOnboardingModal(user);
+    } else if (user && user.onboarding_completed_at && typeof closeOnboardingModal === "function") {
+        closeOnboardingModal();
     }
 
     const name = String(user.name || "John Doe").trim();
@@ -2895,7 +2897,7 @@ async function startStripeCheckout() {
     const originalLabel = button ? button.textContent : "";
     if (button) {
         button.disabled = true;
-        button.textContent = t("settings.billing.redirecting", "Redirecting…");
+        button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${t("settings.billing.redirecting", "Redirecting…")}`;
     }
 
     try {
@@ -2922,7 +2924,7 @@ async function openStripeBillingPortal() {
     const originalLabel = button ? button.textContent : "";
     if (button) {
         button.disabled = true;
-        button.textContent = t("settings.billing.redirecting", "Redirecting…");
+        button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${t("settings.billing.redirecting", "Redirecting…")}`;
     }
 
     try {
@@ -5004,9 +5006,13 @@ async function uploadCSV(file) {
 
     const formData = new FormData();
     formData.append('file', file);
+    const originalBtnLabel = csvUploadBtn ? csvUploadBtn.textContent : '';
     try {
         setCsvUploadStatus('Uploading...');
-        if (csvUploadBtn) csvUploadBtn.disabled = true;
+        if (csvUploadBtn) {
+            csvUploadBtn.disabled = true;
+            csvUploadBtn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${t('csv.uploading', 'Uploading…')}`;
+        }
         const res  = await fetch(API + '/upload-csv', { method:'POST', body: formData, credentials: 'include' });
         await throwIfNotOk(res, 'Upload failed');
         const data = await res.json();
@@ -5022,7 +5028,10 @@ async function uploadCSV(file) {
         handleFetchError(err, 'Upload failed. Make sure Flask is running.');
         setCsvUploadStatus(isAuthError(err) ? 'Please log in before importing.' : (err.message || 'Upload failed.'), true);
     } finally {
-        if (csvUploadBtn) csvUploadBtn.disabled = false;
+        if (csvUploadBtn) {
+            csvUploadBtn.disabled = false;
+            csvUploadBtn.textContent = originalBtnLabel || t('csv.upload_btn', 'Upload & Import');
+        }
     }
 }
 
