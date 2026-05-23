@@ -94,8 +94,8 @@ def env_list(*names, default=None):
     return default or []
 
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+ANTHROPIC_API_KEY = (os.getenv("ANTHROPIC_API_KEY") or "").strip() or None
+ANTHROPIC_BASE_URL = (os.getenv("ANTHROPIC_BASE_URL") or "https://api.anthropic.com").strip()
 anthropic_client = (
     anthropic.Anthropic(
         api_key=ANTHROPIC_API_KEY,
