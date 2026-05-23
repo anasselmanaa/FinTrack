@@ -4522,9 +4522,11 @@ body {
 @media (max-width: 600px) {
     .stats-row { grid-template-columns: 1fr; }
     #page-dashboard > .stats-row { grid-template-columns: 1fr; }
-    .topnav { padding: 0 16px; }
+    .topnav { padding: 0 16px; gap: 8px; }
+    .topnav-right { gap: 6px; }
     .content { padding: 16px; }
     .search-bar { display: none; }
+    .page-subtitle { display: none; }
 }
 
 /* Premium category quick-add row */
