@@ -6835,57 +6835,148 @@ details.coach-history-collapsible > .coach-history-list {
 /* Step 3 — review */
 .scan-review-top {
     display: grid;
-    grid-template-columns: 96px 1fr;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(248,250,252,.6), rgba(255,255,255,.4));
+    grid-template-columns: 112px 1fr;
+    gap: 18px;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid rgba(16,185,129,.18);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top right, rgba(16,185,129,.06), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,1), rgba(248,250,252,.7));
+    box-shadow:
+        0 1px 0 rgba(255,255,255,.6) inset,
+        0 12px 28px rgba(15,23,42,.06);
+    margin-bottom: 18px;
 }
 .scan-review-img {
-    width: 96px;
-    height: 96px;
+    width: 112px;
+    height: 112px;
     object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(15,23,42,.08);
+    border-radius: 14px;
+    box-shadow:
+        0 0 0 1px rgba(15,23,42,.06) inset,
+        0 10px 26px rgba(15,23,42,.12);
 }
 .scan-review-meta {
     display: grid;
-    gap: 6px;
+    gap: 10px;
     justify-items: start;
     align-self: center;
+}
+.scan-review-meta::before {
+    content: "✨ AI extracted these fields";
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--text-2);
+    text-transform: uppercase;
 }
 .scan-review-pill {
     display: inline-flex;
     align-items: center;
-    height: 24px;
+    gap: 6px;
+    height: 26px;
     padding: 0 12px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .04em;
+    font-weight: 800;
+    letter-spacing: .05em;
     text-transform: uppercase;
-    background: rgba(16,185,129,.12);
+    background: linear-gradient(180deg, rgba(16,185,129,.16), rgba(16,185,129,.08));
     color: var(--green);
+    box-shadow: 0 0 0 1px rgba(16,185,129,.18) inset;
     width: auto;
 }
+.scan-review-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+}
 .scan-review-confidence.confidence-medium {
-    background: rgba(249,115,22,.14);
+    background: linear-gradient(180deg, rgba(249,115,22,.18), rgba(249,115,22,.08));
     color: var(--orange);
+    box-shadow: 0 0 0 1px rgba(249,115,22,.22) inset;
 }
 .scan-review-confidence.confidence-low {
-    background: rgba(239,68,68,.14);
+    background: linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.08));
     color: var(--red);
+    box-shadow: 0 0 0 1px rgba(239,68,68,.22) inset;
 }
 .scan-review-warning {
     margin: 0;
     color: var(--orange);
     font-size: 12.5px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.45;
 }
-.scan-review-form { display: grid; gap: 12px; margin-top: 4px; }
+.scan-review-form { display: grid; gap: 14px; }
+
+/* Premium-feel form inputs inside the scan review */
+.scan-receipt-modal .scan-review-form .form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+}
+.scan-receipt-modal .scan-review-form .form-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    box-shadow: 0 1px 0 rgba(15,23,42,.02);
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.scan-receipt-modal .scan-review-form .form-input:hover {
+    border-color: rgba(16,185,129,.35);
+}
+.scan-receipt-modal .scan-review-form .form-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(16,185,129,.12);
+}
+.scan-receipt-modal .scan-review-form .premium-type-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+}
+.scan-receipt-modal .scan-review-form .premium-type-btn {
+    border-radius: 9px;
+    font-weight: 700;
+    font-size: 13px;
+    height: 36px;
+    transition: background .15s, color .15s, box-shadow .15s;
+}
+.scan-receipt-modal .scan-review-form .premium-type-btn.active {
+    box-shadow: 0 4px 10px rgba(15,23,42,.08);
+}
+/* Make Save Transaction button stand out as the primary action */
+.scan-receipt-modal .modal-footer .btn-primary#scanReceiptSave {
+    background: linear-gradient(180deg, var(--green), #0f8a63);
+    color: #fff;
+    height: 42px;
+    padding: 0 22px;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    border-radius: 11px;
+    box-shadow:
+        0 8px 20px rgba(16,185,129,.28),
+        0 0 0 1px rgba(255,255,255,.18) inset;
+}
+.scan-receipt-modal .modal-footer .btn-primary#scanReceiptSave:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 12px 26px rgba(16,185,129,.34),
+        0 0 0 1px rgba(255,255,255,.22) inset;
+}
 
 /* Step 4 — error */
 .scan-step-error {
