@@ -5,7 +5,7 @@ bcrypt
 psycopg2-binary
 pandas
 python-dotenv
-anthropic
+anthropic==0.102.0
 stripe
 yfinance
 gunicorn
