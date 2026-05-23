@@ -3000,8 +3000,6 @@ def scan_receipt_structured():
         print("Receipt scan error:", repr(exc))
         return jsonify({"error": "Could not read this receipt. Try a clearer photo or enter the details manually."}), 422
 
-    print("Receipt scan parsed response:", repr(parsed))
-
     validated, validation_error = validate_receipt_scan_output(parsed)
     if validation_error:
         return jsonify({"error": validation_error}), 422
