@@ -89,6 +89,14 @@ const TRANSLATIONS = {
         "notif.recurring.today.title": "{name} à régler aujourd'hui",
         "notif.recurring.soon.title": "{name} à régler dans {n} jours",
 
+        // Daily Insights card (dashboard)
+        "insights.empty.title": "Préparation de vos insights",
+        "insights.empty.body": "FinTrack analyse vos transactions récentes. Vos conseils apparaîtront ici dès qu'il y aura quelque chose d'utile à montrer.",
+        "insights.meta.checking": "Analyse de vos données",
+        "insights.meta.based_on": "Basé sur votre activité récente",
+        "insights.action.got_it": "Compris",
+        "insights.action.dismiss_error": "Impossible d'ignorer cet insight",
+
         // Topnav
         "topnav.search": "Rechercher des transactions…",
         "topnav.toggle_theme": "Changer de thème",
@@ -1051,6 +1059,14 @@ const TRANSLATIONS = {
         "notif.recurring.overdue.sub": "Vencía hace {n} días · {amt}",
         "notif.recurring.today.title": "{name} vence hoy",
         "notif.recurring.soon.title": "{name} vence en {n} días",
+
+        // Daily Insights card (dashboard)
+        "insights.empty.title": "Preparando tus insights",
+        "insights.empty.body": "FinTrack está analizando tus transacciones recientes. Tus consejos aparecerán aquí cuando haya algo útil que mostrar.",
+        "insights.meta.checking": "Analizando tus datos",
+        "insights.meta.based_on": "Basado en tu actividad reciente",
+        "insights.action.got_it": "Entendido",
+        "insights.action.dismiss_error": "No se pudo descartar el insight",
 
         // Topnav
         "topnav.search": "Buscar transacciones…",
@@ -12111,22 +12127,24 @@ function renderDailyInsights(rows) {
     const items = (Array.isArray(rows) ? rows : []).slice(0, 3);
 
     if (!items.length) {
+        const emptyTitle = t("insights.empty.title", "Preparing your insights");
+        const emptyBody = t("insights.empty.body", "FinTrack is checking your recent transactions. Your tips will appear here when there is something useful to show.");
         list.innerHTML = `
             <div class="daily-insights-empty">
-                <strong>Preparing your insights</strong>
-                <p>FinTrack is checking your recent transactions. Your tips will appear here when there is something useful to show.</p>
+                <strong>${escapeHTML(emptyTitle)}</strong>
+                <p>${escapeHTML(emptyBody)}</p>
             </div>
         `;
-        if (meta) meta.textContent = "Checking your data";
+        if (meta) meta.textContent = t("insights.meta.checking", "Checking your data");
         return;
     }
 
-    if (meta) meta.textContent = "Based on your recent activity";
+    if (meta) meta.textContent = t("insights.meta.based_on", "Based on your recent activity");
 
     list.innerHTML = items.map(item => {
         const tone = dailyInsightTone(item);
         const typeLabel = dailyInsightTypeLabel(item.insight_type);
-        const actionLabel = item.action_label || "Got it";
+        const actionLabel = item.action_label || t("insights.action.got_it", "Got it");
         return `
             <div class="coach-saved-insight-item daily-insight-${escapeHTML(tone)} daily-insight-card">
                 <div>
@@ -12156,9 +12174,9 @@ function renderDailyInsights(rows) {
                 await throwIfNotOk(response, "Could not dismiss insight");
                 await loadDailyInsights();
             } catch (error) {
-                handleFetchError(error, "Could not dismiss insight");
+                handleFetchError(error, t("insights.action.dismiss_error", "Could not dismiss insight"));
                 button.disabled = false;
-                button.textContent = button.dataset.originalLabel || "Got it";
+                button.textContent = button.dataset.originalLabel || t("insights.action.got_it", "Got it");
             }
         });
         button.dataset.originalLabel = button.textContent;
