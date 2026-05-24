@@ -90,6 +90,28 @@
     const params = new URLSearchParams(window.location.search || "");
     showTab(params.get("mode") === "register" ? "register" : "login");
 
+    // Google OAuth round-trip can bounce back here with ?auth_error=... when
+    // something goes wrong (user denied consent, token exchange failed, etc.).
+    const authError = params.get("auth_error");
+    if (authError) {
+      const messages = {
+        google_not_configured: "Google sign-in isn't set up yet. Please use email + password.",
+        google_denied: "Google sign-in was cancelled.",
+        google_state_mismatch: "Your sign-in session expired. Please try again.",
+        google_missing_code: "Google didn't send a sign-in code. Please try again.",
+        google_token_exchange_failed: "Couldn't complete Google sign-in. Please try again.",
+        google_no_access_token: "Couldn't complete Google sign-in. Please try again.",
+        google_userinfo_failed: "Couldn't read your Google profile. Please try again.",
+        google_incomplete_profile: "Your Google account is missing an email. Please use email + password.",
+        google_email_unverified: "Your Google email isn't verified.",
+        google_account_deleted: "This email previously had a FinTrack account that was deleted and can't be reopened.",
+      };
+      const friendly = messages[authError] || "Google sign-in failed. Please try again.";
+      setMessage("loginMessage", friendly, "error");
+      // Clean the URL so a refresh doesn't re-show the error.
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
     loginTab?.addEventListener("click", () => showTab("login"));
     registerTab?.addEventListener("click", () => showTab("register"));
 

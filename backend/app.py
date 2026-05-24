@@ -1492,6 +1492,247 @@ def logout():
     return jsonify({"message": "Logout successful"}), 200
 
 
+# ══════════════════════════════════════
+#  GOOGLE OAUTH
+# ══════════════════════════════════════
+#
+# Standard OAuth 2.0 authorization-code flow:
+#   1. /auth/google  → build a Google authorize URL with a random state token
+#                       (CSRF guard), stash the state in the Flask session,
+#                       redirect the user to Google.
+#   2. /auth/google/callback  → Google redirects back with `code` + `state`.
+#                       Verify state, exchange code for tokens, fetch userinfo,
+#                       find-or-create the user, log them in, redirect to the
+#                       app dashboard.
+#
+# Account-linking rules (in order):
+#   a) Existing user with this google_id → log them in.
+#   b) Existing user with this email (canonical match) → link the google_id,
+#      auto-verify their email if not already, log them in.
+#   c) Email was used by a deleted account → block (anti-abuse).
+#   d) Otherwise → create a new account with google_id, email_verified_at=NOW(),
+#      no password_hash.
+
+import urllib.parse as _urllib_parse
+import urllib.request as _urllib_request
+
+from flask import redirect, session, url_for
+
+GOOGLE_CLIENT_ID = (os.getenv("GOOGLE_CLIENT_ID") or "").strip()
+GOOGLE_CLIENT_SECRET = (os.getenv("GOOGLE_CLIENT_SECRET") or "").strip()
+GOOGLE_AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+
+def google_oauth_configured():
+    return bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+
+
+def _google_redirect_uri():
+    # In production we have a fixed public URL; locally we let Flask compute it
+    # from the request so the same code works on http://localhost:5001 too.
+    override = (os.getenv("GOOGLE_REDIRECT_URI") or "").strip()
+    if override:
+        return override
+    return url_for("google_oauth_callback", _external=True)
+
+
+def _frontend_redirect(path="/frontend/index.html", error=None):
+    """Bounce the user back to a frontend page, optionally with an error code
+    in the query string so the page can show a friendly toast."""
+    target = path
+    if error:
+        sep = "&" if "?" in target else "?"
+        target = f"{target}{sep}auth_error={_urllib_parse.quote(error)}"
+    return redirect(target)
+
+
+@app.route('/auth/google', methods=['GET'])
+def google_oauth_start():
+    if not google_oauth_configured():
+        return _frontend_redirect("/frontend/login.html", error="google_not_configured")
+
+    state = secrets.token_urlsafe(32)
+    session["google_oauth_state"] = state
+
+    params = {
+        "client_id": GOOGLE_CLIENT_ID,
+        "redirect_uri": _google_redirect_uri(),
+        "response_type": "code",
+        "scope": "openid email profile",
+        "state": state,
+        "access_type": "online",
+        "prompt": "select_account",
+    }
+    return redirect(f"{GOOGLE_AUTHORIZE_URL}?{_urllib_parse.urlencode(params)}")
+
+
+@app.route('/auth/google/callback', methods=['GET'])
+def google_oauth_callback():
+    if not google_oauth_configured():
+        return _frontend_redirect("/frontend/login.html", error="google_not_configured")
+
+    # User declined consent or Google returned an error.
+    if request.args.get("error"):
+        return _frontend_redirect("/frontend/login.html", error="google_denied")
+
+    # CSRF check: the state token we issued must match the one Google echoed back.
+    expected_state = session.pop("google_oauth_state", None)
+    received_state = request.args.get("state", "")
+    if not expected_state or expected_state != received_state:
+        return _frontend_redirect("/frontend/login.html", error="google_state_mismatch")
+
+    code = request.args.get("code", "")
+    if not code:
+        return _frontend_redirect("/frontend/login.html", error="google_missing_code")
+
+    # ── 1. Exchange the authorization code for an access_token ──────────────
+    token_body = _urllib_parse.urlencode({
+        "code": code,
+        "client_id": GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri": _google_redirect_uri(),
+        "grant_type": "authorization_code",
+    }).encode("utf-8")
+
+    try:
+        token_req = _urllib_request.Request(
+            GOOGLE_TOKEN_URL,
+            data=token_body,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            method="POST",
+        )
+        with _urllib_request.urlopen(token_req, timeout=15) as resp:
+            token_payload = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        print("[google-oauth] token exchange failed:", exc)
+        return _frontend_redirect("/frontend/login.html", error="google_token_exchange_failed")
+
+    access_token = token_payload.get("access_token")
+    if not access_token:
+        return _frontend_redirect("/frontend/login.html", error="google_no_access_token")
+
+    # ── 2. Fetch the user's profile from Google ─────────────────────────────
+    try:
+        userinfo_req = _urllib_request.Request(
+            GOOGLE_USERINFO_URL,
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        with _urllib_request.urlopen(userinfo_req, timeout=15) as resp:
+            userinfo = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        print("[google-oauth] userinfo fetch failed:", exc)
+        return _frontend_redirect("/frontend/login.html", error="google_userinfo_failed")
+
+    google_id = userinfo.get("sub")
+    google_email = (userinfo.get("email") or "").strip().lower()
+    google_email_verified = bool(userinfo.get("email_verified"))
+    google_name = (userinfo.get("name") or "").strip()
+    google_picture = userinfo.get("picture") or None
+
+    if not google_id or not google_email:
+        return _frontend_redirect("/frontend/login.html", error="google_incomplete_profile")
+
+    if not google_email_verified:
+        # Should be impossible for real Google accounts, but defend anyway.
+        return _frontend_redirect("/frontend/login.html", error="google_email_unverified")
+
+    # ── 3. Find or create the local user ────────────────────────────────────
+    user_row = _google_find_or_create_user(
+        google_id=google_id,
+        email=google_email,
+        name=google_name or google_email.split("@")[0],
+        picture=google_picture,
+    )
+
+    if user_row is None:
+        return _frontend_redirect("/frontend/login.html", error="google_account_deleted")
+
+    # ── 4. Log them in and bounce to the dashboard ──────────────────────────
+    login_user(User(dict(user_row)))
+    return redirect("/frontend/index.html")
+
+
+def _google_find_or_create_user(*, google_id, email, name, picture):
+    """Find a matching user (by google_id, then by email) and link if needed;
+    otherwise create a brand-new account. Returns the user row, or None if the
+    email was previously used by a deleted account (anti-abuse block)."""
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        # (a) Look up by google_id.
+        cur.execute("""
+            SELECT id, email, name, subscription_status, trial_started_at, trial_ends_at,
+                   stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
+                   subscription_current_period_end, subscription_canceled_at, created_at,
+                   email_verified_at, profile_image_url, preferred_currency, preferred_language,
+                   onboarding_completed_at, onboarding_goal
+            FROM users
+            WHERE google_id = %s
+        """, (google_id,))
+        existing = cur.fetchone()
+        if existing:
+            return existing
+
+        # (b) Look up by canonical email — if found, link the google_id.
+        canonical = canonicalize_email(email)
+        cur.execute("""
+            SELECT id, email, name, subscription_status, trial_started_at, trial_ends_at,
+                   stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
+                   subscription_current_period_end, subscription_canceled_at, created_at,
+                   email_verified_at, profile_image_url, preferred_currency, preferred_language,
+                   onboarding_completed_at, onboarding_goal
+            FROM users
+            WHERE email_canonical = %s
+        """, (canonical,))
+        existing_by_email = cur.fetchone()
+        if existing_by_email:
+            cur.execute("""
+                UPDATE users
+                SET google_id = %s,
+                    email_verified_at = COALESCE(email_verified_at, NOW())
+                WHERE id = %s
+            """, (google_id, existing_by_email["id"]))
+            conn.commit()
+            existing_by_email["email_verified_at"] = existing_by_email["email_verified_at"] or datetime.utcnow()
+            return existing_by_email
+
+        # (c) Email was used by a deleted account → block.
+        had_prior, kind = email_has_prior_account(email)
+        if had_prior and kind == "deleted":
+            return None
+
+        # (d) Create a brand-new account. No password_hash. Email is verified
+        # because Google already verified it.
+        cur.execute("""
+            INSERT INTO users (
+                name, email, email_canonical, google_id,
+                profile_image_url, email_verified_at
+            )
+            VALUES (%s, %s, %s, %s, %s, NOW())
+            RETURNING id, email, name, subscription_status, trial_started_at, trial_ends_at,
+                      stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
+                      subscription_current_period_end, subscription_canceled_at, created_at,
+                      email_verified_at, profile_image_url, preferred_currency, preferred_language,
+                      onboarding_completed_at, onboarding_goal
+        """, (name, email, canonical, google_id, picture))
+        new_user = cur.fetchone()
+        conn.commit()
+
+        # Fire the welcome email (same as email/password signup).
+        try:
+            send_transactional_email_once(new_user, "welcome_trial", welcome_trial_email)
+        except Exception as exc:
+            print("[google-oauth] welcome email failed for new user:", exc)
+
+        return new_user
+    finally:
+        cur.close()
+        conn.close()
+
+
 # ─── TEMPORARY DEBUG ENDPOINT — one-shot Sentry wiring check ───
 # Visit /api/debug/sentry-test?token=fintrack_sentry_check once after setting
 # SENTRY_DSN. Reports whether the SDK is initialized, then deliberately raises

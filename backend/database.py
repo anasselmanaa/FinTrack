@@ -58,6 +58,16 @@ def init_db():
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMP")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed_at TIMESTAMP")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_goal TEXT")
+    # Google OAuth: users who sign in with Google have a google_id and no
+    # password_hash. Existing email/password users get a google_id later if
+    # they choose to link their Google account.
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT")
+    cur.execute("ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL")
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS users_google_id_idx
+        ON users (google_id)
+        WHERE google_id IS NOT NULL
+    """)
     # Canonical email form used for anti-abuse duplicate checks. Gmail-aware:
     # 'anas+x@gmail.com' and 'a.n.a.s@gmail.com' both canonicalize to 'anas@gmail.com'.
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_canonical TEXT")
