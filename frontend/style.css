@@ -7610,8 +7610,13 @@ details.coach-history-collapsible > .coach-history-list {
 .cashflow-event-amount.expense { color: var(--red); }
 
 /* ─── What-if modal ─── */
-.whatif-modal { max-width: 540px; }
+.whatif-modal {
+    width: 100%;
+    max-width: 520px;
+}
 .whatif-modal [hidden] { display: none !important; }
+/* Tighten the modal-body bottom padding since the footer brings its own. */
+.whatif-modal .modal-body { padding-bottom: 12px; }
 
 .whatif-modal-header {
     align-items: flex-start;
@@ -7732,9 +7737,8 @@ details.coach-history-collapsible > .coach-history-list {
 }
 
 .whatif-modal-footer {
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-    margin-top: 22px;
+    padding: 16px 24px 20px;
+    margin-top: 4px;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
