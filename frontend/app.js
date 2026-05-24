@@ -2131,7 +2131,7 @@ async function logoutUser() {
         const response = await fetch(`${AUTH_API}/logout`, { method: "POST" });
         await throwIfNotOk(response, "Could not log out");
 
-        window.location.href = "login.html";
+        window.location.href = "landing.html";
     } catch (error) {
         handleFetchError(error, "Could not log out");
         if (button) {
@@ -2301,6 +2301,7 @@ function applyCurrentUserProfile(user = {}) {
     const isPaid = ["active", "premium", "subscribed"].includes(subscriptionStatus);
     setText(".user-plan", isPaid ? t("plan.premium", "Premium Plan") : t("plan.trial", "Trial Plan"));
     renderTrialBanner(user);
+    document.getElementById("sidebarUserProfile")?.classList.add("is-loaded");
     setText("#settingsProfileName", name);
     setText("#settingsProfileEmail", email);
     setText("#settingsProfileSince", formatMemberSince(user.created_at || user.trial_started_at, subscriptionStatus));

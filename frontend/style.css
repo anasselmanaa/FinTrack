@@ -163,8 +163,10 @@ body {
     padding: 8px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.15s, opacity 0.2s;
+    opacity: 0;
 }
+.user-profile.is-loaded { opacity: 1; }
 .user-profile:hover { background: var(--bg); }
 
 .user-avatar {
