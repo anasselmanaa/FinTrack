@@ -6709,31 +6709,6 @@ details.coach-history-collapsible > .coach-history-list {
     background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
 }
 
-/* ─── Scan Receipt — toolbar button ─── */
-.btn-scan-receipt {
-    position: relative;
-    border-color: rgba(16, 185, 129, .28);
-    background: linear-gradient(180deg, rgba(16,185,129,.10), rgba(16,185,129,.04));
-    color: var(--green);
-}
-.btn-scan-receipt:hover {
-    border-color: rgba(16, 185, 129, .45);
-    background: linear-gradient(180deg, rgba(16,185,129,.16), rgba(16,185,129,.06));
-}
-.scan-receipt-badge {
-    display: inline-flex;
-    align-items: center;
-    height: 18px;
-    padding: 0 7px;
-    margin-left: 4px;
-    border-radius: 999px;
-    background: var(--green);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: .06em;
-}
-
 /* ─── Scan Receipt — floating action button ─── */
 .receipt-fab {
     position: fixed;

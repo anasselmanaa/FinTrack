@@ -479,7 +479,7 @@ const TRANSLATIONS = {
 
         // Receipt scan
         "receipt.scan_btn": "Scanner un reçu",
-        "receipt.fab": "Photographier un reçu",
+        "receipt.fab": "Scanner un reçu",
         "receipt.badge_ai": "IA",
         "receipt.modal.title": "Scanner un reçu",
         "receipt.modal.desc": "Prenez une photo ou importez une image. L'IA lit le marchand, le montant, la date et la catégorie — vous confirmez.",
@@ -1414,7 +1414,7 @@ const TRANSLATIONS = {
 
         // Receipt scan
         "receipt.scan_btn": "Escanear un recibo",
-        "receipt.fab": "Fotografiar un recibo",
+        "receipt.fab": "Escanear un recibo",
         "receipt.badge_ai": "IA",
         "receipt.modal.title": "Escanear un recibo",
         "receipt.modal.desc": "Toma una foto o sube una imagen. La IA lee el comercio, el monto, la fecha y la categoría — tú confirmas.",
@@ -8932,7 +8932,7 @@ if (dashboardScanReceiptBtn) {
         if (typeof openScanReceiptModal === "function") {
             openScanReceiptModal();
         } else {
-            const scanBtn = document.getElementById("scanReceiptBtn");
+            const scanBtn = document.getElementById("scanReceiptFab");
             if (scanBtn) scanBtn.click();
         }
     });
@@ -12628,7 +12628,6 @@ async function saveScanReceiptTransaction() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const openBtn   = document.getElementById("scanReceiptBtn");
     const fabBtn    = document.getElementById("scanReceiptFab");
     const modal     = document.getElementById("scanReceiptModal");
     const closeBtn  = document.getElementById("scanReceiptModalClose");
@@ -12644,7 +12643,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!modal || !fileInput || !dropzone) return;
 
-    if (openBtn) openBtn.addEventListener("click", openScanReceiptModal);
     if (fabBtn) fabBtn.addEventListener("click", openScanReceiptModal);
     if (closeBtn) closeBtn.addEventListener("click", closeScanReceiptModal);
     if (cancelBtn) cancelBtn.addEventListener("click", closeScanReceiptModal);
