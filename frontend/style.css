@@ -1773,6 +1773,33 @@ body {
     line-height: 1.4;
 }
 
+.goals-add-btn,
+.goals-empty-add-btn {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.18);
+}
+
+.goals-empty-add-btn {
+    margin-top: 18px;
+    display: inline-flex;
+}
+
+@media (max-width: 640px) {
+    #page-goals .section-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .goals-add-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
 .status-badge {
     font-size: 11px; font-weight: 600;
     padding: 3px 8px; border-radius: 20px;

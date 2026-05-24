@@ -4963,8 +4963,10 @@ function renderGoals(goals) {
                 <div class="premium-empty-state-icon">🎯</div>
                 <h3 class="premium-empty-state-title">${t('goals.empty.title', 'No goals yet')}</h3>
                 <p class="premium-empty-state-text">${t('goals.empty.text', 'Create your first goal and FinTrack will track your progress here.')}</p>
+                <button type="button" class="btn-primary goals-empty-add-btn" id="goalsEmptyAddGoalBtn">${t('topnav.add_goal', 'Add Goal')}</button>
             </div>
         `;
+        document.getElementById("goalsEmptyAddGoalBtn")?.addEventListener("click", () => openGoalModal());
         return;
     }
 
@@ -9271,6 +9273,8 @@ function closeDeleteGoalModal() {
 if (addGoalBtn) {
     addGoalBtn.addEventListener("click", openGoalModal);
 }
+
+document.getElementById("goalsPageAddGoalBtn")?.addEventListener("click", () => openGoalModal());
 
 if (goalModalClose) {
     goalModalClose.addEventListener("click", closeGoalModal);
