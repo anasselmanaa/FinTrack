@@ -2786,35 +2786,11 @@ function initializePreferencesSave() {
     if (!saveButton) return;
     saveButton.addEventListener("click", savePreferences);
 
-    const languageSelect = document.getElementById("settingsLanguage");
-    const currencySelect = document.getElementById("settingsCurrency");
-    if (currencySelect) {
-        currencySelect.addEventListener("change", () => {
-            setPreferredCurrency(currencySelect.value);
-        });
-    }
-
-    if (languageSelect) {
-        languageSelect.addEventListener("change", async () => {
-            const newLang = languageSelect.value;
-            applyLanguage(newLang);
-            refreshAddNewButtonLabel();
-            refreshActivePageMeta();
-            refreshDynamicI18n();
-            try {
-                const res = await fetch(API + "/preferences", {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ preferred_language: newLang })
-                });
-                if (res.ok) {
-                    showToast(t("toast.preferences_saved", "Preferences saved"));
-                }
-            } catch (e) {
-                console.error("Language save error:", e);
-            }
-        });
-    }
+    // Note: language + currency dropdowns no longer apply on change. The user
+    // explicitly wants the change to wait for the Save button so they can
+    // back out of an accidental selection. savePreferences() re-fetches the
+    // updated user and calls applyCurrentUserProfile() which re-applies
+    // language + currency from the server's source of truth.
 }
 
 function refreshDynamicI18n() {

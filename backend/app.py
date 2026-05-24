@@ -3068,7 +3068,8 @@ def update_preferences():
         RETURNING id, email, name, first_name, last_name, phone, preferred_currency, preferred_language,
                   subscription_status, trial_started_at, trial_ends_at,
                   stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
-                  subscription_current_period_end, subscription_canceled_at, created_at, email_verified_at, profile_image_url
+                  subscription_current_period_end, subscription_canceled_at, created_at, email_verified_at, profile_image_url,
+                  onboarding_completed_at, onboarding_goal
     """, values)
     user = cur.fetchone()
     conn.commit()
