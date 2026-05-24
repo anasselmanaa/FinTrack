@@ -233,14 +233,32 @@ def init_db():
     """)
     cur.execute("CREATE INDEX IF NOT EXISTS coupon_redemptions_user_idx ON coupon_redemptions (user_id)")
 
-    # Seed a first lifetime coupon so the owner has something to share on
-    # day one. ON CONFLICT DO NOTHING means re-running init_db() never
-    # clobbers a coupon that's already been edited / had its max_uses set.
-    cur.execute("""
-        INSERT INTO coupons (code, kind, max_uses, note)
-        VALUES ('FINTRACK-VIP', 'lifetime', NULL, 'Initial lifetime code — share privately')
-        ON CONFLICT (code) DO NOTHING
-    """)
+    # The original commit seeded a hardcoded 'FINTRACK-VIP' code. That code
+    # is now visible in this repo's public git history, so anyone could
+    # redeem it. Burn it on every boot. Cascades to coupon_redemptions —
+    # any user who already redeemed FINTRACK-VIP keeps their lifetime
+    # status (it's a column on users, not a join), they just lose the
+    # ability to re-redeem the burned code.
+    cur.execute("DELETE FROM coupons WHERE code = 'FINTRACK-VIP'")
+
+    # Real lifetime coupon comes from env vars so the secret never lives in
+    # git. Owner sets LIFETIME_COUPON_CODE + (optional) LIFETIME_COUPON_MAX_USES
+    # in their Railway / local .env. Re-deploy → coupon updates.
+    lifetime_code = (os.getenv("LIFETIME_COUPON_CODE") or "").strip()
+    raw_max_uses = (os.getenv("LIFETIME_COUPON_MAX_USES") or "").strip()
+    try:
+        lifetime_max_uses = int(raw_max_uses) if raw_max_uses else None
+    except ValueError:
+        lifetime_max_uses = None
+
+    if lifetime_code:
+        # UPSERT — preserves times_used on subsequent boots so we don't reset
+        # the redemption counter, but updates max_uses if the owner bumped it.
+        cur.execute("""
+            INSERT INTO coupons (code, kind, max_uses, note)
+            VALUES (%s, 'lifetime', %s, 'Owner-issued lifetime code')
+            ON CONFLICT (code) DO UPDATE SET max_uses = EXCLUDED.max_uses
+        """, (lifetime_code, lifetime_max_uses))
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS recurring_payment_history (
