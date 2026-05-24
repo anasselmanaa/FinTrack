@@ -504,6 +504,8 @@ const TRANSLATIONS = {
         "receipt.error.too_big": "L'image est trop volumineuse (max 8 Mo).",
         "receipt.error.fields": "Veuillez renseigner le marchand, le montant et la date.",
         "receipt.error.save": "Impossible d'enregistrer la transaction",
+        "receipt.duplicate.confirm": "Ce reçu a déjà été scanné le {date}. Voulez-vous le scanner à nouveau ?",
+        "receipt.duplicate.cancelled": "Scan annulé — ce reçu a déjà été scanné.",
         "receipt.retry": "Essayer une autre photo",
         "receipt.manual": "Saisir manuellement",
         "receipt.save": "Enregistrer la transaction",
@@ -1433,6 +1435,8 @@ const TRANSLATIONS = {
         "receipt.error.too_big": "La imagen es demasiado grande (máx. 8 MB).",
         "receipt.error.fields": "Por favor completa el comercio, el monto y la fecha.",
         "receipt.error.save": "No se pudo guardar la transacción",
+        "receipt.duplicate.confirm": "Este recibo ya fue escaneado el {date}. ¿Quieres escanearlo de nuevo?",
+        "receipt.duplicate.cancelled": "Escaneo cancelado — este recibo ya fue escaneado.",
         "receipt.retry": "Probar con otra foto",
         "receipt.manual": "Ingresar manualmente",
         "receipt.save": "Guardar transacción",
@@ -12099,10 +12103,75 @@ const RECEIPT_MAX_BYTES = 8 * 1024 * 1024;
 const RECEIPT_OK_TYPES = new Set([
     "image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"
 ]);
+const RECEIPT_SCAN_HISTORY_KEY = "fintrack.receiptScans.v1";
 
 let scanCurrentFile = null;
 let scanCurrentPreviewUrl = null;
 let scanCurrentExtracted = null;
+let scanCurrentReceiptHash = null;
+
+function receiptHistoryDateLabel(value) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "before";
+    return d.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+    });
+}
+
+function getReceiptScanHistory() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(RECEIPT_SCAN_HISTORY_KEY) || "{}");
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function setReceiptScanHistory(history) {
+    try {
+        const entries = Object.entries(history || {})
+            .sort((a, b) => String(b[1]?.scannedAt || "").localeCompare(String(a[1]?.scannedAt || "")))
+            .slice(0, 120);
+        localStorage.setItem(RECEIPT_SCAN_HISTORY_KEY, JSON.stringify(Object.fromEntries(entries)));
+    } catch (e) {}
+}
+
+async function hashReceiptFile(file) {
+    if (!window.crypto?.subtle || !file?.arrayBuffer) return "";
+    const buffer = await file.arrayBuffer();
+    const digest = await window.crypto.subtle.digest("SHA-256", buffer);
+    return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function confirmDuplicateReceiptScan(receiptHash) {
+    if (!receiptHash) return true;
+    const history = getReceiptScanHistory();
+    const previous = history[receiptHash];
+    if (!previous) return true;
+
+    const dateLabel = receiptHistoryDateLabel(previous.scannedAt);
+    const message = t(
+        "receipt.duplicate.confirm",
+        "This receipt was already scanned on {date}. Do you want to scan it again?"
+    ).replace("{date}", dateLabel);
+    return window.confirm(message);
+}
+
+function rememberReceiptScan(receiptHash, extracted = {}) {
+    if (!receiptHash) return;
+    const history = getReceiptScanHistory();
+    history[receiptHash] = {
+        scannedAt: new Date().toISOString(),
+        merchant: String(extracted.merchant || "").slice(0, 120),
+        amount: Number(extracted.amount || 0) || 0,
+        date: String(extracted.date || "").slice(0, 20),
+    };
+    setReceiptScanHistory(history);
+}
 
 function closeReceiptImageLightbox() {
     const lightbox = document.getElementById("receiptImageLightbox");
@@ -12141,6 +12210,7 @@ function scanReceiptResetState() {
     scanCurrentFile = null;
     scanCurrentPreviewUrl = null;
     scanCurrentExtracted = null;
+    scanCurrentReceiptHash = null;
 
     const fileInput = document.getElementById("scanReceiptFileInput");
     if (fileInput) fileInput.value = "";
@@ -12276,6 +12346,7 @@ async function uploadScanReceipt() {
             showScanReceiptError(t("receipt.error.msg", "Try a clearer photo, or enter the details manually."));
             return;
         }
+        rememberReceiptScan(scanCurrentReceiptHash, extracted);
         populateScanReceiptReview(extracted, data.warning || "");
     } catch (error) {
         console.error("Receipt scan error:", error);
@@ -12283,7 +12354,7 @@ async function uploadScanReceipt() {
     }
 }
 
-function handleScanReceiptFile(file) {
+async function handleScanReceiptFile(file) {
     if (!file) return;
 
     if (!RECEIPT_OK_TYPES.has(file.type) && !/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || "")) {
@@ -12300,6 +12371,19 @@ function handleScanReceiptFile(file) {
     }
     scanCurrentFile = file;
     scanCurrentPreviewUrl = URL.createObjectURL(file);
+    scanCurrentReceiptHash = "";
+
+    try {
+        scanCurrentReceiptHash = await hashReceiptFile(file);
+    } catch (error) {
+        console.warn("Receipt hash error:", error);
+    }
+
+    if (!confirmDuplicateReceiptScan(scanCurrentReceiptHash)) {
+        showToast(t("receipt.duplicate.cancelled", "Scan cancelled — this receipt was already scanned."));
+        scanReceiptResetState();
+        return;
+    }
 
     uploadScanReceipt();
 }
