@@ -3269,6 +3269,39 @@ async function redeemCouponFromSettings() {
 // ── Notifications (bell dropdown) ──
 let _notifData = { count: 0, notifications: [] };
 
+const _DISMISSED_KEY = "fintrack_dismissed_notifs";
+
+function _getDismissedNotifs() {
+    try {
+        const raw = localStorage.getItem(_DISMISSED_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? new Set(arr) : new Set();
+    } catch (_e) {
+        return new Set();
+    }
+}
+
+function _saveDismissedNotifs(set) {
+    try {
+        localStorage.setItem(_DISMISSED_KEY, JSON.stringify(Array.from(set)));
+    } catch (_e) { /* quota / disabled storage — fine, just won't persist */ }
+}
+
+function _notifKey(n) {
+    // Stable per-condition keys. Budget keys include the current month so
+    // dismissing this month's over-budget alert doesn't suppress next month's.
+    // Recurring keys include next_date for the same reason — the next cycle
+    // gets its own key.
+    if (n.type === "budget_over") {
+        const month = new Date().toISOString().slice(0, 7); // YYYY-MM
+        return `budget_over:${(n.category || "").toLowerCase()}:${month}`;
+    }
+    if (n.type === "recurring_due") {
+        return `recurring_due:${n.id}:${n.next_date || ""}`;
+    }
+    return `${n.type}:${JSON.stringify(n)}`;
+}
+
 async function loadNotifications() {
     try {
         const res = await fetch(API + "/notifications", { credentials: "include" });
@@ -3277,7 +3310,11 @@ async function loadNotifications() {
             renderNotifBadge();
             return;
         }
-        _notifData = await res.json();
+        const raw = await res.json();
+        // Filter out anything the user has already dismissed.
+        const dismissed = _getDismissedNotifs();
+        const filtered = (raw.notifications || []).filter((n) => !dismissed.has(_notifKey(n)));
+        _notifData = { count: filtered.length, notifications: filtered };
         renderNotifBadge();
     } catch (err) {
         _notifData = { count: 0, notifications: [] };
@@ -3314,6 +3351,16 @@ function renderNotifDropdown() {
         el.addEventListener("click", () => {
             const idx = parseInt(el.dataset.notifIdx, 10);
             if (Number.isNaN(idx)) return;
+            const dismissed = (_notifData.notifications || [])[idx];
+            // Persist the dismissal so re-opening the bell or refreshing the
+            // page doesn't bring it right back (the server still reports the
+            // condition; we just suppress it client-side until the condition
+            // changes — see _notifKey for the keying scheme).
+            if (dismissed) {
+                const set = _getDismissedNotifs();
+                set.add(_notifKey(dismissed));
+                _saveDismissedNotifs(set);
+            }
             (_notifData.notifications || []).splice(idx, 1);
             _notifData.count = Math.max(0, (_notifData.count || 0) - 1);
             renderNotifBadge();
