@@ -12104,6 +12104,22 @@ let scanCurrentFile = null;
 let scanCurrentPreviewUrl = null;
 let scanCurrentExtracted = null;
 
+function closeReceiptImageLightbox() {
+    const lightbox = document.getElementById("receiptImageLightbox");
+    const img = document.getElementById("receiptImageLightboxImg");
+    if (img) img.src = "";
+    if (lightbox) lightbox.style.display = "none";
+}
+
+function openReceiptImageLightbox() {
+    if (!scanCurrentPreviewUrl) return;
+    const lightbox = document.getElementById("receiptImageLightbox");
+    const img = document.getElementById("receiptImageLightboxImg");
+    if (!lightbox || !img) return;
+    img.src = scanCurrentPreviewUrl;
+    lightbox.style.display = "flex";
+}
+
 function scanReceiptShowStep(step) {
     ["pick", "scan", "review", "error"].forEach(name => {
         const el = document.getElementById(`scanStep${name.charAt(0).toUpperCase() + name.slice(1)}`);
@@ -12118,6 +12134,7 @@ function scanReceiptShowStep(step) {
 }
 
 function scanReceiptResetState() {
+    closeReceiptImageLightbox();
     if (scanCurrentPreviewUrl) {
         try { URL.revokeObjectURL(scanCurrentPreviewUrl); } catch (e) {}
     }
@@ -12347,6 +12364,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const saveBtn   = document.getElementById("scanReceiptSave");
     const dropzone  = document.getElementById("scanDropzone");
     const fileInput = document.getElementById("scanReceiptFileInput");
+    const reviewImageBtn = document.getElementById("scanReviewImageBtn");
+    const lightbox = document.getElementById("receiptImageLightbox");
+    const lightboxClose = document.getElementById("receiptImageLightboxClose");
 
     if (!modal || !fileInput || !dropzone) return;
 
@@ -12393,6 +12413,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (saveBtn) saveBtn.addEventListener("click", saveScanReceiptTransaction);
+    if (reviewImageBtn) reviewImageBtn.addEventListener("click", openReceiptImageLightbox);
+    if (lightboxClose) lightboxClose.addEventListener("click", closeReceiptImageLightbox);
+    if (lightbox) {
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) closeReceiptImageLightbox();
+        });
+    }
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeReceiptImageLightbox();
+    });
 });
 
 // ══════════════════════════════════════

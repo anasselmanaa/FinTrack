@@ -2600,7 +2600,9 @@
             <!-- Step 3: review extracted fields -->
             <div class="scan-step scan-step-review" id="scanStepReview" hidden>
                 <div class="scan-review-top">
-                    <img id="scanReviewImg" alt="" class="scan-review-img" loading="lazy" decoding="async">
+                    <button type="button" class="scan-review-image-btn" id="scanReviewImageBtn" aria-label="View receipt image">
+                        <img id="scanReviewImg" alt="" class="scan-review-img" loading="lazy" decoding="async">
+                    </button>
                     <div class="scan-review-meta">
                         <span class="scan-review-pill scan-review-confidence" id="scanReviewConfidence">High confidence</span>
                         <p class="scan-review-warning" id="scanReviewWarning" hidden></p>
@@ -2732,6 +2734,13 @@
             <button type="button" class="btn-secondary" id="whatIfCancel" data-i18n="recurring.modal.cancel">Cancel</button>
             <button type="button" class="btn-primary" id="whatIfRun" data-i18n="whatif.run">See impact</button>
         </div>
+    </div>
+</div>
+
+<div class="modal-overlay receipt-image-lightbox" id="receiptImageLightbox" style="display:none">
+    <div class="receipt-image-lightbox-panel" role="dialog" aria-modal="true" aria-label="Receipt image preview">
+        <button class="modal-close receipt-image-lightbox-close" id="receiptImageLightboxClose" type="button">✕</button>
+        <img id="receiptImageLightboxImg" alt="" class="receipt-image-lightbox-img" loading="lazy" decoding="async">
     </div>
 </div>
 

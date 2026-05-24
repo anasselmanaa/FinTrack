@@ -6935,6 +6935,23 @@ details.coach-history-collapsible > .coach-history-list {
         0 0 0 1px rgba(15,23,42,.06) inset,
         0 10px 26px rgba(15,23,42,.12);
 }
+.scan-review-image-btn {
+    width: 112px;
+    height: 112px;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    cursor: zoom-in;
+    line-height: 0;
+}
+.scan-review-image-btn:focus-visible {
+    outline: 3px solid rgba(16,185,129,.35);
+    outline-offset: 3px;
+}
+.scan-review-image-btn:hover .scan-review-img {
+    filter: brightness(.96);
+}
 .scan-review-meta {
     display: grid;
     gap: 10px;
@@ -7053,6 +7070,34 @@ details.coach-history-collapsible > .coach-history-list {
     box-shadow:
         0 12px 26px rgba(16,185,129,.34),
         0 0 0 1px rgba(255,255,255,.22) inset;
+}
+.receipt-image-lightbox {
+    z-index: 3000;
+    padding: 18px;
+    background: rgba(15,23,42,.72);
+}
+.receipt-image-lightbox-panel {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: min(920px, 100%);
+    max-height: calc(100vh - 36px);
+    padding: 46px 18px 18px;
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 24px 70px rgba(15,23,42,.34);
+}
+.receipt-image-lightbox-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+.receipt-image-lightbox-img {
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 32px rgba(15,23,42,.16);
 }
 
 /* Step 4 — error */
