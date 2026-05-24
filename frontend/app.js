@@ -77,6 +77,18 @@ const TRANSLATIONS = {
         "settings.billing.coupon.error_empty": "Saisissez d'abord un code.",
         "settings.billing.coupon.error_generic": "Impossible d'appliquer ce code.",
 
+        // Notifications bell
+        "topnav.notifications": "Notifications",
+        "notif.title": "Notifications",
+        "notif.loading": "Chargement…",
+        "notif.empty": "Vous êtes à jour.",
+        "notif.budget_over.title": "Budget {cat} dépassé",
+        "notif.budget_over.sub": "Dépensé {spent} sur {budget} ce mois-ci",
+        "notif.recurring.overdue.title": "{name} en retard",
+        "notif.recurring.overdue.sub": "À régler il y a {n} jours · {amt}",
+        "notif.recurring.today.title": "{name} à régler aujourd'hui",
+        "notif.recurring.soon.title": "{name} à régler dans {n} jours",
+
         // Topnav
         "topnav.search": "Rechercher des transactions…",
         "topnav.toggle_theme": "Changer de thème",
@@ -1032,6 +1044,18 @@ const TRANSLATIONS = {
         "settings.billing.coupon.success": "Cupón aplicado. Todo listo.",
         "settings.billing.coupon.error_empty": "Ingresa primero un código.",
         "settings.billing.coupon.error_generic": "No pudimos aplicar ese cupón.",
+
+        // Notifications bell
+        "topnav.notifications": "Notificaciones",
+        "notif.title": "Notificaciones",
+        "notif.loading": "Cargando…",
+        "notif.empty": "Estás al día.",
+        "notif.budget_over.title": "{cat} sobre el presupuesto",
+        "notif.budget_over.sub": "Gastado {spent} de {budget} este mes",
+        "notif.recurring.overdue.title": "{name} vencido",
+        "notif.recurring.overdue.sub": "Vencía hace {n} días · {amt}",
+        "notif.recurring.today.title": "{name} vence hoy",
+        "notif.recurring.soon.title": "{name} vence en {n} días",
 
         // Topnav
         "topnav.search": "Buscar transacciones…",
@@ -3240,6 +3264,136 @@ async function redeemCouponFromSettings() {
             btn.textContent = originalLabel || t("settings.billing.coupon.redeem", "Redeem");
         }
     }
+}
+
+// ── Notifications (bell dropdown) ──
+let _notifData = { count: 0, notifications: [] };
+
+async function loadNotifications() {
+    try {
+        const res = await fetch(API + "/notifications", { credentials: "include" });
+        if (!res.ok) {
+            _notifData = { count: 0, notifications: [] };
+            renderNotifBadge();
+            return;
+        }
+        _notifData = await res.json();
+        renderNotifBadge();
+    } catch (err) {
+        _notifData = { count: 0, notifications: [] };
+        renderNotifBadge();
+    }
+}
+
+function renderNotifBadge() {
+    const badge = document.getElementById("notifBadge");
+    if (!badge) return;
+    const count = parseInt(_notifData?.count || 0, 10);
+    if (count > 0) {
+        badge.textContent = count > 9 ? "9+" : String(count);
+        badge.hidden = false;
+    } else {
+        badge.textContent = "";
+        badge.hidden = true;
+    }
+}
+
+function renderNotifDropdown() {
+    const body = document.getElementById("notifDropdownBody");
+    if (!body) return;
+    const items = _notifData?.notifications || [];
+    if (items.length === 0) {
+        body.innerHTML = `<p class="notif-empty">${escapeHTML(t("notif.empty", "You're all caught up."))}</p>`;
+        return;
+    }
+    body.innerHTML = items.map(renderNotifItem).join("");
+}
+
+function renderNotifItem(n) {
+    const sev = ["critical", "warning", "info"].includes(n.severity) ? n.severity : "info";
+    let title = "";
+    let sub = "";
+    let icon = "🔔";
+
+    if (n.type === "budget_over") {
+        icon = "⚠️";
+        title = t("notif.budget_over.title", "{cat} over budget").replace("{cat}", escapeHTML(n.category || ""));
+        sub = t("notif.budget_over.sub", "Spent {spent} of {budget} this month")
+            .replace("{spent}", fmt(n.spent))
+            .replace("{budget}", fmt(n.budget_amount));
+    } else if (n.type === "recurring_due") {
+        const d = parseInt(n.days_until, 10);
+        const amt = fmt(Math.abs(parseFloat(n.amount) || 0));
+        if (d < 0) {
+            icon = "⏰";
+            title = t("notif.recurring.overdue.title", "{name} overdue").replace("{name}", escapeHTML(n.name || ""));
+            sub = t("notif.recurring.overdue.sub", "Was due {n} days ago · {amt}")
+                .replace("{n}", Math.abs(d))
+                .replace("{amt}", amt);
+        } else if (d === 0) {
+            icon = "📅";
+            title = t("notif.recurring.today.title", "{name} due today").replace("{name}", escapeHTML(n.name || ""));
+            sub = amt;
+        } else {
+            icon = "📅";
+            title = t("notif.recurring.soon.title", "{name} due in {n} days")
+                .replace("{name}", escapeHTML(n.name || ""))
+                .replace("{n}", d);
+            sub = amt;
+        }
+    }
+
+    return `
+        <div class="notif-item">
+            <div class="notif-item-icon ${sev}">${icon}</div>
+            <div class="notif-item-body">
+                <p class="notif-item-title">${title}</p>
+                <p class="notif-item-sub">${sub}</p>
+            </div>
+        </div>
+    `;
+}
+
+function toggleNotifDropdown(event) {
+    event?.stopPropagation();
+    const dropdown = document.getElementById("notifDropdown");
+    const btn = document.getElementById("notifBtn");
+    if (!dropdown || !btn) return;
+    const willShow = dropdown.hidden;
+    dropdown.hidden = !willShow;
+    btn.setAttribute("aria-expanded", willShow ? "true" : "false");
+    if (willShow) {
+        // Re-fetch each time the user opens — keeps things fresh without polling.
+        loadNotifications().then(renderNotifDropdown);
+        renderNotifDropdown();
+    }
+}
+
+function closeNotifDropdown() {
+    const dropdown = document.getElementById("notifDropdown");
+    const btn = document.getElementById("notifBtn");
+    if (dropdown) dropdown.hidden = true;
+    if (btn) btn.setAttribute("aria-expanded", "false");
+}
+
+function initializeNotifications() {
+    const btn = document.getElementById("notifBtn");
+    if (!btn) return;
+    btn.addEventListener("click", toggleNotifDropdown);
+    // Outside-click closes the dropdown.
+    document.addEventListener("click", (event) => {
+        const dropdown = document.getElementById("notifDropdown");
+        if (!dropdown || dropdown.hidden) return;
+        if (dropdown.contains(event.target)) return;
+        if (btn.contains(event.target)) return;
+        closeNotifDropdown();
+    });
+    // Escape key closes too.
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeNotifDropdown();
+    });
+    // Initial fetch so the badge populates on load.
+    loadNotifications();
 }
 
 function initializeBillingActions() {
@@ -8825,6 +8979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeChangePassword();
     initializePreferencesSave();
     initializeBillingActions();
+    initializeNotifications();
     document.getElementById("resendVerificationBtn")?.addEventListener("click", resendVerificationEmail);
     applyLanguage(CURRENT_LANG);
     handleBillingReturnState();

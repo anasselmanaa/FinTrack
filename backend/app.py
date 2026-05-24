@@ -2378,6 +2378,99 @@ def redeem_coupon():
         conn.close()
 
 
+# ══════════════════════════════════════
+#  NOTIFICATIONS (bell dropdown)
+# ══════════════════════════════════════
+#
+# Aggregates two signals the user actually cares about:
+#   1. Recurring payments due in the next 7 days (and not yet marked paid
+#      for this cycle).
+#   2. Categories where current-month spend has blown past the budget.
+#
+# Returns a list ranked by urgency (overdue > today > soon, and budget-over
+# is always shown first since it's already-incurred).
+
+@app.route('/api/notifications', methods=['GET'])
+@login_required
+def get_notifications():
+    user_id = current_user_id()
+    notifications = []
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # ── 1. Budget overruns this month ──────────────────────────────────
+        cur.execute("""
+            WITH this_month AS (
+                SELECT category, SUM(ABS(amount)) AS spent
+                FROM transactions
+                WHERE user_id = %s
+                  AND amount < 0
+                  AND date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
+                GROUP BY category
+            )
+            SELECT b.category, b.amount AS budget_amount, COALESCE(tm.spent, 0) AS spent
+            FROM budgets b
+            LEFT JOIN this_month tm
+              ON LOWER(b.category) = LOWER(tm.category)
+            WHERE b.user_id = %s
+              AND b.amount > 0
+              AND COALESCE(tm.spent, 0) > b.amount
+            ORDER BY (COALESCE(tm.spent, 0) - b.amount) DESC
+            LIMIT 10
+        """, (user_id, user_id))
+        for row in cur.fetchall():
+            over = float(row["spent"]) - float(row["budget_amount"])
+            notifications.append({
+                "type": "budget_over",
+                "category": row["category"],
+                "spent": float(row["spent"]),
+                "budget_amount": float(row["budget_amount"]),
+                "over_by": round(over, 2),
+                "severity": "critical",
+            })
+
+        # ── 2. Recurring payments due in the next 7 days ───────────────────
+        cur.execute("""
+            SELECT id, name, amount, category, next_date,
+                   (next_date - CURRENT_DATE) AS days_until,
+                   last_paid_for_date
+            FROM recurring_payments
+            WHERE user_id = %s
+              AND COALESCE(is_active, TRUE)
+              AND next_date <= CURRENT_DATE + INTERVAL '7 days'
+              AND (last_paid_for_date IS NULL OR last_paid_for_date < next_date)
+            ORDER BY next_date ASC
+            LIMIT 10
+        """, (user_id,))
+        for row in cur.fetchall():
+            days = int(row["days_until"]) if row["days_until"] is not None else 0
+            if days < 0:
+                severity = "critical"
+            elif days == 0:
+                severity = "warning"
+            else:
+                severity = "info"
+            notifications.append({
+                "type": "recurring_due",
+                "id": row["id"],
+                "name": row["name"],
+                "amount": float(row["amount"]),
+                "category": row["category"],
+                "next_date": row["next_date"].isoformat() if row["next_date"] else None,
+                "days_until": days,
+                "severity": severity,
+            })
+
+        return jsonify({
+            "count": len(notifications),
+            "notifications": notifications,
+        }), 200
+    finally:
+        cur.close()
+        conn.close()
+
+
 @app.route('/api/billing/webhook', methods=['POST'])
 def stripe_billing_webhook():
     if stripe is None:
