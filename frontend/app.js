@@ -2291,11 +2291,17 @@ function refreshCurrencySensitiveViews() {
     if (typeof renderBudgets === "function" && typeof allBudgets !== "undefined") {
         try { renderBudgets(allBudgets); } catch (e) {}
     }
+    if (typeof renderDashboardBudgets === "function" && typeof allBudgets !== "undefined") {
+        try { renderDashboardBudgets(allBudgets); } catch (e) {}
+    }
     if (typeof updateBudgetStats === "function" && typeof allBudgets !== "undefined") {
         try { updateBudgetStats(allBudgets); } catch (e) {}
     }
     if (typeof renderGoals === "function" && typeof allGoals !== "undefined") {
         try { renderGoals(allGoals); } catch (e) {}
+    }
+    if (typeof renderDashboardGoals === "function" && typeof allGoals !== "undefined") {
+        try { renderDashboardGoals(allGoals); } catch (e) {}
     }
     if (typeof updateGoalStats === "function" && typeof allGoals !== "undefined") {
         try { updateGoalStats(allGoals); } catch (e) {}
@@ -2797,8 +2803,14 @@ function refreshDynamicI18n() {
     if (typeof renderBudgets === "function" && typeof allBudgets !== "undefined") {
         try { renderBudgets(allBudgets); } catch (e) {}
     }
+    if (typeof renderDashboardBudgets === "function" && typeof allBudgets !== "undefined") {
+        try { renderDashboardBudgets(allBudgets); } catch (e) {}
+    }
     if (typeof renderGoals === "function" && typeof allGoals !== "undefined") {
         try { renderGoals(allGoals); } catch (e) {}
+    }
+    if (typeof renderDashboardGoals === "function" && typeof allGoals !== "undefined") {
+        try { renderDashboardGoals(allGoals); } catch (e) {}
     }
     if (typeof updateGoalStats === "function" && typeof allGoals !== "undefined") {
         try { updateGoalStats(allGoals); } catch (e) {}
@@ -4329,6 +4341,7 @@ async function loadBudgets() {
         allBudgets = Array.isArray(data) ? data : [];
 
         renderBudgets(allBudgets);
+        renderDashboardBudgets(allBudgets);
         updateBudgetStats(allBudgets);
     } catch (err) {
         console.log(SHOW_DEMO_DATA ? 'Using demo budgets' : 'Budgets data unavailable');
@@ -4336,12 +4349,56 @@ async function loadBudgets() {
         if (!SHOW_DEMO_DATA) {
             allBudgets = [];
             renderBudgets([]);
+            renderDashboardBudgets([]);
             updateBudgetStats([]);
         }
     }
     if (typeof loadBudgetSuggestions === 'function') {
         loadBudgetSuggestions();
     }
+}
+
+function renderDashboardBudgets(budgets) {
+    const list = document.querySelector('#page-dashboard .budget-list');
+    if (!list) return;
+
+    const rows = (Array.isArray(budgets) ? budgets : []).filter(isExpenseBudget).slice(0, 4);
+    if (!rows.length) {
+        list.innerHTML = `<p class="production-empty-note">${escapeHTML(t('empty.budgets.list', 'Create budgets to see budget progress here.'))}</p>`;
+        return;
+    }
+
+    list.innerHTML = rows.map(b => {
+        const spent = Number.parseFloat(b.spent || 0);
+        const amount = Number.parseFloat(b.amount || 0);
+        const rawPct = amount > 0 ? Math.round((spent / amount) * 100) : 0;
+        const pct = Math.min(Math.max(rawPct, 0), 100);
+        const cls =
+            rawPct > 100 ? 'danger' :
+            rawPct >= 75 ? 'warning' :
+            'ok';
+        const category = String(b.category || 'Other');
+        const icon = typeof getCategoryIcon === 'function' ? getCategoryIcon(category) : '🏷️';
+
+        return `
+            <div class="budget-item">
+                <div class="budget-row">
+                    <div class="budget-left">
+                        <span class="budget-icon">${escapeHTML(icon)}</span>
+                        <span class="budget-name">${escapeHTML(translateCategory(category))}</span>
+                    </div>
+                    <div class="budget-right">
+                        <span class="budget-spent ${cls}">${fmt(spent)}</span>
+                        <span class="budget-total">/ ${fmt(amount)}</span>
+                        <span class="budget-pct ${cls}">${pct}%</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill ${cls}" style="width:${pct}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function formatBudgetPaceDate(dateValue) {
@@ -4687,6 +4744,7 @@ async function loadGoals() {
         const data = await res.json();
         allGoals = Array.isArray(data) ? data : [];
         renderGoals(allGoals);
+        renderDashboardGoals(allGoals);
         updateGoalStats(allGoals);
     } catch (err) {
         console.log(SHOW_DEMO_DATA ? 'Using demo goals' : 'Goals data unavailable');
@@ -4694,9 +4752,53 @@ async function loadGoals() {
         if (!SHOW_DEMO_DATA) {
             allGoals = [];
             renderGoals([]);
+            renderDashboardGoals([]);
             updateGoalStats([]);
         }
     }
+}
+
+function renderDashboardGoals(goals) {
+    const grid = document.querySelector('#page-dashboard .goals-grid');
+    if (!grid) return;
+
+    const rows = (Array.isArray(goals) ? goals : []).slice(0, 4);
+    if (!rows.length) {
+        grid.innerHTML = `<p class="production-empty-note">${escapeHTML(t('empty.goals.list', 'Create goals to track savings progress here.'))}</p>`;
+        return;
+    }
+
+    const wrapClasses = ['green-wrap', 'blue-wrap', 'orange-wrap', 'purple-wrap'];
+    grid.innerHTML = rows.map((g, i) => {
+        const target = Number.parseFloat(g.target_amount || 0);
+        const savedRaw = g.effective_saved_amount !== undefined ? g.effective_saved_amount : g.saved_amount;
+        const saved = Number.parseFloat(savedRaw || 0);
+        const rawPct = target > 0 ? Math.round((saved / target) * 100) : 0;
+        const pct = Math.min(Math.max(rawPct, 0), 100);
+        const remaining = Math.max(target - saved, 0);
+        const categoryName = g.category || t('goals.default_category', 'Savings');
+        const displayIcon = g.icon || getCategoryIcon(categoryName) || '🎯';
+        const targetLabel = getGoalTargetLabel(g.deadline);
+        const pctClass = rawPct >= 100 ? 'ok' : 'blue-fill';
+
+        return `
+            <div class="goal-card">
+                <div class="goal-top">
+                    <div class="goal-icon-wrap ${wrapClasses[i % wrapClasses.length]}">${escapeHTML(displayIcon)}</div>
+                    <span class="goal-date">${escapeHTML(targetLabel)}</span>
+                </div>
+                <p class="goal-name">${escapeHTML(g.name || t('goals.untitled', 'Untitled goal'))}</p>
+                <p class="goal-progress">${fmt(saved)} <span>/ ${fmt(target)}</span></p>
+                <div class="progress-bar">
+                    <div class="progress-fill ${pctClass}" style="width:${pct}%"></div>
+                </div>
+                <div class="goal-footer">
+                    <span>${pct}% ${escapeHTML(t('goals.complete_short', 'complete'))}</span>
+                    <span>${fmt(remaining)} ${escapeHTML(t('goals.left_short', 'left'))}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function getGoalStatus(goal, pct) {
