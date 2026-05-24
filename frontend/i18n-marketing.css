@@ -1,0 +1,85 @@
+/* FinTrack marketing-page language picker */
+.lang-picker {
+  position: relative;
+  display: inline-block;
+  font-family: inherit;
+}
+.lang-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.lang-picker-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+.lang-picker-btn svg:first-child {
+  opacity: 0.85;
+}
+.lang-picker-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(22, 56, 50, 0.22);
+  padding: 6px;
+  z-index: 400;
+}
+.lang-picker.is-open .lang-picker-menu {
+  display: block;
+}
+.lang-picker-option {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: #163832;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.lang-picker-option:hover {
+  background: #DAF1DE;
+  color: #163832;
+}
+.lang-picker-option.is-active {
+  background: #163832;
+  color: #fff;
+}
+.lang-picker-option.is-active:hover {
+  background: #1c4a40;
+  color: #fff;
+}
+
+/* On light backgrounds (e.g. inside light-themed pages), override colors so
+   the picker stays readable. Pages set .lang-picker-light on a wrapper to
+   opt in. */
+.lang-picker-light .lang-picker-btn {
+  border-color: rgba(22, 56, 50, 0.15);
+  background: #fff;
+  color: #163832;
+}
+.lang-picker-light .lang-picker-btn:hover {
+  background: #f6faf7;
+  border-color: rgba(22, 56, 50, 0.30);
+  color: #163832;
+}
