@@ -83,8 +83,9 @@ body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: 
 }
 .nav-dropdown:hover .nav-dropdown-menu,
 .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
-.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
-.nav-dropdown-menu a:hover { background: var(--light); }
+.nav-dropdown-menu a { display: block; color: var(--dark2); background: #fff; font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:visited { color: var(--dark2); }
+.nav-dropdown-menu a:hover, .nav-dropdown-menu a:focus { background: var(--light); color: var(--dark1); outline: none; }
 
 /* ══ HERO — matches YNAB layout exactly ══ */
 .hero {

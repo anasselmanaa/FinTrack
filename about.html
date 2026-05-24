@@ -59,8 +59,9 @@ body { font-family: var(--f); color: var(--text); background: #fff; overflow-x: 
 .nav-dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
 .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 8px 40px rgba(22,56,50,0.18); padding: 10px 0; min-width: 220px; z-index: 300; }
 .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
-.nav-dropdown-menu a { display: block; color: var(--dark2); font-size: 14px; padding: 10px 20px; text-decoration: none; }
-.nav-dropdown-menu a:hover { background: var(--light); }
+.nav-dropdown-menu a { display: block; color: var(--dark2); background: #fff; font-size: 14px; padding: 10px 20px; text-decoration: none; }
+.nav-dropdown-menu a:visited { color: var(--dark2); }
+.nav-dropdown-menu a:hover, .nav-dropdown-menu a:focus { background: var(--light); color: var(--dark1); outline: none; }
 
 .about-hero {
   margin-top: 64px;
