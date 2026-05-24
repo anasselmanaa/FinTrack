@@ -8928,6 +8928,13 @@ if (dashboardAddTransactionBtn) {
 document.getElementById("dashboardAddAccountBtn")?.addEventListener("click", openAccountModal);
 initializeAccountModal();
 
+// "+ Add" on the Budget Overview + Savings Goals dashboard cards reuses the
+// existing add-budget / add-goal modals from those pages — same form, same
+// translations (already covered via data-i18n on those modals), same save
+// handlers, so balances and goals refresh through their normal load paths.
+document.getElementById("dashboardAddBudgetBtn")?.addEventListener("click", () => openBudgetModal());
+document.getElementById("dashboardAddGoalBtn")?.addEventListener("click", () => openGoalModal());
+
 const dashboardScanReceiptBtn = document.getElementById("dashboardScanReceiptBtn");
 if (dashboardScanReceiptBtn) {
     dashboardScanReceiptBtn.addEventListener("click", () => {
