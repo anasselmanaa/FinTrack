@@ -300,12 +300,7 @@ const TRANSLATIONS = {
 
         // Recurring page — Detected Subscriptions card
         "recurring.detected_subs": "Trouver les abonnements",
-        "recurring.subs.explain_what": "Ce que ça fait",
-        "recurring.subs.explain_what_text": "Trouve les factures qui se répètent, comme Netflix, le loyer ou la salle de sport.",
-        "recurring.subs.explain_how": "Comment ça marche",
-        "recurring.subs.explain_how_text": "FinTrack cherche les mêmes prélèvements qui reviennent dans vos transactions.",
-        "recurring.subs.explain_use": "Comment l'utiliser",
-        "recurring.subs.explain_use_text": "Si FinTrack en trouve un, touchez Ajouter. Sinon, utilisez + Ajouter ci-dessous.",
+        "recurring.subs.explain": "Nous repérons les prélèvements qui reviennent — Netflix, loyer, salle de sport — et les affichons ici. Touchez Ajouter pour suivre ceux que vous voulez.",
         "recurring.subs.scanning": "Analyse de vos transactions…",
         "recurring.subs.loading": "Recherche de prélèvements récurrents du même montant sur les 6 derniers mois…",
         "recurring.subs.active": "Actifs",
@@ -1268,12 +1263,7 @@ const TRANSLATIONS = {
 
         // Recurring page — Detected Subscriptions card
         "recurring.detected_subs": "Encontrar suscripciones",
-        "recurring.subs.explain_what": "Qué hace",
-        "recurring.subs.explain_what_text": "Encuentra pagos que se repiten, como Netflix, renta o gimnasio.",
-        "recurring.subs.explain_how": "Cómo funciona",
-        "recurring.subs.explain_how_text": "FinTrack busca el mismo cargo apareciendo otra vez en tus transacciones.",
-        "recurring.subs.explain_use": "Cómo usarlo",
-        "recurring.subs.explain_use_text": "Si FinTrack encuentra uno, toca Agregar. Si no, usa + Agregar abajo.",
+        "recurring.subs.explain": "Detectamos cargos que se repiten — Netflix, renta, gimnasio — y los mostramos aquí. Toca Agregar para seguir los que quieras.",
         "recurring.subs.scanning": "Analizando tus transacciones…",
         "recurring.subs.loading": "Buscando cargos recurrentes del mismo monto en los últimos 6 meses…",
         "recurring.subs.active": "Activas",

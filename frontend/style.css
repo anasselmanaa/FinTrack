@@ -8062,29 +8062,14 @@ details.coach-history-collapsible > .coach-history-list {
 }
 
 .subscriptions-explainer {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.subscriptions-explainer > div {
-    padding: 12px;
+    margin: 0 0 12px;
+    padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 12px;
     background: var(--bg);
-}
-
-.subscriptions-explainer strong,
-.subscriptions-explainer span {
-    display: block;
-}
-
-.subscriptions-explainer strong {
-    margin-bottom: 4px;
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 900;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-2);
 }
 
 .subscriptions-explainer span {
