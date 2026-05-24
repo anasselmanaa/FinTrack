@@ -3306,10 +3306,23 @@ function renderNotifDropdown() {
         body.innerHTML = `<p class="notif-empty">${escapeHTML(t("notif.empty", "You're all caught up."))}</p>`;
         return;
     }
-    body.innerHTML = items.map(renderNotifItem).join("");
+    body.innerHTML = items.map((n, i) => renderNotifItem(n, i)).join("");
+    // Click a notification → dismiss it locally and bump the badge -1.
+    // No backend persistence: refreshing brings them back if the underlying
+    // condition is still true (budget still over, bill still due).
+    body.querySelectorAll(".notif-item").forEach((el) => {
+        el.addEventListener("click", () => {
+            const idx = parseInt(el.dataset.notifIdx, 10);
+            if (Number.isNaN(idx)) return;
+            (_notifData.notifications || []).splice(idx, 1);
+            _notifData.count = Math.max(0, (_notifData.count || 0) - 1);
+            renderNotifBadge();
+            renderNotifDropdown();
+        });
+    });
 }
 
-function renderNotifItem(n) {
+function renderNotifItem(n, idx) {
     const sev = ["critical", "warning", "info"].includes(n.severity) ? n.severity : "info";
     let title = "";
     let sub = "";
@@ -3344,7 +3357,7 @@ function renderNotifItem(n) {
     }
 
     return `
-        <div class="notif-item">
+        <div class="notif-item" data-notif-idx="${idx}" role="button" tabindex="0">
             <div class="notif-item-icon ${sev}">${icon}</div>
             <div class="notif-item-body">
                 <p class="notif-item-title">${title}</p>
