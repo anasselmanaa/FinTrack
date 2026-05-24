@@ -1779,6 +1779,7 @@ body {
 }
 
 .goals-add-btn,
+.recurring-add-btn,
 .goals-empty-add-btn {
     min-height: 42px;
     padding: 0 16px;
@@ -1793,13 +1794,15 @@ body {
 }
 
 @media (max-width: 640px) {
-    #page-goals .section-header {
+    #page-goals .section-header,
+    #page-recurring .section-header {
         align-items: stretch;
         flex-direction: column;
         gap: 12px;
     }
 
-    .goals-add-btn {
+    .goals-add-btn,
+    .recurring-add-btn {
         justify-content: center;
         width: 100%;
     }
