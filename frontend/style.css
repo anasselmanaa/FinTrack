@@ -408,6 +408,10 @@ body {
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
 }
+/* display:flex above overrides the HTML hidden attribute (which usually
+   means display:none). Restore the right behavior so dismissing the last
+   notification fully hides the badge. */
+.notif-badge[hidden] { display: none; }
 
 .notif-wrap { position: relative; }
 
