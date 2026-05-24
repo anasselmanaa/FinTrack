@@ -638,6 +638,10 @@ def user_trial_ends_at(row):
 
 def has_active_subscription(row):
     status = str(row.get("subscription_status") or "trial").strip().lower()
+    # Lifetime users bypass everything: no Stripe row to check, no period-end
+    # date to expire. Always treat them as active.
+    if status == "lifetime":
+        return True
     if status in {"active", "premium", "subscribed"}:
         cancel_at_period_end = bool(row.get("subscription_cancel_at_period_end"))
         current_period_end = parse_db_datetime(row.get("subscription_current_period_end"))
