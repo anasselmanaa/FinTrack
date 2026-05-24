@@ -1247,6 +1247,27 @@ def register():
     """, (name, email, password_hash, canonical))
 
     user = cur.fetchone()
+
+    # Optional coupon at signup. If the code is invalid we don't fail the
+    # signup — just create the trial account and let them try a valid code
+    # later from Settings. This avoids a confusing "your account was created
+    # BUT…" half-state.
+    raw_coupon = (data.get("coupon_code") or "").strip()
+    coupon_applied_kind = None
+    if raw_coupon:
+        ok, _err, kind = _redeem_coupon_for_user(cur, user["id"], raw_coupon)
+        if ok:
+            coupon_applied_kind = kind
+            cur.execute("""
+                SELECT id, email, name, subscription_status, trial_started_at, trial_ends_at,
+                       stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
+                       subscription_current_period_end, subscription_canceled_at, created_at, email_verified_at,
+                       profile_image_url, preferred_currency, preferred_language,
+                       onboarding_completed_at, onboarding_goal
+                FROM users WHERE id = %s
+            """, (user["id"],))
+            user = cur.fetchone()
+
     conn.commit()
     cur.close()
     conn.close()
@@ -2251,6 +2272,106 @@ def cancel_billing_subscription():
         "message": message,
         "user": public_user_payload(fresh_user) if fresh_user else None,
     }), 200
+
+
+# ══════════════════════════════════════
+#  COUPONS
+# ══════════════════════════════════════
+#
+# Owner-issued codes that grant special status to the redeeming user. Right
+# now only kind='lifetime' is implemented — sets subscription_status to
+# 'lifetime' (treated as paid by the frontend). This deliberately bypasses
+# Stripe so the user never needs to enter a card.
+
+def _normalize_coupon_code(code):
+    return (code or "").strip().upper()
+
+
+def _redeem_coupon_for_user(cur, user_id, raw_code):
+    """Look up + redeem a coupon. Returns (ok, error_string, kind).
+    Caller is responsible for commit/rollback. Caller must pass a cursor
+    bound to the same connection it intends to commit on."""
+    code = _normalize_coupon_code(raw_code)
+    if not code:
+        return False, "Coupon code is required", None
+
+    cur.execute("""
+        SELECT code, kind, max_uses, times_used
+        FROM coupons
+        WHERE UPPER(code) = %s
+    """, (code,))
+    coupon = cur.fetchone()
+    if not coupon:
+        return False, "That coupon code isn't valid", None
+
+    if coupon["max_uses"] is not None and coupon["times_used"] >= coupon["max_uses"]:
+        return False, "This coupon has reached its redemption limit", None
+
+    # Has this user already used this code?
+    cur.execute("""
+        SELECT 1 FROM coupon_redemptions
+        WHERE coupon_code = %s AND user_id = %s
+    """, (coupon["code"], user_id))
+    if cur.fetchone():
+        return False, "You've already used this coupon", None
+
+    cur.execute("""
+        INSERT INTO coupon_redemptions (coupon_code, user_id)
+        VALUES (%s, %s)
+    """, (coupon["code"], user_id))
+
+    cur.execute("""
+        UPDATE coupons
+        SET times_used = times_used + 1
+        WHERE code = %s
+    """, (coupon["code"],))
+
+    if coupon["kind"] == "lifetime":
+        # Lifetime = paid forever, never trial-expires, no Stripe row.
+        cur.execute("""
+            UPDATE users
+            SET subscription_status = 'lifetime',
+                trial_ends_at = NULL
+            WHERE id = %s
+        """, (user_id,))
+    # Future coupon kinds (trial_extend, percent_off, etc.) would branch here.
+
+    return True, None, coupon["kind"]
+
+
+@app.route('/api/coupons/redeem', methods=['POST'])
+@login_required
+def redeem_coupon():
+    data = request.json or {}
+    code = data.get("code", "")
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        ok, err, kind = _redeem_coupon_for_user(cur, current_user_id(), code)
+        if not ok:
+            return jsonify({"error": err}), 400
+
+        # Re-read the user so the frontend gets a fresh subscription_status.
+        cur.execute("""
+            SELECT id, email, name, first_name, last_name, phone, preferred_currency,
+                   preferred_language, subscription_status, trial_started_at, trial_ends_at,
+                   stripe_customer_id, stripe_subscription_id, subscription_cancel_at_period_end,
+                   subscription_current_period_end, subscription_canceled_at, created_at,
+                   email_verified_at, profile_image_url,
+                   onboarding_completed_at, onboarding_goal
+            FROM users WHERE id = %s
+        """, (current_user_id(),))
+        user = cur.fetchone()
+        conn.commit()
+        return jsonify({
+            "message": "Coupon applied. You're all set.",
+            "kind": kind,
+            "user": public_user_payload(user),
+        }), 200
+    finally:
+        cur.close()
+        conn.close()
 
 
 @app.route('/api/billing/webhook', methods=['POST'])

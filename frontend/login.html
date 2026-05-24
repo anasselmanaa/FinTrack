@@ -91,6 +91,12 @@
           <button type="button" class="password-toggle" data-toggle-password="registerPasswordConfirm" aria-label="Show password">Show</button>
         </div>
 
+        <button type="button" class="auth-coupon-toggle" id="registerCouponToggle">Have a coupon?</button>
+        <div class="auth-coupon-field" id="registerCouponField" hidden>
+          <label for="registerCouponCode">Coupon code</label>
+          <input id="registerCouponCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Enter your code">
+        </div>
+
         <button class="auth-submit" type="submit">Create account</button>
         <p class="auth-message" id="registerMessage" role="status"></p>
       </form>

@@ -208,6 +208,40 @@ def init_db():
     """)
     cur.execute("CREATE INDEX IF NOT EXISTS accounts_user_id_idx ON accounts (user_id)")
 
+    # Coupons — issued by the owner to grant special access. Right now only
+    # kind='lifetime' is supported (sets subscription_status='lifetime' on
+    # the redeeming user, which the rest of the app treats as paid). The
+    # times_used counter + max_uses cap let us issue limited-run codes too.
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS coupons (
+            code TEXT PRIMARY KEY,
+            kind TEXT NOT NULL DEFAULT 'lifetime',
+            max_uses INTEGER,
+            times_used INTEGER NOT NULL DEFAULT 0,
+            note TEXT,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS coupon_redemptions (
+            id SERIAL PRIMARY KEY,
+            coupon_code TEXT NOT NULL REFERENCES coupons(code) ON DELETE CASCADE,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            redeemed_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE (coupon_code, user_id)
+        )
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS coupon_redemptions_user_idx ON coupon_redemptions (user_id)")
+
+    # Seed a first lifetime coupon so the owner has something to share on
+    # day one. ON CONFLICT DO NOTHING means re-running init_db() never
+    # clobbers a coupon that's already been edited / had its max_uses set.
+    cur.execute("""
+        INSERT INTO coupons (code, kind, max_uses, note)
+        VALUES ('FINTRACK-VIP', 'lifetime', NULL, 'Initial lifetime code — share privately')
+        ON CONFLICT (code) DO NOTHING
+    """)
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS recurring_payment_history (
             id SERIAL PRIMARY KEY,

@@ -4485,6 +4485,40 @@ body {
     line-height: 1.5;
     font-style: italic;
 }
+
+.billing-coupon {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.billing-coupon-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+.billing-coupon-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.billing-coupon-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.billing-coupon-input:focus {
+    outline: none;
+    border-color: var(--green);
+}
 .billing-cancel-summary {
     display: flex;
     align-items: center;

@@ -90,6 +90,17 @@
     const params = new URLSearchParams(window.location.search || "");
     showTab(params.get("mode") === "register" ? "register" : "login");
 
+    // Coupon field is collapsed by default — most signups won't have one,
+    // so we don't want it cluttering the form. Toggle reveals the input.
+    const couponToggle = document.getElementById("registerCouponToggle");
+    const couponField = document.getElementById("registerCouponField");
+    couponToggle?.addEventListener("click", () => {
+      const willShow = couponField.hidden;
+      couponField.hidden = !willShow;
+      couponToggle.classList.toggle("is-open", willShow);
+      if (willShow) document.getElementById("registerCouponCode")?.focus();
+    });
+
     // Google OAuth round-trip can bounce back here with ?auth_error=... when
     // something goes wrong (user denied consent, token exchange failed, etc.).
     const authError = params.get("auth_error");
@@ -147,11 +158,13 @@
       setBusy(button, "Creating account...", true);
 
       try {
+        const couponCode = (document.getElementById("registerCouponCode")?.value || "").trim();
         const payload = {
           name: document.getElementById("registerName").value.trim(),
           email: document.getElementById("registerEmail").value.trim(),
           password: document.getElementById("registerPassword").value,
         };
+        if (couponCode) payload.coupon_code = couponCode;
         const confirmPassword = document.getElementById("registerPasswordConfirm").value;
 
         if (payload.password !== confirmPassword) {

@@ -67,6 +67,16 @@ const TRANSLATIONS = {
         "trial.banner.last_day": "Dernier jour d'essai gratuit — abonnez-vous pour garder l'accès.",
         "trial.banner.expired": "Votre essai est terminé — abonnez-vous pour conserver vos données.",
 
+        // Lifetime plan + coupon redemption
+        "plan.lifetime": "Plan à vie",
+        "settings.billing.coupon.label": "Vous avez un code promo ?",
+        "settings.billing.coupon.placeholder": "Saisissez votre code",
+        "settings.billing.coupon.redeem": "Utiliser",
+        "settings.billing.coupon.redeeming": "Validation…",
+        "settings.billing.coupon.success": "Code appliqué. Tout est en ordre.",
+        "settings.billing.coupon.error_empty": "Saisissez d'abord un code.",
+        "settings.billing.coupon.error_generic": "Impossible d'appliquer ce code.",
+
         // Topnav
         "topnav.search": "Rechercher des transactions…",
         "topnav.toggle_theme": "Changer de thème",
@@ -1004,6 +1014,16 @@ const TRANSLATIONS = {
         "trial.banner.urgent": "Solo {n} días de prueba — suscríbete para conservar tus datos.",
         "trial.banner.last_day": "Último día de prueba gratuita — suscríbete para mantener el acceso.",
         "trial.banner.expired": "Tu prueba ha terminado — suscríbete para conservar tus datos.",
+
+        // Lifetime plan + coupon redemption
+        "plan.lifetime": "Plan de por vida",
+        "settings.billing.coupon.label": "¿Tienes un cupón?",
+        "settings.billing.coupon.placeholder": "Ingresa tu código",
+        "settings.billing.coupon.redeem": "Canjear",
+        "settings.billing.coupon.redeeming": "Aplicando…",
+        "settings.billing.coupon.success": "Cupón aplicado. Todo listo.",
+        "settings.billing.coupon.error_empty": "Ingresa primero un código.",
+        "settings.billing.coupon.error_generic": "No pudimos aplicar ese cupón.",
 
         // Topnav
         "topnav.search": "Buscar transacciones…",
@@ -2316,8 +2336,12 @@ function applyCurrentUserProfile(user = {}) {
     const { dialCode, number: phoneNumber } = splitPhone(phone);
 
     setText(".user-name", name);
-    const isPaid = ["active", "premium", "subscribed"].includes(subscriptionStatus);
-    setText(".user-plan", isPaid ? t("plan.premium", "Premium Plan") : t("plan.trial", "Trial Plan"));
+    const isLifetime = subscriptionStatus === "lifetime";
+    const isPaid = ["active", "premium", "subscribed", "lifetime"].includes(subscriptionStatus);
+    const planLabel = isLifetime
+        ? t("plan.lifetime", "Lifetime Plan")
+        : isPaid ? t("plan.premium", "Premium Plan") : t("plan.trial", "Trial Plan");
+    setText(".user-plan", planLabel);
     renderTrialBanner(user);
     document.getElementById("sidebarUserProfile")?.classList.add("is-loaded");
     setText("#settingsProfileName", name);
@@ -2428,7 +2452,7 @@ function renderTrialBanner(user = {}) {
     if (!banner || !textEl) return;
 
     const status = String(user.subscription_status || "trial").trim().toLowerCase();
-    const isPaid = ["active", "premium", "subscribed"].includes(status);
+    const isPaid = ["active", "premium", "subscribed", "lifetime"].includes(status);
     const trialEndsAt = getBillingDate(user.trial_ends_at);
 
     if (isPaid || !trialEndsAt) {
@@ -2478,7 +2502,7 @@ function updateBillingSettings(user = {}) {
     const trialEndsAt = getBillingDate(user.trial_ends_at);
     const currentPeriodEnd = getBillingDate(user.subscription_current_period_end) || trialEndsAt;
     const trialExpired = status === "trial" && trialEndsAt && Date.now() > trialEndsAt.getTime();
-    const isPaid = ["active", "premium", "subscribed"].includes(status);
+    const isPaid = ["active", "premium", "subscribed", "lifetime"].includes(status);
     const isEnded = ["canceled", "unpaid", "incomplete_expired"].includes(status);
     const hasStripeCustomer = !!user.stripe_customer_id;
     const hasStripeSubscription = !!user.stripe_subscription_id;
@@ -2533,6 +2557,13 @@ function updateBillingSettings(user = {}) {
 
     if (portalHint) {
         portalHint.hidden = !hasStripeCustomer;
+    }
+
+    // Hide the coupon row for users who are already paid — there's nothing to
+    // redeem against. Keeps Settings tidy for paying customers.
+    const couponRow = document.getElementById("settingsCouponRow");
+    if (couponRow) {
+        couponRow.hidden = isPaid;
     }
 }
 
@@ -3141,6 +3172,48 @@ async function confirmCancelSubscription() {
     }
 }
 
+async function redeemCouponFromSettings() {
+    const input = document.getElementById("settingsCouponInput");
+    const btn = document.getElementById("settingsCouponBtn");
+    const code = (input?.value || "").trim();
+    if (!code) {
+        setMessage("settingsCouponMessage", t("settings.billing.coupon.error_empty", "Enter a coupon code first."), "error");
+        return;
+    }
+
+    const originalLabel = btn ? btn.textContent : "";
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = t("settings.billing.coupon.redeeming", "Redeeming…");
+    }
+    setMessage("settingsCouponMessage", "");
+
+    try {
+        const res = await fetch(API + "/coupons/redeem", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+        });
+        if (!res.ok) {
+            throw await getResponseError(res, t("settings.billing.coupon.error_generic", "We couldn't apply that coupon."));
+        }
+        showToast(t("settings.billing.coupon.success", "Coupon applied. You're all set."));
+        // Reload profile + dashboard so subscription_status flips everywhere.
+        if (typeof loadCurrentUserProfile === "function") await loadCurrentUserProfile();
+        if (typeof loadDashboard === "function") await loadDashboard();
+        if (input) input.value = "";
+    } catch (error) {
+        handleFetchError(error, t("settings.billing.coupon.error_generic", "We couldn't apply that coupon."));
+        setMessage("settingsCouponMessage", error.message || t("settings.billing.coupon.error_generic", "We couldn't apply that coupon."), "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalLabel || t("settings.billing.coupon.redeem", "Redeem");
+        }
+    }
+}
+
 function initializeBillingActions() {
     document.getElementById("settingsSubscribeBtn")?.addEventListener("click", startStripeCheckout);
     document.getElementById("trialBannerCta")?.addEventListener("click", (event) => {
@@ -3152,6 +3225,13 @@ function initializeBillingActions() {
         startStripeCheckout();
     });
     document.getElementById("settingsManageBtn")?.addEventListener("click", openStripeBillingPortal);
+    document.getElementById("settingsCouponBtn")?.addEventListener("click", redeemCouponFromSettings);
+    document.getElementById("settingsCouponInput")?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            redeemCouponFromSettings();
+        }
+    });
     document.getElementById("settingsExportBtn")?.addEventListener("click", downloadAccountExport);
     document.getElementById("settingsCancelSubscriptionBtn")?.addEventListener("click", openCancelSubscriptionModal);
     document.getElementById("cancelSubscriptionModalClose")?.addEventListener("click", closeCancelSubscriptionModal);

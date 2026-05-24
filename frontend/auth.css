@@ -235,6 +235,31 @@ input:focus {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+.auth-coupon-toggle {
+  margin-top: 6px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+  cursor: pointer;
+  align-self: flex-start;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.auth-coupon-toggle:hover { color: var(--green-dark); }
+.auth-coupon-toggle.is-open { color: var(--green-dark); }
+
+.auth-coupon-field {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.auth-coupon-field input { text-transform: uppercase; letter-spacing: 0.05em; }
 .auth-divider::before,
 .auth-divider::after {
   content: "";

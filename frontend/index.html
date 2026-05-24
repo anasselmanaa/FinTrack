@@ -1708,6 +1708,24 @@
                     </div>
                 </div>
                 <p class="billing-portal-hint" id="settingsBillingHint" data-i18n="settings.billing.portal_hint" hidden>Update your card or view invoices from Stripe's secure billing portal.</p>
+
+                <!-- Coupon redemption (hidden for users already on a paid plan) -->
+                <div class="billing-coupon" id="settingsCouponRow">
+                    <label for="settingsCouponInput" class="billing-coupon-label" data-i18n="settings.billing.coupon.label">Have a coupon?</label>
+                    <div class="billing-coupon-row">
+                        <input
+                            type="text"
+                            id="settingsCouponInput"
+                            class="billing-coupon-input"
+                            autocomplete="off"
+                            autocapitalize="characters"
+                            spellcheck="false"
+                            placeholder="Enter your code"
+                            data-i18n-placeholder="settings.billing.coupon.placeholder">
+                        <button type="button" class="btn-export" id="settingsCouponBtn" data-i18n="settings.billing.coupon.redeem">Redeem</button>
+                    </div>
+                    <p class="form-hint" id="settingsCouponMessage" role="status" style="display:none"></p>
+                </div>
             </div>
 
             <!-- Security -->
