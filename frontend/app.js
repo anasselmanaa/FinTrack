@@ -506,6 +506,10 @@ const TRANSLATIONS = {
         "receipt.error.save": "Impossible d'enregistrer la transaction",
         "receipt.duplicate.confirm": "Ce reçu a déjà été scanné le {date}. Voulez-vous le scanner à nouveau ?",
         "receipt.duplicate.cancelled": "Scan annulé — ce reçu a déjà été scanné.",
+        "receipt.duplicate.title": "Reçu déjà scanné",
+        "receipt.duplicate.body": "Ce reçu a déjà été scanné le {date}. Vous pouvez choisir une autre photo ou le scanner à nouveau.",
+        "receipt.duplicate.cancel": "Choisir une autre photo",
+        "receipt.duplicate.continue": "Scanner à nouveau",
         "receipt.retry": "Essayer une autre photo",
         "receipt.manual": "Saisir manuellement",
         "receipt.save": "Enregistrer la transaction",
@@ -1437,6 +1441,10 @@ const TRANSLATIONS = {
         "receipt.error.save": "No se pudo guardar la transacción",
         "receipt.duplicate.confirm": "Este recibo ya fue escaneado el {date}. ¿Quieres escanearlo de nuevo?",
         "receipt.duplicate.cancelled": "Escaneo cancelado — este recibo ya fue escaneado.",
+        "receipt.duplicate.title": "Recibo ya escaneado",
+        "receipt.duplicate.body": "Este recibo ya fue escaneado el {date}. Puedes elegir otra foto o escanearlo de nuevo.",
+        "receipt.duplicate.cancel": "Elegir otra foto",
+        "receipt.duplicate.continue": "Escanear de nuevo",
         "receipt.retry": "Probar con otra foto",
         "receipt.manual": "Ingresar manualmente",
         "receipt.save": "Guardar transacción",
@@ -12147,18 +12155,90 @@ async function hashReceiptFile(file) {
     return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
 }
 
-function confirmDuplicateReceiptScan(receiptHash) {
+function ensureReceiptDuplicateModal() {
+    let modal = document.getElementById("receiptDuplicateModal");
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "receiptDuplicateModal";
+    modal.className = "receipt-duplicate-modal";
+    modal.innerHTML = `
+        <div class="receipt-duplicate-panel" role="dialog" aria-modal="true" aria-labelledby="receiptDuplicateTitle">
+            <div class="receipt-duplicate-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3h6l4 4v14H5V3h4z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M8 13h8"></path>
+                    <path d="M8 17h6"></path>
+                </svg>
+            </div>
+            <div class="receipt-duplicate-copy">
+                <h3 id="receiptDuplicateTitle"></h3>
+                <p id="receiptDuplicateBody"></p>
+            </div>
+            <div class="receipt-duplicate-actions">
+                <button type="button" class="btn-secondary" data-receipt-duplicate-cancel></button>
+                <button type="button" class="btn-primary" data-receipt-duplicate-confirm></button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function showReceiptDuplicateModal(dateLabel) {
+    const modal = ensureReceiptDuplicateModal();
+    const title = modal.querySelector("#receiptDuplicateTitle");
+    const body = modal.querySelector("#receiptDuplicateBody");
+    const cancelBtn = modal.querySelector("[data-receipt-duplicate-cancel]");
+    const confirmBtn = modal.querySelector("[data-receipt-duplicate-confirm]");
+
+    if (title) title.textContent = t("receipt.duplicate.title", "Receipt already scanned");
+    if (body) {
+        body.textContent = t(
+            "receipt.duplicate.body",
+            "This receipt was already scanned on {date}. You can choose another photo or scan it again."
+        ).replace("{date}", dateLabel);
+    }
+    if (cancelBtn) cancelBtn.textContent = t("receipt.duplicate.cancel", "Choose another photo");
+    if (confirmBtn) confirmBtn.textContent = t("receipt.duplicate.continue", "Scan again");
+
+    modal.classList.add("is-open");
+
+    return new Promise(resolve => {
+        const cleanup = (result) => {
+            modal.classList.remove("is-open");
+            cancelBtn?.removeEventListener("click", onCancel);
+            confirmBtn?.removeEventListener("click", onConfirm);
+            modal.removeEventListener("click", onBackdrop);
+            document.removeEventListener("keydown", onKeydown);
+            resolve(result);
+        };
+        const onCancel = () => cleanup(false);
+        const onConfirm = () => cleanup(true);
+        const onBackdrop = (event) => {
+            if (event.target === modal) cleanup(false);
+        };
+        const onKeydown = (event) => {
+            if (event.key === "Escape") cleanup(false);
+        };
+
+        cancelBtn?.addEventListener("click", onCancel);
+        confirmBtn?.addEventListener("click", onConfirm);
+        modal.addEventListener("click", onBackdrop);
+        document.addEventListener("keydown", onKeydown);
+        setTimeout(() => confirmBtn?.focus(), 0);
+    });
+}
+
+async function confirmDuplicateReceiptScan(receiptHash) {
     if (!receiptHash) return true;
     const history = getReceiptScanHistory();
     const previous = history[receiptHash];
     if (!previous) return true;
 
     const dateLabel = receiptHistoryDateLabel(previous.scannedAt);
-    const message = t(
-        "receipt.duplicate.confirm",
-        "This receipt was already scanned on {date}. Do you want to scan it again?"
-    ).replace("{date}", dateLabel);
-    return window.confirm(message);
+    return showReceiptDuplicateModal(dateLabel);
 }
 
 function rememberReceiptScan(receiptHash, extracted = {}) {
@@ -12379,7 +12459,7 @@ async function handleScanReceiptFile(file) {
         console.warn("Receipt hash error:", error);
     }
 
-    if (!confirmDuplicateReceiptScan(scanCurrentReceiptHash)) {
+    if (!(await confirmDuplicateReceiptScan(scanCurrentReceiptHash))) {
         showToast(t("receipt.duplicate.cancelled", "Scan cancelled — this receipt was already scanned."));
         scanReceiptResetState();
         return;
