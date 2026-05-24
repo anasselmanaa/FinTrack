@@ -3426,6 +3426,23 @@ function closeNotifDropdown() {
     if (btn) btn.setAttribute("aria-expanded", "false");
 }
 
+// Restore the active page from the URL hash (e.g., #recurring) so a refresh
+// keeps the user where they were. Also responds to browser back/forward.
+function _restorePageFromHash() {
+    const raw = (window.location.hash || "").replace(/^#/, "").toLowerCase().trim();
+    if (!raw) return; // empty hash → default dashboard already shown by HTML
+    const nav = document.querySelector(`.nav-item[data-page="${raw}"]`);
+    if (!nav) return; // unknown hash → leave whatever is currently active
+    // Bail out if already on this page (avoids re-loading data unnecessarily).
+    if (document.body.dataset.activePage === raw) return;
+    nav.click();
+}
+
+function initializePageRestore() {
+    _restorePageFromHash();
+    window.addEventListener("hashchange", _restorePageFromHash);
+}
+
 function initializeNotifications() {
     const btn = document.getElementById("notifBtn");
     if (!btn) return;
@@ -3688,6 +3705,18 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item => {
             openInvestmentPreviewModal();
             return;
         }
+
+        // Persist the page in the URL hash so refresh / back-forward keeps
+        // the user where they were. Dashboard is the default so we clear the
+        // hash for it to avoid an awkward "/#dashboard" URL.
+        try {
+            const newHash = target === 'dashboard' ? '' : '#' + target;
+            if (window.location.hash !== newHash) {
+                // Use replaceState so we don't pollute browser history with
+                // every tab click — only one entry per session.
+                history.replaceState(null, '', window.location.pathname + window.location.search + newHash);
+            }
+        } catch (_e) { /* hash update isn't load-bearing */ }
 
         document.body.dataset.activePage = target;
         document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
@@ -9030,6 +9059,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializePreferencesSave();
     initializeBillingActions();
     initializeNotifications();
+    initializePageRestore();
     document.getElementById("resendVerificationBtn")?.addEventListener("click", resendVerificationEmail);
     applyLanguage(CURRENT_LANG);
     handleBillingReturnState();
