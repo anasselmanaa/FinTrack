@@ -11,6 +11,8 @@
     <title>FinTrack – Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="stylesheet" href="style.css?v=i18n-fr-10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -131,6 +133,20 @@
      MAIN
 ══════════════════════════════════════ -->
 <main class="main" id="main">
+
+    <!-- TRIAL COUNTDOWN BANNER -->
+    <div class="trial-banner" id="trialBanner" hidden>
+        <div class="trial-banner-inner">
+            <span class="trial-banner-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <polyline points="12 7 12 12 15 14"/>
+                </svg>
+            </span>
+            <p class="trial-banner-text" id="trialBannerText"></p>
+            <button class="trial-banner-cta" id="trialBannerCta" type="button" data-i18n="trial.banner.cta">Subscribe now</button>
+        </div>
+    </div>
 
     <!-- TOP NAV -->
     <header class="topnav">
@@ -2577,7 +2593,7 @@
             <!-- Step 2: scanning -->
             <div class="scan-step scan-step-scan" id="scanStepScan" hidden>
                 <div class="scan-preview-wrap">
-                    <img id="scanPreviewImg" alt="" class="scan-preview-img">
+                    <img id="scanPreviewImg" alt="" class="scan-preview-img" loading="lazy" decoding="async">
                 </div>
                 <div class="scan-progress">
                     <div class="scan-progress-bar"><span></span></div>
@@ -2588,7 +2604,7 @@
             <!-- Step 3: review extracted fields -->
             <div class="scan-step scan-step-review" id="scanStepReview" hidden>
                 <div class="scan-review-top">
-                    <img id="scanReviewImg" alt="" class="scan-review-img">
+                    <img id="scanReviewImg" alt="" class="scan-review-img" loading="lazy" decoding="async">
                     <div class="scan-review-meta">
                         <span class="scan-review-pill scan-review-confidence" id="scanReviewConfidence">High confidence</span>
                         <p class="scan-review-warning" id="scanReviewWarning" hidden></p>

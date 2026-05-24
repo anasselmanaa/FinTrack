@@ -60,6 +60,13 @@ const TRANSLATIONS = {
         "plan.premium": "Plan Premium",
         "plan.trial": "Essai gratuit",
 
+        // Trial countdown banner
+        "trial.banner.cta": "S'abonner",
+        "trial.banner.days_left": "Il vous reste {n} jours d'essai gratuit.",
+        "trial.banner.urgent": "Plus que {n} jours d'essai — abonnez-vous pour conserver vos données.",
+        "trial.banner.last_day": "Dernier jour d'essai gratuit — abonnez-vous pour garder l'accès.",
+        "trial.banner.expired": "Votre essai est terminé — abonnez-vous pour conserver vos données.",
+
         // Topnav
         "topnav.search": "Rechercher des transactions…",
         "topnav.toggle_theme": "Changer de thème",
@@ -981,6 +988,13 @@ const TRANSLATIONS = {
         // User plan
         "plan.premium": "Plan Premium",
         "plan.trial": "Prueba gratuita",
+
+        // Trial countdown banner
+        "trial.banner.cta": "Suscribirse",
+        "trial.banner.days_left": "Te quedan {n} días de prueba gratuita.",
+        "trial.banner.urgent": "Solo {n} días de prueba — suscríbete para conservar tus datos.",
+        "trial.banner.last_day": "Último día de prueba gratuita — suscríbete para mantener el acceso.",
+        "trial.banner.expired": "Tu prueba ha terminado — suscríbete para conservar tus datos.",
 
         // Topnav
         "topnav.search": "Buscar transacciones…",
@@ -2286,6 +2300,7 @@ function applyCurrentUserProfile(user = {}) {
     setText(".user-name", name);
     const isPaid = ["active", "premium", "subscribed"].includes(subscriptionStatus);
     setText(".user-plan", isPaid ? t("plan.premium", "Premium Plan") : t("plan.trial", "Trial Plan"));
+    renderTrialBanner(user);
     setText("#settingsProfileName", name);
     setText("#settingsProfileEmail", email);
     setText("#settingsProfileSince", formatMemberSince(user.created_at || user.trial_started_at, subscriptionStatus));
@@ -2386,6 +2401,49 @@ function formatBillingDate(value) {
     const date = value instanceof Date ? value : getBillingDate(value);
     if (!date) return t("settings.billing.period_unknown", "End of current billing period");
     return date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+}
+
+function renderTrialBanner(user = {}) {
+    const banner = document.getElementById("trialBanner");
+    const textEl = document.getElementById("trialBannerText");
+    if (!banner || !textEl) return;
+
+    const status = String(user.subscription_status || "trial").trim().toLowerCase();
+    const isPaid = ["active", "premium", "subscribed"].includes(status);
+    const trialEndsAt = getBillingDate(user.trial_ends_at);
+
+    if (isPaid || !trialEndsAt) {
+        banner.hidden = true;
+        return;
+    }
+
+    // Days remaining, rounded UP so "23h59m left" still reads as "1 day".
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const daysLeft = Math.ceil((trialEndsAt.getTime() - Date.now()) / msPerDay);
+
+    let message;
+    let severity;
+    if (daysLeft <= 0) {
+        // trial_ends_at is in the past but Stripe hasn't flipped the status yet
+        message = t("trial.banner.expired", "Your trial has ended — subscribe to keep your data.");
+        severity = "is-critical";
+    } else if (daysLeft === 1) {
+        message = t("trial.banner.last_day", "Last day of your free trial — subscribe to keep access.");
+        severity = "is-critical";
+    } else if (daysLeft <= 3) {
+        const template = t("trial.banner.urgent", "Only {n} days left in your trial — subscribe to keep your data.");
+        message = template.replace("{n}", daysLeft);
+        severity = "is-warning";
+    } else {
+        const template = t("trial.banner.days_left", "{n} days left in your free trial.");
+        message = template.replace("{n}", daysLeft);
+        severity = "";
+    }
+
+    banner.classList.remove("is-warning", "is-critical");
+    if (severity) banner.classList.add(severity);
+    textEl.textContent = message;
+    banner.hidden = false;
 }
 
 function updateBillingSettings(user = {}) {
@@ -3062,6 +3120,14 @@ async function confirmCancelSubscription() {
 
 function initializeBillingActions() {
     document.getElementById("settingsSubscribeBtn")?.addEventListener("click", startStripeCheckout);
+    document.getElementById("trialBannerCta")?.addEventListener("click", (event) => {
+        const btn = event.currentTarget;
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = t("settings.billing.redirecting", "Redirecting…");
+        }
+        startStripeCheckout();
+    });
     document.getElementById("settingsManageBtn")?.addEventListener("click", openStripeBillingPortal);
     document.getElementById("settingsExportBtn")?.addEventListener("click", downloadAccountExport);
     document.getElementById("settingsCancelSubscriptionBtn")?.addEventListener("click", openCancelSubscriptionModal);
