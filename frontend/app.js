@@ -2064,6 +2064,19 @@ function applyLanguage(lang) {
 
     _enBaselineCaptured = true;
 
+    // Re-render labels that are set imperatively (not via data-i18n) — the
+    // sidebar user-plan badge in particular shows "Premium / Lifetime / Trial"
+    // in the wrong language otherwise after a language switch.
+    if (lastCurrentUser) {
+        const status = String(lastCurrentUser.subscription_status || "trial").trim().toLowerCase();
+        const isLifetime = status === "lifetime";
+        const isPaid = ["active", "premium", "subscribed", "lifetime"].includes(status);
+        const planLabel = isLifetime
+            ? t("plan.lifetime", "Lifetime Plan")
+            : isPaid ? t("plan.premium", "Premium Plan") : t("plan.trial", "Trial Plan");
+        document.querySelectorAll(".user-plan").forEach(el => { el.textContent = planLabel; });
+    }
+
     try { localStorage.setItem("fintrack.lang", lang); } catch (e) {}
 
     if (typeof loadRecurringPayments === "function") {
@@ -2353,7 +2366,10 @@ function refreshCurrencySensitiveViews() {
     }
 }
 
+let lastCurrentUser = null;
+
 function applyCurrentUserProfile(user = {}) {
+    lastCurrentUser = user || {};
     // First-login onboarding gate: open the 4-step modal if the user has
     // never completed it, otherwise force-close it. The close branch defends
     // against any earlier code path that opened the modal with stale data.
@@ -2373,12 +2389,16 @@ function applyCurrentUserProfile(user = {}) {
         avatar.textContent = initials;
 
         if (imageUrl) {
-            avatar.style.backgroundImage = `url("${imageUrl}")`;
+            const next = `url("${imageUrl}")`;
+            if (avatar.style.backgroundImage !== next) {
+                avatar.style.backgroundImage = next;
+            }
             avatar.classList.add("has-image");
-        } else {
-            avatar.style.backgroundImage = "";
-            avatar.classList.remove("has-image");
         }
+        // If imageUrl is missing we deliberately DON'T clear the avatar — that
+        // would cause a white flash any time the user object gets re-applied
+        // by a partial response. The avatar can only be cleared by an
+        // explicit "delete profile picture" action (which doesn't exist yet).
     });
 
     const nameParts = name.split(/\s+/).filter(Boolean);
