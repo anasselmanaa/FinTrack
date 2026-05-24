@@ -8006,6 +8006,18 @@ details.coach-history-collapsible > .coach-history-list {
     gap: 8px;
 }
 
+.subscriptions-empty {
+    padding: 6px 2px 2px;
+}
+
+.subscriptions-empty p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
 .subscription-item {
     display: grid;
     grid-template-columns: 1fr auto auto;

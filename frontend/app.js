@@ -297,7 +297,9 @@ const TRANSLATIONS = {
         "recurring.subs.summary_mode.cached": "Résumé en cache",
         "recurring.subs.summary_mode.rule": "Résumé heuristique",
         "recurring.subs.summary_mode.empty": "Aucune correspondance",
-        "recurring.subs.empty_list": "Aucun prélèvement récurrent détecté. Importez plus de transactions ou attendez le prochain cycle de facturation.",
+        "recurring.subs.empty_title": "Aucun abonnement trouvé pour le moment.",
+        "recurring.subs.empty_hint": "Ajoutez vos paiements récurrents vous-même ci-dessous.",
+        "recurring.subs.empty_list": "Aucun abonnement trouvé pour le moment.",
         "recurring.subs.fetch_error": "Impossible d'analyser les abonnements pour le moment. Veuillez réessayer.",
         "recurring.subs.add_failed": "Impossible d'ajouter aux paiements récurrents",
         "recurring.subs.tracked_toast": "{name} ajouté aux paiements récurrents",
@@ -1245,7 +1247,9 @@ const TRANSLATIONS = {
         "recurring.subs.summary_mode.cached": "Resumen en caché",
         "recurring.subs.summary_mode.rule": "Resumen heurístico",
         "recurring.subs.summary_mode.empty": "Sin coincidencias",
-        "recurring.subs.empty_list": "No se detectaron cargos recurrentes. Importa más transacciones o espera al próximo ciclo de facturación.",
+        "recurring.subs.empty_title": "No se encontraron suscripciones por ahora.",
+        "recurring.subs.empty_hint": "Agrega tus pagos recurrentes manualmente abajo.",
+        "recurring.subs.empty_list": "No se encontraron suscripciones por ahora.",
         "recurring.subs.fetch_error": "No se pudieron analizar las suscripciones en este momento. Inténtalo de nuevo.",
         "recurring.subs.add_failed": "No se pudo agregar a pagos recurrentes",
         "recurring.subs.tracked_toast": "{name} agregado a pagos recurrentes",
@@ -8546,7 +8550,11 @@ function renderDetectedSubscriptions(data) {
 
     const subscriptions = Array.isArray(data && data.subscriptions) ? data.subscriptions : [];
     const cancelCandidates = Array.isArray(data && data.cancel_candidates) ? data.cancel_candidates : [];
-    const summary = (data && data.summary) || t("recurring.subs.empty_list", "No detected subscriptions yet.");
+    const emptyTitle = t("recurring.subs.empty_title", "No subscriptions found yet.");
+    const emptyHint = t("recurring.subs.empty_hint", "Add recurring payments yourself below.");
+    const summary = subscriptions.length
+        ? ((data && data.summary) || t("recurring.subs.empty_list", "No detected subscriptions yet."))
+        : emptyTitle;
     const currency = CURRENT_CURRENCY;
     const totalMonthly = Number((data && data.total_monthly) || 0);
     const activeCount = Number((data && data.active_count) || subscriptions.length);
@@ -8558,11 +8566,11 @@ function renderDetectedSubscriptions(data) {
         else if (data && data.summary_mode === "cached") metaEl.textContent = t("recurring.subs.summary_mode.cached", "Cached summary");
         else metaEl.textContent = activeCount
             ? t("recurring.subs.summary_mode.rule", "Heuristic summary")
-            : t("recurring.subs.summary_mode.empty", "No matches yet");
+            : "";
     }
 
     if (statsEl) {
-        statsEl.hidden = false;
+        statsEl.hidden = !subscriptions.length;
         const setStat = (id, value) => { const n = document.getElementById(id); if (n) n.textContent = value; };
         setStat("subscriptionsActiveCount", String(activeCount));
         setStat("subscriptionsMonthlyTotal", `${currency} ${totalMonthly.toFixed(2)}`);
@@ -8570,7 +8578,11 @@ function renderDetectedSubscriptions(data) {
     }
 
     if (!subscriptions.length) {
-        listEl.innerHTML = `<p class="coach-history-empty">${escapeHTML(t("recurring.subs.empty_list", "No recurring same-amount charges detected. Import more transactions or wait for another billing cycle."))}</p>`;
+        listEl.innerHTML = `
+            <div class="subscriptions-empty">
+                <p>${escapeHTML(emptyHint)}</p>
+            </div>
+        `;
         return;
     }
 
