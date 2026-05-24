@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Accessibility Statement – FinTrack</title>
+<title data-i18n="a11y.page.title">Accessibility Statement – FinTrack</title>
+<link rel="stylesheet" href="i18n-marketing.css">
 <meta name="description" content="Read FinTrack's accessibility statement, standards, known limitations, and contact options for accessibility feedback.">
 <meta name="theme-color" content="#163832">
 <link rel="canonical" href="https://fintrack.art/accessibility.html">
@@ -156,84 +157,85 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <a href="landing.html" class="nav-brand">FinTrack<span class="dot">.</span></a>
   <div class="nav-menu">
     <div class="nav-dropdown">
-      <a href="features.html">Features <span class="chevron">▼</span></a>
+      <a href="features.html"><span data-i18n="about.nav.features">Features</span> <span class="chevron">▼</span></a>
       <div class="nav-dropdown-menu">
-        <a href="features.html#budgeting">Budgeting</a>
-        <a href="features.html#insights">Insights</a>
-        <a href="features.html#goals">Goals</a>
-        <a href="features.html#receipt-scanning">Receipt Scanning</a>
+        <a href="features.html#budgeting" data-i18n="about.nav.budget">Budgeting</a>
+        <a href="features.html#insights" data-i18n="about.nav.insights">Insights</a>
+        <a href="features.html#goals" data-i18n="about.nav.goals">Goals</a>
+        <a href="features.html#receipt-scanning" data-i18n="about.nav.receipt">Receipt Scanning</a>
       </div>
     </div>
-    <a href="different.html">Why we're different</a>
-    <a href="trial.html">Trial</a>
-    <a href="guide.html">Guide</a>
-    <a href="help.html">Help Center</a>
-    <a href="about.html">About</a>
+    <a href="different.html" data-i18n="about.nav.different">Why we're different</a>
+    <a href="trial.html" data-i18n="about.nav.trial">Trial</a>
+    <a href="guide.html" data-i18n="about.nav.guide">Guide</a>
+    <a href="help.html" data-i18n="about.nav.help">Help Center</a>
+    <a href="about.html" data-i18n="about.nav.about">About</a>
   </div>
   <div class="nav-right">
-    <a href="login.html" class="nav-login">Log in</a>
-    <a href="login.html?mode=register" class="nav-cta">Start Free</a>
+    <span class="lang-picker-slot"></span>
+    <a href="login.html" class="nav-login" data-i18n="about.nav.login">Log in</a>
+    <a href="login.html?mode=register" class="nav-cta" data-i18n="about.nav.cta">Start Free</a>
   </div>
 </nav>
 
 <main>
   <section class="hero">
     <div class="hero-inner">
-      <span class="eyebrow">Accessibility</span>
-      <h1>FinTrack should work for <em>everyone.</em></h1>
-      <p>We are committed to making FinTrack usable by as many people as possible, including people who use assistive technologies, keyboard navigation, captions, zoom, high contrast settings, or screen readers.</p>
+      <span class="eyebrow" data-i18n="a11y.hero.eyebrow">Accessibility</span>
+      <h1><span data-i18n="a11y.hero.h1.1">FinTrack should work for</span> <em data-i18n="a11y.hero.h1.2">everyone.</em></h1>
+      <p data-i18n="a11y.hero.sub">We are committed to making FinTrack usable by as many people as possible, including people who use assistive technologies, keyboard navigation, captions, zoom, high contrast settings, or screen readers.</p>
     </div>
   </section>
 
   <section class="content">
     <div class="content-inner">
       <aside class="summary" aria-label="Accessibility statement sections">
-        <h2>Statement</h2>
-        <a href="#commitment">Commitment</a>
-        <a href="#standards">Standards</a>
-        <a href="#features">Accessibility Features</a>
-        <a href="#limitations">Known Limitations</a>
-        <a href="#feedback">Feedback</a>
+        <h2 data-i18n="a11y.toc.statement">Statement</h2>
+        <a href="#commitment" data-i18n="a11y.toc.commit">Commitment</a>
+        <a href="#standards" data-i18n="a11y.toc.std">Standards</a>
+        <a href="#features" data-i18n="a11y.toc.feat">Accessibility Features</a>
+        <a href="#limitations" data-i18n="a11y.toc.limit">Known Limitations</a>
+        <a href="#feedback" data-i18n="a11y.toc.feedback">Feedback</a>
       </aside>
 
       <div class="statement">
         <section id="commitment">
-          <h2>Our Commitment</h2>
-          <p><strong>FinTrack is built to help people understand their money with less stress and more clarity.</strong> Accessibility is part of that promise. We want the website and app experience to be perceivable, operable, understandable, and robust for users with different abilities and different ways of navigating software.</p>
-          <p>This statement applies to the FinTrack public website and web app experiences available through `fintrack.art` and local preview builds of the same pages.</p>
+          <h2 data-i18n="a11y.commit.h2">Our Commitment</h2>
+          <p><strong data-i18n="a11y.commit.p1">FinTrack is built to help people understand their money with less stress and more clarity.</strong> <span data-i18n="a11y.commit.p2">Accessibility is part of that promise. We want the website and app experience to be perceivable, operable, understandable, and robust for users with different abilities and different ways of navigating software.</span></p>
+          <p data-i18n="a11y.commit.p3">This statement applies to the FinTrack public website and web app experiences available through `fintrack.art` and local preview builds of the same pages.</p>
         </section>
 
         <section id="standards">
-          <h2>Standards We Aim To Meet</h2>
-          <p>Our goal is to substantially conform with the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA. These guidelines cover areas such as keyboard access, text contrast, visible focus, readable structure, form labels, error messages, and compatibility with assistive technologies.</p>
+          <h2 data-i18n="a11y.std.h2">Standards We Aim To Meet</h2>
+          <p data-i18n="a11y.std.p1">Our goal is to substantially conform with the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA. These guidelines cover areas such as keyboard access, text contrast, visible focus, readable structure, form labels, error messages, and compatibility with assistive technologies.</p>
           <div class="notice">
-            <p>This page is an accessibility statement, not a legal guarantee. We review and improve the product over time as the app changes.</p>
+            <p data-i18n="a11y.std.p2">This page is an accessibility statement, not a legal guarantee. We review and improve the product over time as the app changes.</p>
           </div>
         </section>
 
         <section id="features">
-          <h2>Accessibility Features</h2>
-          <p>FinTrack is designed with practical accessibility in mind, including:</p>
+          <h2 data-i18n="a11y.feat.h2">Accessibility Features</h2>
+          <p data-i18n="a11y.feat.intro">FinTrack is designed with practical accessibility in mind, including:</p>
           <ul>
-            <li>Semantic page structure with headings, links, buttons, forms, and labels where appropriate.</li>
-            <li>Keyboard-operable navigation and controls for core workflows.</li>
-            <li>Readable text sizes, responsive layouts, and support for browser zoom.</li>
-            <li>Color contrast targets suitable for normal and large text.</li>
-            <li>Clear support channels for reporting accessibility barriers.</li>
+            <li data-i18n="a11y.feat.b1">Semantic page structure with headings, links, buttons, forms, and labels where appropriate.</li>
+            <li data-i18n="a11y.feat.b2">Keyboard-operable navigation and controls for core workflows.</li>
+            <li data-i18n="a11y.feat.b3">Readable text sizes, responsive layouts, and support for browser zoom.</li>
+            <li data-i18n="a11y.feat.b4">Color contrast targets suitable for normal and large text.</li>
+            <li data-i18n="a11y.feat.b5">Clear support channels for reporting accessibility barriers.</li>
           </ul>
         </section>
 
         <section id="limitations">
-          <h2>Known Limitations</h2>
-          <p>FinTrack is actively evolving. Some newer or experimental areas may need additional review, especially interactive charts, AI-generated content, file upload states, and third-party services such as checkout or email flows.</p>
-          <p>When we identify an accessibility issue, we prioritize fixes based on severity, user impact, and how often the affected workflow is used.</p>
+          <h2 data-i18n="a11y.limit.h2">Known Limitations</h2>
+          <p data-i18n="a11y.limit.p1">FinTrack is actively evolving. Some newer or experimental areas may need additional review, especially interactive charts, AI-generated content, file upload states, and third-party services such as checkout or email flows.</p>
+          <p data-i18n="a11y.limit.p2">When we identify an accessibility issue, we prioritize fixes based on severity, user impact, and how often the affected workflow is used.</p>
         </section>
 
         <section id="feedback" class="contact-box">
-          <h2>Feedback And Assistance</h2>
-          <p>If you experience an accessibility barrier, need information in another format, or have trouble using any part of FinTrack, email us at <a href="mailto:help@fintrack.art">help@fintrack.art</a>.</p>
-          <p>For the fastest response, include the page URL, what you were trying to do, your browser/device, and any assistive technology you were using. You can also report defects to <a href="mailto:bugs@fintrack.art">bugs@fintrack.art</a>.</p>
-          <p>Last updated: May 21, 2026.</p>
+          <h2 data-i18n="a11y.fb.h2">Feedback And Assistance</h2>
+          <p><span data-i18n="a11y.fb.p1">If you experience an accessibility barrier, need information in another format, or have trouble using any part of FinTrack, email us at</span> <a href="mailto:help@fintrack.art" data-i18n="a11y.fb.help_link">help@fintrack.art</a>.</p>
+          <p><span data-i18n="a11y.fb.p2">For the fastest response, include the page URL, what you were trying to do, your browser/device, and any assistive technology you were using. You can also report defects to</span> <a href="mailto:bugs@fintrack.art" data-i18n="a11y.fb.bugs_link">bugs@fintrack.art</a>.</p>
+          <p data-i18n="a11y.last_updated">Last updated: May 21, 2026.</p>
         </section>
       </div>
     </div>
@@ -259,21 +261,23 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
       </div>
     </div>
     <div class="footer-cols">
-      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a></div>
-      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
-      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
-      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" class="is-current">Accessibility</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.col.company">Company</h4><a href="about.html" data-i18n="about.nav.about">About</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.programs">Programs</h4><a href="#" data-i18n="about.foot.college">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.app">App</h4><a href="features.html" data-i18n="about.nav.features">Features</a><a href="different.html" data-i18n="about.nav.different">Why we're different</a><a href="trial.html" data-i18n="about.foot.trial">14-day trial</a><a href="guide.html" data-i18n="about.foot.guide">Get-started guide</a><a href="help.html" data-i18n="about.nav.help">Help Center</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.legal">Legal</h4><a href="terms.html" data-i18n="about.foot.terms">Terms</a><a href="#" data-i18n="about.foot.security">Security</a><a href="/accessibility.html" class="is-current" data-i18n="about.foot.accessibility">Accessibility</a></div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
-    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+    <p class="footer-copy" data-i18n="about.foot.copyright">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html" data-i18n="about.foot.terms">Terms</a><a href="privacy.html" data-i18n="about.foot.privacy">Privacy</a><a href="#" data-i18n="about.foot.security">Security</a><a href="#" data-i18n="about.foot.privacy_choices">Your Privacy Choices</a></div>
   </div>
 </footer>
 
 <script>
   document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 </script>
+<script src="i18n-marketing-content.js"></script>
+<script src="i18n-marketing.js"></script>
 
 </body>
 </html>
