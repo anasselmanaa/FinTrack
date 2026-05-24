@@ -450,6 +450,8 @@ body {
 
 .stat-label { font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
 .stat-value { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+.stat-value.is-negative { color: var(--red); }
+.tb-amount.is-negative { color: #ffb4b4; }
 
 .stat-change {
     display: flex; align-items: center; gap: 4px;

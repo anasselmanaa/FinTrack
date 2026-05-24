@@ -3500,15 +3500,25 @@ async function loadDashboard() {
 }
 
 function renderDashboard(data = {}) {
-    // Update stat cards
-    document.querySelector('#stat-balance').textContent  = fmt(data.total_balance);
+    // Total Balance can be negative (you've spent more than your opening
+    // balance + income). fmt() strips the sign, so we prepend "-" manually
+    // and flip the .is-negative class for red styling.
+    const balance = parseFloat(data.total_balance) || 0;
+    const balanceEl = document.querySelector('#stat-balance');
+    if (balanceEl) {
+        balanceEl.textContent = (balance < 0 ? '-' : '') + fmt(balance);
+        balanceEl.classList.toggle('is-negative', balance < 0);
+    }
     document.querySelector('#stat-income').textContent   = fmt(data.monthly_income);
     document.querySelector('#stat-expenses').textContent = fmt(data.monthly_expenses);
     setText('#page-dashboard .donut-amount', fmt(data.monthly_expenses));
 
-    // Update accounts total balance banner
+    // Update accounts total balance banner (same negative-aware treatment)
     const bannerEl = document.querySelector('.tb-amount');
-    if (bannerEl) bannerEl.textContent = fmt(data.total_balance);
+    if (bannerEl) {
+        bannerEl.textContent = (balance < 0 ? '-' : '') + fmt(balance);
+        bannerEl.classList.toggle('is-negative', balance < 0);
+    }
 
     // Recent transactions list on dashboard
     renderRecentTransactions(data.recent_transactions);
