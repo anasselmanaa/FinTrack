@@ -11774,12 +11774,17 @@ function renderDailyInsights(rows) {
     const items = (Array.isArray(rows) ? rows : []).slice(0, 3);
 
     if (!items.length) {
-        list.innerHTML = '<p class="coach-history-empty">No daily insight cards are ready yet. Try refreshing in a moment.</p>';
-        if (meta) meta.textContent = "Waiting for Claude";
+        list.innerHTML = `
+            <div class="daily-insights-empty">
+                <strong>Preparing your insights</strong>
+                <p>FinTrack is checking your recent transactions. Your tips will appear here when there is something useful to show.</p>
+            </div>
+        `;
+        if (meta) meta.textContent = "Checking your data";
         return;
     }
 
-    if (meta) meta.textContent = "Generated from your last 90 days";
+    if (meta) meta.textContent = "Based on your recent activity";
 
     list.innerHTML = items.map(item => {
         const tone = dailyInsightTone(item);

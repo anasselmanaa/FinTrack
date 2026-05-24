@@ -7824,6 +7824,34 @@ details.coach-history-collapsible > .coach-history-list {
     gap: 12px;
 }
 
+.daily-insights-empty {
+    grid-column: 1 / -1;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+}
+
+.daily-insights-empty strong,
+.daily-insights-empty p {
+    display: block;
+}
+
+.daily-insights-empty strong {
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.daily-insights-empty p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
 .daily-insights-list .coach-saved-insight-item {
     grid-template-columns: auto 1fr;
     align-items: start;
