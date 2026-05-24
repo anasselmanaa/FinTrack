@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About FinTrack</title>
+<title data-i18n="about.page.title">About FinTrack</title>
+<link rel="stylesheet" href="i18n-marketing.css">
 <meta name="description" content="Learn what FinTrack is, why it exists, how it handles trust, and how to contact the team.">
 <meta name="theme-color" content="#163832">
 <link rel="canonical" href="https://fintrack.art/about.html">
@@ -197,23 +198,24 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <a href="landing.html" class="nav-brand">FinTrack<span class="dot">.</span></a>
   <div class="nav-menu">
     <div class="nav-dropdown">
-      <a href="features.html">Features <span class="chevron">▼</span></a>
+      <a href="features.html"><span data-i18n="about.nav.features">Features</span> <span class="chevron">▼</span></a>
       <div class="nav-dropdown-menu">
-        <a href="features.html#budgeting">Budgeting</a>
-        <a href="features.html#insights">Insights</a>
-        <a href="features.html#goals">Goals</a>
-        <a href="features.html#receipt-scanning">Receipt Scanning</a>
+        <a href="features.html#budgeting" data-i18n="about.nav.budget">Budgeting</a>
+        <a href="features.html#insights" data-i18n="about.nav.insights">Insights</a>
+        <a href="features.html#goals" data-i18n="about.nav.goals">Goals</a>
+        <a href="features.html#receipt-scanning" data-i18n="about.nav.receipt">Receipt Scanning</a>
       </div>
     </div>
-    <a href="different.html">Why we're different</a>
-    <a href="trial.html">Trial</a>
-    <a href="guide.html">Guide</a>
-    <a href="help.html">Help Center</a>
-    <a href="about.html" class="is-current">About</a>
+    <a href="different.html" data-i18n="about.nav.different">Why we're different</a>
+    <a href="trial.html" data-i18n="about.nav.trial">Trial</a>
+    <a href="guide.html" data-i18n="about.nav.guide">Guide</a>
+    <a href="help.html" data-i18n="about.nav.help">Help Center</a>
+    <a href="about.html" class="is-current" data-i18n="about.nav.about">About</a>
   </div>
   <div class="nav-right">
-    <a href="login.html" class="nav-login">Log in</a>
-    <a href="login.html?mode=register" class="nav-cta">Start Free</a>
+    <span class="lang-picker-slot"></span>
+    <a href="login.html" class="nav-login" data-i18n="about.nav.login">Log in</a>
+    <a href="login.html?mode=register" class="nav-cta" data-i18n="about.nav.cta">Start Free</a>
   </div>
 </nav>
 
@@ -221,34 +223,34 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <section class="about-hero">
     <div class="about-hero-inner">
       <div>
-        <span class="eyebrow">About FinTrack</span>
-        <h1>Money clarity, built for <em>real life.</em></h1>
-        <p>FinTrack is a personal finance app for people who want to understand their money without turning their life into a spreadsheet. It brings spending, budgets, goals, recurring bills, receipts, and AI guidance into one calm workspace.</p>
+        <span class="eyebrow" data-i18n="about.page.title">About FinTrack</span>
+        <h1><span data-i18n="about.hero.h1.1">Money clarity, built for</span> <em data-i18n="about.hero.h1.2">real life.</em></h1>
+        <p data-i18n="about.hero.sub">FinTrack is a personal finance app for people who want to understand their money without turning their life into a spreadsheet. It brings spending, budgets, goals, recurring bills, receipts, and AI guidance into one calm workspace.</p>
         <div class="hero-actions">
-          <a href="login.html?mode=register" class="btn-primary">Start Free</a>
-          <a href="help.html" class="btn-secondary">Contact Support</a>
+          <a href="login.html?mode=register" class="btn-primary" data-i18n="about.hero.cta1">Start Free</a>
+          <a href="help.html" class="btn-secondary" data-i18n="about.hero.cta2">Contact Support</a>
         </div>
       </div>
 
       <div class="product-panel" aria-label="FinTrack product overview">
         <div class="panel-top">
           <span class="panel-logo">FinTrack.</span>
-          <span class="panel-status">Private by design</span>
+          <span class="panel-status" data-i18n="about.demo.priv">Private by design</span>
         </div>
         <div class="panel-body">
           <div class="panel-row">
             <div>
-              <div class="panel-label">Monthly overview</div>
-              <div class="panel-value">$1,842 tracked</div>
+              <div class="panel-label" data-i18n="about.demo.month">Monthly overview</div>
+              <div class="panel-value" data-i18n="about.demo.tracked">$1,842 tracked</div>
             </div>
-            <span class="panel-pill">Clearer habits</span>
+            <span class="panel-pill" data-i18n="about.demo.habits">Clearer habits</span>
           </div>
           <div class="panel-row">
             <div>
-              <div class="panel-label">Goals progress</div>
+              <div class="panel-label" data-i18n="about.demo.goals">Goals progress</div>
               <div class="panel-value">68%</div>
             </div>
-            <span class="panel-pill">On pace</span>
+            <span class="panel-pill" data-i18n="about.demo.pace">On pace</span>
           </div>
           <div class="panel-bars">
             <div class="bar"><span style="width: 78%;"></span></div>
@@ -263,33 +265,33 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <section class="section">
     <div class="section-inner split">
       <div>
-        <div class="section-kicker">What we build</div>
-        <h2>A finance app that explains, not shames.</h2>
+        <div class="section-kicker" data-i18n="about.what.eyebrow">What we build</div>
+        <h2 data-i18n="about.what.h2">A finance app that explains, not shames.</h2>
       </div>
       <div>
-        <p><strong>FinTrack helps people see what is happening with their money and what to do next.</strong> The product is built around everyday workflows: adding transactions, importing CSVs, scanning receipts, setting budgets, tracking goals, spotting recurring payments, and asking Money Coach for practical guidance.</p>
-        <p>The goal is not to make finance feel complicated or overly polished. The goal is to make it usable on an ordinary Tuesday, when you want a quick answer and a clear next step.</p>
-        <p>We keep the product focused on the things that help users act: plain-language insights, simple controls, and honest feedback about spending patterns without panic or guilt.</p>
+        <p><strong data-i18n="about.what.body1">FinTrack helps people see what is happening with their money and what to do next.</strong> <span data-i18n="about.what.body2">The product is built around everyday workflows: adding transactions, importing CSVs, scanning receipts, setting budgets, tracking goals, spotting recurring payments, and asking Money Coach for practical guidance.</span></p>
+        <p data-i18n="about.what.body3">The goal is not to make finance feel complicated or overly polished. The goal is to make it usable on an ordinary Tuesday, when you want a quick answer and a clear next step.</p>
+        <p data-i18n="about.what.body4">We keep the product focused on the things that help users act: plain-language insights, simple controls, and honest feedback about spending patterns without panic or guilt.</p>
       </div>
     </div>
   </section>
 
   <section class="section alt">
     <div class="section-inner">
-      <div class="section-kicker">How we work</div>
-      <h2>Our principles</h2>
+      <div class="section-kicker" data-i18n="about.how.eyebrow">How we work</div>
+      <h2 data-i18n="about.how.h2">Our principles</h2>
       <div class="principles">
         <div class="principle">
-          <h3>Privacy first</h3>
-          <p>FinTrack does not need bank credentials to be useful. Users can add data manually, import CSV files, and stay in control of what enters the app.</p>
+          <h3 data-i18n="about.how.p1.title">Privacy first</h3>
+          <p data-i18n="about.how.p1.body">FinTrack does not need bank credentials to be useful. Users can add data manually, import CSV files, and stay in control of what enters the app.</p>
         </div>
         <div class="principle">
-          <h3>Plain language</h3>
-          <p>Financial software should not require a finance degree. We write product copy, insights, and support replies in direct everyday language.</p>
+          <h3 data-i18n="about.how.p2.title">Plain language</h3>
+          <p data-i18n="about.how.p2.body">Financial software should not require a finance degree. We write product copy, insights, and support replies in direct everyday language.</p>
         </div>
         <div class="principle">
-          <h3>Useful before flashy</h3>
-          <p>Every feature should earn its place by helping people make a better decision, catch a pattern, or feel less lost about their money.</p>
+          <h3 data-i18n="about.how.p3.title">Useful before flashy</h3>
+          <p data-i18n="about.how.p3.body">Every feature should earn its place by helping people make a better decision, catch a pattern, or feel less lost about their money.</p>
         </div>
       </div>
     </div>
@@ -298,21 +300,21 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <section class="section">
     <div class="section-inner split">
       <div>
-        <div class="section-kicker">Company</div>
-        <h2>Small team, clear responsibility.</h2>
+        <div class="section-kicker" data-i18n="about.team.eyebrow">Company</div>
+        <h2 data-i18n="about.team.h2">Small team, clear responsibility.</h2>
       </div>
       <div class="facts">
         <div class="fact">
-          <b>Built independently</b>
-          <span>FinTrack is developed as an independent product with a focus on careful execution, direct support, and fast product improvements.</span>
+          <b data-i18n="about.team.p1.title">Built independently</b>
+          <span data-i18n="about.team.p1.body">FinTrack is developed as an independent product with a focus on careful execution, direct support, and fast product improvements.</span>
         </div>
         <div class="fact">
-          <b>Support is direct</b>
-          <span>Messages sent to our support addresses are read by the FinTrack team. Bugs, account issues, and product ideas each have a dedicated inbox.</span>
+          <b data-i18n="about.team.p2.title">Support is direct</b>
+          <span data-i18n="about.team.p2.body">Messages sent to our support addresses are read by the FinTrack team. Bugs, account issues, and product ideas each have a dedicated inbox.</span>
         </div>
         <div class="fact">
-          <b>Trust is part of the product</b>
-          <span>Because FinTrack handles sensitive financial information, we prioritize clear data controls, limited access patterns, and honest communication.</span>
+          <b data-i18n="about.team.p3.title">Trust is part of the product</b>
+          <span data-i18n="about.team.p3.body">Because FinTrack handles sensitive financial information, we prioritize clear data controls, limited access patterns, and honest communication.</span>
         </div>
       </div>
     </div>
@@ -321,13 +323,13 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <section class="contact-band">
     <div class="contact-inner">
       <div>
-        <h2>Need to reach us?</h2>
-        <p>Use the inbox that matches what you need. It helps us respond faster and keeps support, bug reports, and product ideas organized.</p>
+        <h2 data-i18n="about.contact.eyebrow">Need to reach us?</h2>
+        <p data-i18n="about.contact.intro">Use the inbox that matches what you need. It helps us respond faster and keeps support, bug reports, and product ideas organized.</p>
       </div>
       <div class="contact-links">
-        <a href="mailto:help@fintrack.art"><b>help@fintrack.art</b><span>Account, billing, and general support</span></a>
-        <a href="mailto:bugs@fintrack.art"><b>bugs@fintrack.art</b><span>Broken flows, errors, and regressions</span></a>
-        <a href="mailto:ideas@fintrack.art"><b>ideas@fintrack.art</b><span>Feature requests and product feedback</span></a>
+        <a href="mailto:help@fintrack.art"><b>help@fintrack.art</b><span data-i18n="about.contact.help">Account, billing, and general support</span></a>
+        <a href="mailto:bugs@fintrack.art"><b>bugs@fintrack.art</b><span data-i18n="about.contact.bugs">Broken flows, errors, and regressions</span></a>
+        <a href="mailto:ideas@fintrack.art"><b>ideas@fintrack.art</b><span data-i18n="about.contact.ideas">Feature requests and product feedback</span></a>
       </div>
     </div>
   </section>
@@ -337,30 +339,30 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   <div class="footer-top">
     <div class="footer-brand">
       <span class="footer-logo-text">FinTrack<span>.</span></span>
-      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <p class="footer-tagline" data-i18n="foot.brand_desc">The personal finance app that helps you get good at money. Start free, stay free.</p>
       <div class="footer-search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search...">
+        <input type="text" placeholder="Search..." data-i18n-placeholder="foot.search_aria">
       </div>
       <div class="footer-socials">
-        <a href="#" class="fsoc" aria-label="Instagram">
+        <a href="#" class="fsoc" aria-label="Instagram" data-i18n-aria="foot.ig">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
         </a>
-        <a href="#" class="fsoc" aria-label="TikTok">
+        <a href="#" class="fsoc" aria-label="TikTok" data-i18n-aria="foot.tt">
           <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
         </a>
       </div>
     </div>
     <div class="footer-cols">
-      <div class="footer-col"><h4>Company</h4><a href="about.html" class="is-current">About</a></div>
-      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
-      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="guide.html">Get-started guide</a><a href="help.html">Help Center</a></div>
-      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.col.company">Company</h4><a href="about.html" class="is-current" data-i18n="about.nav.about">About</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.programs">Programs</h4><a href="#" data-i18n="about.foot.college">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.app">App</h4><a href="features.html" data-i18n="about.nav.features">Features</a><a href="different.html" data-i18n="about.nav.different">Why we're different</a><a href="trial.html" data-i18n="about.foot.trial">14-day trial</a><a href="guide.html" data-i18n="about.foot.guide">Get-started guide</a><a href="help.html" data-i18n="about.nav.help">Help Center</a></div>
+      <div class="footer-col"><h4 data-i18n="about.foot.legal">Legal</h4><a href="terms.html" data-i18n="about.foot.terms">Terms</a><a href="#" data-i18n="about.foot.security">Security</a><a href="/accessibility.html" data-accessibility-link data-i18n="about.foot.accessibility">Accessibility</a></div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
-    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+    <p class="footer-copy" data-i18n="about.foot.copyright">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html" data-i18n="about.foot.terms">Terms</a><a href="privacy.html" data-i18n="about.foot.privacy">Privacy</a><a href="#" data-i18n="about.foot.security">Security</a><a href="#" data-i18n="about.foot.privacy_choices">Your Privacy Choices</a></div>
   </div>
 </footer>
 
@@ -368,6 +370,8 @@ footer { background: var(--dark1); padding: 80px 80px 40px; border-top: 1px soli
   document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
   document.querySelectorAll('[data-accessibility-link]').forEach(a => a.addEventListener('click', () => { window.location.href = '/accessibility.html'; }));
 </script>
+<script src="i18n-marketing-content.js"></script>
+<script src="i18n-marketing.js"></script>
 
 </body>
 </html>
