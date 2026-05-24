@@ -7959,6 +7959,39 @@ details.coach-history-collapsible > .coach-history-list {
     font-weight: 800;
 }
 
+.subscriptions-explainer {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.subscriptions-explainer > div {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+.subscriptions-explainer strong,
+.subscriptions-explainer span {
+    display: block;
+}
+
+.subscriptions-explainer strong {
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.subscriptions-explainer span {
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
 .subscriptions-summary {
     margin-bottom: 14px;
     padding: 12px 14px;
@@ -7969,6 +8002,12 @@ details.coach-history-collapsible > .coach-history-list {
     font-size: 13px;
     font-weight: 650;
     line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+    .subscriptions-explainer {
+        grid-template-columns: 1fr;
+    }
 }
 
 .subscriptions-stats {
