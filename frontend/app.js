@@ -518,7 +518,8 @@ const TRANSLATIONS = {
 
         // Cash flow forecast
         "cashflow.title": "Prévision de trésorerie",
-        "cashflow.whatif_btn": "Simuler un achat",
+        "cashflow.whatif_btn": "Tester un achat",
+        "cashflow.whatif_sub": "Voyez s'il passe sur 30 jours",
         "cashflow.loading_kicker": "Lecture de vos données…",
         "cashflow.loading_text": "Construction des 30 prochains jours.",
         "cashflow.error": "Impossible de charger la prévision. Réessayez.",
@@ -1453,7 +1454,8 @@ const TRANSLATIONS = {
 
         // Cash flow forecast
         "cashflow.title": "Pronóstico de flujo de caja",
-        "cashflow.whatif_btn": "Simular una compra",
+        "cashflow.whatif_btn": "Probar una compra",
+        "cashflow.whatif_sub": "Ve si encaja en tus próximos 30 días",
         "cashflow.loading_kicker": "Leyendo tus datos…",
         "cashflow.loading_text": "Construyendo los próximos 30 días.",
         "cashflow.error": "No se pudo cargar el pronóstico. Inténtalo de nuevo.",
