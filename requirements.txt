@@ -12,3 +12,4 @@ gunicorn
 pytest
 APScheduler
 resend
+sentry-sdk[flask]

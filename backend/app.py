@@ -52,6 +52,26 @@ load_dotenv(Path(__file__).with_name(".env"))
 APP_ENV = os.getenv("APP_ENV", "development").lower()
 IS_PRODUCTION = APP_ENV == "production"
 
+# Sentry error monitoring — silent no-op when SENTRY_DSN is unset, so local
+# dev never phones home. Errors only (no perf traces) to stay well inside the
+# free tier.
+SENTRY_DSN = (os.getenv("SENTRY_DSN") or "").strip()
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.flask import FlaskIntegration
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            environment=APP_ENV,
+            integrations=[FlaskIntegration()],
+            send_default_pii=False,
+            traces_sample_rate=0.0,
+        )
+    except ImportError:
+        print("[sentry] sentry-sdk not installed; skipping error monitoring")
+    except Exception as exc:
+        print("[sentry] init failed:", exc)
+
 
 def env_bool(name, default=False):
     value = os.getenv(name)
@@ -1470,6 +1490,53 @@ def resend_verification():
 def logout():
     logout_user()
     return jsonify({"message": "Logout successful"}), 200
+
+
+# ─── TEMPORARY DEBUG ENDPOINT — one-shot Sentry wiring check ───
+# Visit /api/debug/sentry-test?token=fintrack_sentry_check once after setting
+# SENTRY_DSN. Reports whether the SDK is initialized, then deliberately raises
+# so the error lands in your Sentry dashboard. Safe to leave in place (gated
+# on a secret token), but you can delete this block once you've confirmed it
+# works end-to-end.
+@app.route('/api/debug/sentry-test', methods=['GET'])
+def debug_sentry_test():
+    if request.args.get("token", "") != "fintrack_sentry_check":
+        return jsonify({"error": "Not found"}), 404
+
+    try:
+        import sentry_sdk as _sentry
+        client = _sentry.Hub.current.client if hasattr(_sentry, "Hub") else None
+        sdk_loaded = True
+        sdk_version = getattr(_sentry, "VERSION", "unknown")
+        sdk_active = client is not None
+    except ImportError:
+        sdk_loaded = False
+        sdk_version = None
+        sdk_active = False
+
+    status = {
+        "sentry_dsn_configured": bool(SENTRY_DSN),
+        "sentry_dsn_prefix": SENTRY_DSN[:24] + "..." if SENTRY_DSN else None,
+        "environment": APP_ENV,
+        "sdk_loaded": sdk_loaded,
+        "sdk_version": sdk_version,
+        "sdk_active": sdk_active,
+    }
+
+    # Only raise if the SDK is actually wired up — otherwise the error has
+    # nowhere to go and we'd just 500 the debug endpoint for nothing.
+    if sdk_active:
+        try:
+            raise RuntimeError("FinTrack Sentry wiring test — expected error, check the Sentry dashboard")
+        except RuntimeError as exc:
+            import sentry_sdk as _sentry
+            event_id = _sentry.capture_exception(exc)
+            status["sent_event_id"] = event_id
+            status["next_step"] = "Open your Sentry project; the event should appear within ~30 seconds."
+    else:
+        status["next_step"] = "Set SENTRY_DSN in backend/.env, restart the server, then reload this URL."
+
+    return jsonify(status), 200
 
 
 # ─── TEMPORARY DEBUG ENDPOINT — remove after diagnosing email send issue ───
