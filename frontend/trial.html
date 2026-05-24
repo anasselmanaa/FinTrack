@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our 14-Day Trial – FinTrack</title>
+<title data-i18n="trial.page.title">Our 14-Day Trial – FinTrack</title>
+<link rel="stylesheet" href="i18n-marketing.css">
 <meta name="description" content="Try FinTrack free and see how budgets, goals, receipts, recurring bills, forecasts, and AI money guidance fit your life.">
 <meta name="theme-color" content="#163832">
 <link rel="canonical" href="https://fintrack.art/trial.html">
@@ -460,19 +461,20 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
   <a href="landing.html#top" class="nav-brand">FinTrack<span class="dot">.</span></a>
   <div class="nav-menu">
     <div class="nav-dropdown">
-      <a href="trial.html" class="is-current">What is FinTrack? <span class="chevron">▾</span></a>
+      <a href="trial.html" class="is-current"><span data-i18n="nav.what_is">What is FinTrack?</span> <span class="chevron">▾</span></a>
       <div class="nav-dropdown-menu">
-        <a href="features.html">Features</a>
-        <a href="different.html">Why FinTrack Is Different</a>
-        <a href="trial.html">Our 14-Day Trial</a>
-        <a href="guide.html">The Ultimate Get Started Guide</a>
+        <a href="features.html" data-i18n="nav.features">Features</a>
+        <a href="different.html" data-i18n="nav.different">Why FinTrack Is Different</a>
+        <a href="trial.html" data-i18n="nav.trial">Our 14-Day Trial</a>
+        <a href="guide.html" data-i18n="nav.guide">The Ultimate Get Started Guide</a>
       </div>
     </div>
-    <a href="help.html">Help Center</a>
+    <a href="help.html" data-i18n="nav.help">Help Center</a>
   </div>
   <div class="nav-right">
-    <a href="login.html" class="nav-login">Log In</a>
-    <a href="login.html?mode=register" class="nav-cta">Start Your Free Trial</a>
+    <span class="lang-picker-slot"></span>
+    <a href="login.html" class="nav-login" data-i18n="nav.login">Log In</a>
+    <a href="login.html?mode=register" class="nav-cta" data-i18n="nav.cta">Start Your Free Trial</a>
   </div>
 </nav>
 
@@ -480,21 +482,21 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <section class="t-hero">
   <div class="t-hero-inner">
     <div class="t-hero-text">
-      <span class="t-hero-eyebrow reveal">The free trial, in full</span>
-      <h1 class="reveal d1">14 days. <em>Every feature.</em> No credit card.</h1>
-      <p class="reveal d2">No "premium tier" hiding behind a paywall, no card grab on signup, no auto-charge surprise on day 15. You get the whole app for two weeks. If it earns the $4.99 a month, you decide to keep it. <b>If not, you walk — and your data stays where you left it.</b></p>
+      <span class="t-hero-eyebrow reveal" data-i18n="trial.hero.eyebrow">The free trial, in full</span>
+      <h1 class="reveal d1"><span data-i18n="trial.hero.h1.1">14 days.</span> <em data-i18n="trial.hero.h1.2">Every feature.</em> <span data-i18n="trial.hero.h1.3">No credit card.</span></h1>
+      <p class="reveal d2"><span data-i18n="trial.hero.sub">No "premium tier" hiding behind a paywall, no card grab on signup, no auto-charge surprise on day 15. You get the whole app for two weeks. If it earns the $4.99 a month, you decide to keep it.</span> <b data-i18n="trial.hero.end">If not, you walk — and your data stays where you left it.</b></p>
       <div class="t-hero-cta-row reveal d3">
-        <a href="login.html?mode=register" class="btn-hero-yellow">Start your 14 days</a>
-        <span class="t-hero-fine">No card · Cancel by closing the tab</span>
+        <a href="login.html?mode=register" class="btn-hero-yellow" data-i18n="trial.hero.cta">Start your 14 days</a>
+        <span class="t-hero-fine" data-i18n="trial.hero.note">No card · Cancel by closing the tab</span>
       </div>
     </div>
     <div class="t-cal reveal d2">
       <div class="t-cal-head">
-        <div class="t-cal-month">Two weeks<span class="sub">from the day you sign up</span></div>
-        <span class="t-cal-badge">Free</span>
+        <div class="t-cal-month"><span data-i18n="trial.timeline.eyebrow">Two weeks</span><span class="sub" data-i18n="trial.timeline.h2">from the day you sign up</span></div>
+        <span class="t-cal-badge" data-i18n="trial.timeline.free">Free</span>
       </div>
       <div class="t-cal-grid">
-        <div class="t-day trial start">1<div class="small">Sign up</div></div>
+        <div class="t-day trial start">1<div class="small" data-i18n="trial.timeline.signup">Sign up</div></div>
         <div class="t-day trial">2</div>
         <div class="t-day trial">3</div>
         <div class="t-day trial">4</div>
@@ -505,12 +507,12 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
         <div class="t-day trial">9</div>
         <div class="t-day trial">10</div>
         <div class="t-day trial">11</div>
-        <div class="t-day trial">12<div class="small">Email</div></div>
+        <div class="t-day trial">12<div class="small" data-i18n="trial.timeline.email">Email</div></div>
         <div class="t-day trial">13</div>
-        <div class="t-day trial end">14<div class="small">Decide</div></div>
+        <div class="t-day trial end">14<div class="small" data-i18n="trial.timeline.decide">Decide</div></div>
       </div>
       <div class="t-cal-foot">
-        On day 12 we email you. On day 14 the trial ends. <b>Nothing auto-charges</b> — you have to add a card on purpose.
+        <span data-i18n="trial.timeline.desc">On day 12 we email you. On day 14 the trial ends.</span> <b data-i18n="trial.timeline.no_auto">Nothing auto-charges</b><span data-i18n="trial.timeline.no_auto_post"> — you have to add a card on purpose.</span>
       </div>
     </div>
   </div>
@@ -519,14 +521,14 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <!-- THE DEAL -->
 <section class="t-deal">
   <div class="t-deal-inner">
-    <span class="t-eyebrow reveal">The deal, in one paragraph</span>
-    <h2 class="reveal d1">Sign up tonight, scan a receipt at breakfast. <em>Cancel by next Tuesday if it's not for you.</em></h2>
-    <p class="reveal d2">Most "free trial" pages bury the rules in a 12-point footnote. We'd rather just put them in front of you. <b>Every paid feature is unlocked</b> the moment you sign up — Money Coach, Daily Insights, the receipt scanner, the 30-day forecast, the predictive budget line. Use them, abuse them, decide on day 14.</p>
+    <span class="t-eyebrow reveal" data-i18n="trial.deal.eyebrow">The deal, in one paragraph</span>
+    <h2 class="reveal d1"><span data-i18n="trial.deal.h2">Sign up tonight, scan a receipt at breakfast.</span> <em data-i18n="trial.deal.sub">Cancel by next Tuesday if it's not for you.</em></h2>
+    <p class="reveal d2"><span data-i18n="trial.deal.body">Most "free trial" pages bury the rules in a 12-point footnote. We'd rather just put them in front of you.</span> <b data-i18n="trial.deal.unlocked">Every paid feature is unlocked</b> <span data-i18n="trial.deal.unlocked_end">the moment you sign up — Money Coach, Daily Insights, the receipt scanner, the 30-day forecast, the predictive budget line.</span></p>
     <div class="t-deal-rule reveal d3">
-      <div class="t-rule"><div class="t-rule-num">14</div><div class="t-rule-label">days, every feature</div></div>
-      <div class="t-rule"><div class="t-rule-num">$0</div><div class="t-rule-label">to start, no card asked</div></div>
-      <div class="t-rule"><div class="t-rule-num">2</div><div class="t-rule-label">clicks to cancel later</div></div>
-      <div class="t-rule"><div class="t-rule-num">0</div><div class="t-rule-label">auto-charges, ever</div></div>
+      <div class="t-rule"><div class="t-rule-num">14</div><div class="t-rule-label" data-i18n="trial.stat1.label">days, every feature</div></div>
+      <div class="t-rule"><div class="t-rule-num">$0</div><div class="t-rule-label" data-i18n="trial.stat2.label">to start, no card asked</div></div>
+      <div class="t-rule"><div class="t-rule-num">2</div><div class="t-rule-label" data-i18n="trial.stat3.label">clicks to cancel later</div></div>
+      <div class="t-rule"><div class="t-rule-num">0</div><div class="t-rule-label" data-i18n="trial.stat4.label">auto-charges, ever</div></div>
     </div>
   </div>
 </section>
@@ -535,53 +537,53 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <section class="t-timeline">
   <div class="t-timeline-inner">
     <div class="t-timeline-head reveal">
-      <span class="t-eyebrow">What 14 days actually feels like</span>
-      <h2>Day by day, <em>roughly.</em></h2>
-      <p>Below is the honest arc of the first two weeks. Times are typical — if you skip the CSV import on day one, the AI sections start a bit slower because they have less to read.</p>
+      <span class="t-eyebrow" data-i18n="trial.arc.eyebrow">What 14 days actually feels like</span>
+      <h2><span data-i18n="trial.arc.h2">Day by day,</span> <em data-i18n="trial.arc.h2_2">roughly.</em></h2>
+      <p data-i18n="trial.arc.intro">Below is the honest arc of the first two weeks. Times are typical — if you skip the CSV import on day one, the AI sections start a bit slower because they have less to read.</p>
     </div>
 
     <div class="t-track">
       <div class="t-step reveal">
-        <div class="t-step-day"><span class="pill">Day 1</span> · Sign up</div>
-        <h3>Pick your currency. Upload a few months of bank CSV. Done in ten minutes.</h3>
-        <p>The single best thing you can do on day one is import historical transactions. <b>FinTrack's AI gets sharper with more data</b> — three months of history makes the Money Coach answers genuinely useful from the first session.</p>
-        <div class="tip">Pro tip: export 90 days of CSV from your bank's web portal. It's usually under "Statements" or "Activity."</div>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day1">Day 1</span> <span data-i18n="trial.day1.sub">· Sign up</span></div>
+        <h3 data-i18n="trial.day1.title">Pick your currency. Upload a few months of bank CSV. Done in ten minutes.</h3>
+        <p><span data-i18n="trial.day1.body">The single best thing you can do on day one is import historical transactions.</span> <b data-i18n="trial.day1.bold">FinTrack's AI gets sharper with more data</b> <span data-i18n="trial.day1.bold_end">— three months of history makes the Money Coach answers genuinely useful from the first session.</span></p>
+        <div class="tip" data-i18n="trial.day1.tip">Pro tip: export 90 days of CSV from your bank's web portal. It's usually under "Statements" or "Activity."</div>
       </div>
 
       <div class="t-step reveal d1 gold">
-        <div class="t-step-day"><span class="pill">Day 2</span> · 6 AM your time</div>
-        <h3>Your first three Daily Insights land on the dashboard.</h3>
-        <p>A spending alert if anything stood out yesterday, a subscription warning if a new recurring charge looks like one, a goal-pacing note if you set a target. <b>If nothing's worth saying, nothing shows up.</b></p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day2">Day 2</span> <span data-i18n="trial.day2.sub">· 6 AM your time</span></div>
+        <h3 data-i18n="trial.day2.title">Your first three Daily Insights land on the dashboard.</h3>
+        <p><span data-i18n="trial.day2.body">A spending alert if anything stood out yesterday, a subscription warning if a new recurring charge looks like one, a goal-pacing note if you set a target.</span> <b data-i18n="trial.day2.foot">If nothing's worth saying, nothing shows up.</b></p>
       </div>
 
       <div class="t-step reveal">
-        <div class="t-step-day"><span class="pill">Day 3</span> · Try the Money Coach</div>
-        <h3>Ask a real question. Get a yes, no, or wait.</h3>
-        <p>Don't ease in with "what can you do?" — ask the actual question on your mind. <i>"Can I afford a $400 flight on the 28th?"</i> works better than <i>"give me advice."</i> The verdict pill makes the bottom line impossible to miss.</p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day3">Day 3</span> <span data-i18n="trial.day3.sub">· Try the Money Coach</span></div>
+        <h3 data-i18n="trial.day3.title">Ask a real question. Get a yes, no, or wait.</h3>
+        <p><span data-i18n="trial.day3.body">Don't ease in with "what can you do?" — ask the actual question on your mind.</span> <i data-i18n="trial.day3.example1">"Can I afford a $400 flight on the 28th?"</i> <span data-i18n="trial.day3.vs">works better than</span> <i data-i18n="trial.day3.example2">"give me advice."</i> <span data-i18n="trial.day3.foot">The verdict pill makes the bottom line impossible to miss.</span></p>
       </div>
 
       <div class="t-step reveal d1">
-        <div class="t-step-day"><span class="pill">Day 5</span> · First receipt</div>
-        <h3>Scan one paper receipt on your phone.</h3>
-        <p>This is the moment that surprises most people. Open FinTrack on your phone's browser, tap the floating "+", point at the receipt, confirm one or two fields. <b>The transaction is in, categorized, and done in under 15 seconds.</b></p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day5">Day 5</span> <span data-i18n="trial.day5.sub">· First receipt</span></div>
+        <h3 data-i18n="trial.day5.title">Scan one paper receipt on your phone.</h3>
+        <p><span data-i18n="trial.day5.body">This is the moment that surprises most people. Open FinTrack on your phone's browser, tap the floating "+", point at the receipt, confirm one or two fields.</span> <b data-i18n="trial.day5.foot">The transaction is in, categorized, and done in under 15 seconds.</b></p>
       </div>
 
       <div class="t-step reveal">
-        <div class="t-step-day"><span class="pill">Day 7</span> · Halfway</div>
-        <h3>Check the 30-day Cash Flow Forecast.</h3>
-        <p>With a week of activity on top of your imported history, the forecast line on your dashboard now has enough data to look forward two to four weeks. <b>Try the What-If button</b> on a real purchase you're considering — that's the headline trick.</p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day7">Day 7</span> <span data-i18n="trial.day7.sub">· Halfway</span></div>
+        <h3 data-i18n="trial.day7.title">Check the 30-day Cash Flow Forecast.</h3>
+        <p><span data-i18n="trial.day7.body">With a week of activity on top of your imported history, the forecast line on your dashboard now has enough data to look forward two to four weeks.</span> <b data-i18n="trial.day7.bold">Try the What-If button</b> <span data-i18n="trial.day7.bold_end">on a real purchase you're considering — that's the headline trick.</span></p>
       </div>
 
       <div class="t-step reveal d1 gold">
-        <div class="t-step-day"><span class="pill">Day 12</span> · The email</div>
-        <h3>One single "decide" email lands in your inbox.</h3>
-        <p>Not five. Not "your trial is about to expire!" panic mail every two days. <b>One email</b>, with two buttons: <i>Keep using FinTrack</i> and <i>Walk away</i>. If you click neither, the trial ends quietly on day 14.</p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day12">Day 12</span> <span data-i18n="trial.day12.sub">· The email</span></div>
+        <h3 data-i18n="trial.day12.title">One single "decide" email lands in your inbox.</h3>
+        <p><span data-i18n="trial.day12.body">Not five. Not "your trial is about to expire!" panic mail every two days.</span> <b data-i18n="trial.day12.bold">One email</b><span data-i18n="trial.day12.bold_end">, with two buttons:</span> <i data-i18n="trial.day12.btn1">Keep using FinTrack</i> <span data-i18n="trial.day12.and">and</span> <i data-i18n="trial.day12.btn2">Walk away</i><span data-i18n="trial.day12.foot">. If you click neither, the trial ends quietly on day 14.</span></p>
       </div>
 
       <div class="t-step reveal end">
-        <div class="t-step-day"><span class="pill">Day 14</span> · Decide</div>
-        <h3>Three doors. You pick.</h3>
-        <p>Add a card and keep going at <b>$4.99 USD / $6.99 CAD per month.</b> Or cancel and keep read-only access to your data. Or do nothing — your account quietly goes read-only, and you can come back any time.</p>
+        <div class="t-step-day"><span class="pill" data-i18n="trial.day14">Day 14</span> <span data-i18n="trial.day14.sub">· Decide</span></div>
+        <h3 data-i18n="trial.day14.title">Three doors. You pick.</h3>
+        <p><span data-i18n="trial.day14.body1">Add a card and keep going at</span> <b data-i18n="trial.day14.price">$4.99 USD / $6.99 CAD per month.</b> <span data-i18n="trial.day14.body2">Or cancel and keep read-only access to your data. Or do nothing — your account quietly goes read-only, and you can come back any time.</span></p>
       </div>
     </div>
   </div>
@@ -591,34 +593,34 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <section class="t-mech">
   <div class="t-mech-inner">
     <div class="t-mech-head reveal">
-      <span class="t-eyebrow">The fine print, in big print</span>
-      <h2>What we do — and <em>don't</em> — pull during your trial.</h2>
-      <p>The free-trial industry has gotten dark over the last decade. We've seen the playbook. Here's what we don't run, and what we do, in plain English.</p>
+      <span class="t-eyebrow" data-i18n="trial.fine.eyebrow">The fine print, in big print</span>
+      <h2><span data-i18n="trial.fine.h2.1">What we do — and</span> <em data-i18n="trial.fine.h2.2">don't</em> <span data-i18n="trial.fine.h2.3">— pull during your trial.</span></h2>
+      <p data-i18n="trial.fine.intro">The free-trial industry has gotten dark over the last decade. We've seen the playbook. Here's what we don't run, and what we do, in plain English.</p>
     </div>
     <div class="t-mech-grid">
       <div class="t-mech-row reveal">
-        <h3>No credit card at signup</h3>
-        <p>The standard SaaS move is "free trial, just enter your card" — knowing 60% of people forget to cancel. <b>We don't ask for a card until day 14, and only if you decide to continue.</b></p>
+        <h3 data-i18n="trial.fine.no_card.title">No credit card at signup</h3>
+        <p><span data-i18n="trial.fine.no_card.body1">The standard SaaS move is "free trial, just enter your card" — knowing 60% of people forget to cancel.</span> <b data-i18n="trial.fine.no_card.body2">We don't ask for a card until day 14, and only if you decide to continue.</b></p>
       </div>
       <div class="t-mech-row not reveal d1">
-        <h3>No auto-charge on day 15</h3>
-        <p>Because there's no card on file, there's nothing to charge. The trial just ends. You either add a card on purpose, or you don't.</p>
+        <h3 data-i18n="trial.fine.no_charge.title">No auto-charge on day 15</h3>
+        <p data-i18n="trial.fine.no_charge.body">Because there's no card on file, there's nothing to charge. The trial just ends. You either add a card on purpose, or you don't.</p>
       </div>
       <div class="t-mech-row reveal">
-        <h3>One reminder email. Total.</h3>
-        <p>On day 12 you'll get a single email with two buttons. Then nothing. No "last chance!" on day 13, no follow-up on day 15, no win-back drip campaign next month.</p>
+        <h3 data-i18n="trial.fine.one_email.title">One reminder email. Total.</h3>
+        <p data-i18n="trial.fine.one_email.body">On day 12 you'll get a single email with two buttons. Then nothing. No "last chance!" on day 13, no follow-up on day 15, no win-back drip campaign next month.</p>
       </div>
       <div class="t-mech-row not reveal d1">
-        <h3>No retention dark-pattern flow</h3>
-        <p>When you cancel later, it's two clicks in Settings. We don't make you talk to a chatbot, click through four "are you sure?" screens, or watch a video about <i>what you'll miss</i>.</p>
+        <h3 data-i18n="trial.fine.no_dark.title">No retention dark-pattern flow</h3>
+        <p data-i18n="trial.fine.no_dark.body">When you cancel later, it's two clicks in Settings. We don't make you talk to a chatbot, click through four "are you sure?" screens, or watch a video about what you'll miss.</p>
       </div>
       <div class="t-mech-row reveal">
-        <h3>Your data is yours, paid or not</h3>
-        <p>Cancel and your account drops to read-only — you can still see and export everything. <b>You can pull a full CSV of every transaction</b> from Settings → Export at any point, forever.</p>
+        <h3 data-i18n="trial.miss.h2">Your data is yours, paid or not</h3>
+        <p><span data-i18n="trial.miss.body">Cancel and your account drops to read-only — you can still see and export everything.</span> <b data-i18n="trial.miss.csv.title">You can pull a full CSV of every transaction</b> <span data-i18n="trial.miss.csv.body">from Settings → Export at any point, forever.</span></p>
       </div>
       <div class="t-mech-row not reveal d1">
-        <h3>No "trial features" lockouts</h3>
-        <p>Some apps gate the good stuff behind "upgrade to use." During FinTrack's trial, <b>every feature is open</b> — including Money Coach, receipt scan, and the AI insights. What you see is what $4.99 buys.</p>
+        <h3 data-i18n="trial.miss.no_lock.title">No "trial features" lockouts</h3>
+        <p><span data-i18n="trial.miss.no_lock.body1">Some apps gate the good stuff behind "upgrade to use." During FinTrack's trial,</span> <b data-i18n="trial.miss.no_lock.body2">every feature is open</b> <span data-i18n="trial.miss.no_lock.body3">— including Money Coach, receipt scan, and the AI insights. What you see is what $4.99 buys.</span></p>
       </div>
     </div>
   </div>
@@ -628,28 +630,28 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <section class="t-doors">
   <div class="t-doors-inner">
     <div class="t-doors-head reveal">
-      <span class="t-eyebrow">What happens on day 14</span>
-      <h2>Three doors. <em>Pick any one — none of them are wrong.</em></h2>
-      <p>This is the moment most apps trick you. Here are the three options we actually offer, with what each one means in practice.</p>
+      <span class="t-eyebrow" data-i18n="trial.doors.eyebrow">What happens on day 14</span>
+      <h2><span data-i18n="trial.doors.h2">Three doors.</span> <em data-i18n="trial.doors.h2_2">Pick any one — none of them are wrong.</em></h2>
+      <p data-i18n="trial.doors.intro">This is the moment most apps trick you. Here are the three options we actually offer, with what each one means in practice.</p>
     </div>
     <div class="t-doors-grid">
       <div class="t-door choose reveal">
-        <span class="t-door-tag">Most people</span>
-        <h3>Keep going</h3>
-        <p>Add a card in Settings → Billing. You're charged <b>$4.99 USD or $6.99 CAD</b> for the first month immediately, then on the same day each month after. <b>Cancel any month, no clawback.</b></p>
-        <div class="t-door-foot">Stripe handles the payment. We don't store your card.</div>
+        <span class="t-door-tag" data-i18n="trial.doors.most">Most people</span>
+        <h3 data-i18n="trial.doors.keep.title">Keep going</h3>
+        <p><span data-i18n="trial.doors.keep.body1">Add a card in Settings → Billing. You're charged</span> <b data-i18n="trial.doors.keep.price">$4.99 USD or $6.99 CAD</b> <span data-i18n="trial.doors.keep.body2">for the first month immediately, then on the same day each month after.</span> <b data-i18n="trial.doors.keep.body3">Cancel any month, no clawback.</b></p>
+        <div class="t-door-foot" data-i18n="trial.doors.keep.body4">Stripe handles the payment. We don't store your card.</div>
       </div>
       <div class="t-door reveal d1">
-        <span class="t-door-tag">No card on file</span>
-        <h3>Do nothing</h3>
-        <p>The trial ends quietly. Your account drops to <b>read-only</b> — you can see your transactions, run reports, and export your data, but you can't add new transactions or run the AI features. Come back whenever.</p>
-        <div class="t-door-foot">Re-activate later with one click. Your history is still there.</div>
+        <span class="t-door-tag" data-i18n="trial.doors.nocard">No card on file</span>
+        <h3 data-i18n="trial.doors.nothing.title">Do nothing</h3>
+        <p><span data-i18n="trial.doors.nothing.body1">The trial ends quietly. Your account drops to</span> <b data-i18n="trial.doors.nothing.body2">read-only</b> <span data-i18n="trial.doors.nothing.body3">— you can see your transactions, run reports, and export your data, but you can't add new transactions or run the AI features.</span></p>
+        <div class="t-door-foot" data-i18n="trial.doors.nothing.body4">Re-activate later with one click. Your history is still there.</div>
       </div>
       <div class="t-door reveal d2">
-        <span class="t-door-tag">No regrets</span>
-        <h3>Cancel + export</h3>
-        <p>Cancel from Settings (two clicks). Pull a CSV of your full transaction history. Optionally delete your account from the same page — a one-click <b>"delete everything"</b> button. We mean it.</p>
-        <div class="t-door-foot">Deletion is permanent. You'll be asked to type the word "delete" to confirm.</div>
+        <span class="t-door-tag" data-i18n="trial.doors.noregrets">No regrets</span>
+        <h3 data-i18n="trial.doors.cancel.title">Cancel + export</h3>
+        <p><span data-i18n="trial.doors.cancel.body1">Cancel from Settings (two clicks). Pull a CSV of your full transaction history. Optionally delete your account from the same page — a one-click</span> <b data-i18n="trial.doors.cancel.body2">"delete everything"</b> <span data-i18n="trial.doors.cancel.body3">button. We mean it.</span></p>
+        <div class="t-door-foot" data-i18n="trial.doors.cancel.body4">Deletion is permanent. You'll be asked to type the word "delete" to confirm.</div>
       </div>
     </div>
   </div>
@@ -659,31 +661,31 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <section class="t-price">
   <div class="t-price-inner">
     <div class="t-price-copy reveal">
-      <span class="t-eyebrow">If you stay on after day 14</span>
-      <h2>Two prices. <em>One tier. Monthly.</em></h2>
-      <p>FinTrack has one paid plan, billed monthly. There's no "Pro," no "Plus AI," no annual lock-in. We picked one number and stuck with it.</p>
-      <p><b>$4.99 USD</b> if you're billed in US dollars, <b>$6.99 CAD</b> if you're billed in Canadian dollars — the difference covers Stripe's cross-border fee and the exchange rate, not a markup.</p>
-      <p style="margin-top:18px;font-size:14px;color:var(--mid);font-style:italic;">If we ever raise the price for new users, your old price is locked. Forever.</p>
+      <span class="t-eyebrow" data-i18n="trial.price.eyebrow">If you stay on after day 14</span>
+      <h2><span data-i18n="trial.price.h2.1">Two prices.</span> <em data-i18n="trial.price.h2.2">One tier. Monthly.</em></h2>
+      <p data-i18n="trial.price.intro">FinTrack has one paid plan, billed monthly. There's no "Pro," no "Plus AI," no annual lock-in. We picked one number and stuck with it.</p>
+      <p><b data-i18n="trial.price.usd">$4.99 USD</b> <span data-i18n="trial.price.usd_body">if you're billed in US dollars,</span> <b data-i18n="trial.price.cad">$6.99 CAD</b> <span data-i18n="trial.price.cad_body">if you're billed in Canadian dollars — the difference covers Stripe's cross-border fee and the exchange rate, not a markup.</span></p>
+      <p style="margin-top:18px;font-size:14px;color:var(--mid);font-style:italic;" data-i18n="trial.price.lock">If we ever raise the price for new users, your old price is locked. Forever.</p>
     </div>
     <div class="t-cards reveal d2">
       <div class="t-card flag-us">
-        <div class="t-card-region">United States</div>
-        <div class="t-card-price"><span class="cur">$</span>4.99<small>/mo</small></div>
-        <div class="t-card-trial"><b>14-day free trial first.</b> No card to start.</div>
+        <div class="t-card-region" data-i18n="trial.price.us">United States</div>
+        <div class="t-card-price"><span class="cur">$</span>4.99<small data-i18n="trial.price.mo">/mo</small></div>
+        <div class="t-card-trial"><b data-i18n="trial.price.us_sub1">14-day free trial first.</b> <span data-i18n="trial.price.us_sub2">No card to start.</span></div>
         <div class="t-card-list">
-          <div class="t-card-list-item">All AI features included</div>
-          <div class="t-card-list-item">Monthly billing, no annual</div>
-          <div class="t-card-list-item">Cancel any month</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat1">All AI features included</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat2">Monthly billing, no annual</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat3">Cancel any month</div>
         </div>
       </div>
       <div class="t-card flag-ca">
-        <div class="t-card-region">Canada</div>
-        <div class="t-card-price"><span class="cur">$</span>6.99<small>/mo CAD</small></div>
-        <div class="t-card-trial"><b>14-day free trial first.</b> No card to start.</div>
+        <div class="t-card-region" data-i18n="trial.price.ca">Canada</div>
+        <div class="t-card-price"><span class="cur">$</span>6.99<small data-i18n="trial.price.cad_mo">/mo CAD</small></div>
+        <div class="t-card-trial"><b data-i18n="trial.price.us_sub1">14-day free trial first.</b> <span data-i18n="trial.price.us_sub2">No card to start.</span></div>
         <div class="t-card-list">
-          <div class="t-card-list-item">All AI features included</div>
-          <div class="t-card-list-item">Monthly billing, no annual</div>
-          <div class="t-card-list-item">Cancel any month</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat1">All AI features included</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat2">Monthly billing, no annual</div>
+          <div class="t-card-list-item" data-i18n="trial.price.feat3">Cancel any month</div>
         </div>
       </div>
     </div>
@@ -695,41 +697,41 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
   <div class="t-faq-inner">
     <div class="t-faq-head reveal">
       <span class="t-eyebrow">Honest answers</span>
-      <h2>Things people <em>actually ask.</em></h2>
-      <p>The eight real questions, with eight real answers. No generic "your privacy matters to us" filler.</p>
+      <h2><span data-i18n="trial.faq.h2.1">Things people</span> <em data-i18n="trial.faq.h2.2">actually ask.</em></h2>
+      <p data-i18n="trial.faq.intro">The eight real questions, with eight real answers. No generic "your privacy matters to us" filler.</p>
     </div>
 
     <div class="t-q reveal">
-      <h4>Do I need a credit card to start the trial?</h4>
-      <p>No. None. You enter card details <b>only</b> if you decide to continue on day 14. Until then, FinTrack has no way to charge you.</p>
+      <h4 data-i18n="trial.faq.q1">Do I need a credit card to start the trial?</h4>
+      <p><span data-i18n="trial.faq.a1.1">No. None. You enter card details</span> <b data-i18n="trial.faq.a1.only">only</b> <span data-i18n="trial.faq.a1.2">if you decide to continue on day 14. Until then, FinTrack has no way to charge you.</span></p>
     </div>
     <div class="t-q reveal">
-      <h4>Will I be auto-charged when the 14 days end?</h4>
-      <p>No. There's no card on file, so there's nothing to charge. The trial just ends. You either add a card on day 14 to continue, or your account quietly drops to read-only.</p>
+      <h4 data-i18n="trial.faq.q2">Will I be auto-charged when the 14 days end?</h4>
+      <p data-i18n="trial.faq.a2">No. There's no card on file, so there's nothing to charge. The trial just ends. You either add a card on day 14 to continue, or your account quietly drops to read-only.</p>
     </div>
     <div class="t-q reveal">
-      <h4>Does the AI actually work from day 1, or do I have to wait?</h4>
-      <p>It depends entirely on whether you import history. <b>If you upload a 90-day CSV from your bank on day 1, the Money Coach is fully useful within an hour.</b> If you start with an empty account, the AI gets sharper as you add transactions — most people see real value around day 7.</p>
+      <h4 data-i18n="trial.faq.q3">Does the AI actually work from day 1, or do I have to wait?</h4>
+      <p><span data-i18n="trial.faq.a3.1">It depends entirely on whether you import history.</span> <b data-i18n="trial.faq.a3.2">If you upload a 90-day CSV from your bank on day 1, the Money Coach is fully useful within an hour.</b> <span data-i18n="trial.faq.a3.3">If you start with an empty account, the AI gets sharper as you add transactions — most people see real value around day 7.</span></p>
     </div>
     <div class="t-q reveal">
-      <h4>What if I cancel before day 14?</h4>
-      <p>Just close the tab and never come back — there's nothing to cancel, because nothing's been charged. If you also want to delete your account, Settings → Account → Delete. One click, type "delete" to confirm.</p>
+      <h4 data-i18n="trial.faq.q4">What if I cancel before day 14?</h4>
+      <p data-i18n="trial.faq.a4">Just close the tab and never come back — there's nothing to cancel, because nothing's been charged. If you also want to delete your account, Settings → Account → Delete. One click, type "delete" to confirm.</p>
     </div>
     <div class="t-q reveal">
-      <h4>Can I trial twice with a different email?</h4>
-      <p>Technically yes, the system will let you. We don't think that's fraud and we won't sue you over it — but if you've used it twice and not subscribed, FinTrack probably isn't your app. That's also a fine outcome.</p>
+      <h4 data-i18n="trial.faq.q5">Can I trial twice with a different email?</h4>
+      <p data-i18n="trial.faq.a5">Technically yes, the system will let you. We don't think that's fraud and we won't sue you over it — but if you've used it twice and not subscribed, FinTrack probably isn't your app. That's also a fine outcome.</p>
     </div>
     <div class="t-q reveal">
-      <h4>What happens to my data if I cancel after subscribing?</h4>
-      <p>Your account drops to <b>read-only</b> at the end of your current billing month. You can still see everything and export a CSV at any time. To delete completely, use the delete button — it's irreversible by design.</p>
+      <h4 data-i18n="trial.faq.q6">What happens to my data if I cancel after subscribing?</h4>
+      <p><span data-i18n="trial.faq.a6.1">Your account drops to</span> <b data-i18n="trial.faq.a6.read">read-only</b> <span data-i18n="trial.faq.a6.2">at the end of your current billing month. You can still see everything and export a CSV at any time.</span></p>
     </div>
     <div class="t-q reveal">
-      <h4>Why isn't there an annual plan with a discount?</h4>
-      <p>Because annual plans exist mostly to lock you in. We'd rather earn the $4.99 every month by being good enough that you don't think about cancelling. If we ever add an annual tier, it'll be opt-in, not the default.</p>
+      <h4 data-i18n="trial.faq.q7">Why isn't there an annual plan with a discount?</h4>
+      <p data-i18n="trial.faq.a7">Because annual plans exist mostly to lock you in. We'd rather earn the $4.99 every month by being good enough that you don't think about cancelling. If we ever add an annual tier, it'll be opt-in, not the default.</p>
     </div>
     <div class="t-q reveal">
-      <h4>Can I come back later if I cancel now?</h4>
-      <p>Yes — your account isn't deleted unless you ask. Sign back in any time, re-activate billing, and your full transaction history is still there. No second trial, but the door is always open.</p>
+      <h4 data-i18n="trial.faq.q8">Can I come back later if I cancel now?</h4>
+      <p data-i18n="trial.faq.a8">Yes — your account isn't deleted unless you ask. Sign back in any time, re-activate billing, and your full transaction history is still there. No second trial, but the door is always open.</p>
     </div>
   </div>
 </section>
@@ -737,14 +739,14 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-inner">
-    <span class="cta-eyebrow reveal">Ready when you are</span>
-    <h2 class="reveal d1">Two weeks. <span>No catch.</span></h2>
-    <p class="cta-lede reveal d1">Start tonight. By next weekend you'll know whether FinTrack belongs on your home screen — or whether it doesn't. Either way, you'll have your data, and we'll have an honest answer.</p>
+    <span class="cta-eyebrow reveal" data-i18n="trial.end.eyebrow">Ready when you are</span>
+    <h2 class="reveal d1"><span data-i18n="trial.end.h2.1">Two weeks.</span> <span data-i18n="trial.end.h2.2">No catch.</span></h2>
+    <p class="cta-lede reveal d1" data-i18n="trial.end.body">Start tonight. By next weekend you'll know whether FinTrack belongs on your home screen — or whether it doesn't. Either way, you'll have your data, and we'll have an honest answer.</p>
     <div class="cta-btns reveal d2">
-      <a href="login.html?mode=register" class="btn-white">Start Free Trial</a>
-      <a href="features.html" class="btn-outline-w">See every feature</a>
+      <a href="login.html?mode=register" class="btn-white" data-i18n="trial.end.btn1">Start Free Trial</a>
+      <a href="features.html" class="btn-outline-w" data-i18n="trial.end.btn2">See every feature</a>
     </div>
-    <p class="cta-trust reveal d2">Free for 14 days · Cancel anytime · Just <strong>$4.99/mo</strong> after</p>
+    <p class="cta-trust reveal d2"><span data-i18n="cta.fine_pre">Free for 14 days · Cancel anytime · Just</span> <strong>$4.99/mo</strong> <span data-i18n="cta.fine_post">after</span></p>
   </div>
 </section>
 
@@ -753,30 +755,30 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
   <div class="footer-top">
     <div class="footer-brand">
       <span class="footer-logo-text">FinTrack<span>.</span></span>
-      <p class="footer-tagline">The personal finance app that helps you get good at money. Start free, stay free.</p>
+      <p class="footer-tagline" data-i18n="foot.brand_desc">The personal finance app that helps you get good at money. Start free, stay free.</p>
       <div class="footer-search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search...">
+        <input type="text" placeholder="Search..." data-i18n-placeholder="foot.search_aria">
       </div>
       <div class="footer-socials">
-        <a href="#" class="fsoc" aria-label="Instagram">
+        <a href="#" class="fsoc" aria-label="Instagram" data-i18n-aria="foot.ig">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
         </a>
-        <a href="#" class="fsoc" aria-label="TikTok">
+        <a href="#" class="fsoc" aria-label="TikTok" data-i18n-aria="foot.tt">
           <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a5.6 5.6 0 0 1-3.3-1.9 5.4 5.4 0 0 1-1.3-3.4h-3.5v13.9a2.9 2.9 0 1 1-2.9-2.9 2.9 2.9 0 0 1 .8.1V8.5a6.4 6.4 0 1 0 5.6 6.4V8.6a8.9 8.9 0 0 0 4.6 1.3V6.4z"/></svg>
         </a>
       </div>
     </div>
     <div class="footer-cols">
-      <div class="footer-col"><h4>Company</h4><a href="about.html" data-about-link>About</a></div>
-      <div class="footer-col"><h4>Programs</h4><a href="#">FinTrack for College Students</a></div>
-      <div class="footer-col"><h4>App</h4><a href="features.html">Features</a><a href="different.html">Why we're different</a><a href="trial.html">14-day trial</a><a href="#">Contact Support</a></div>
-      <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="#">Security</a><a href="/accessibility.html" data-accessibility-link>Accessibility</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.col.company">Company</h4><a href="about.html" data-about-link data-i18n="foot.about">About</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.programs">Programs</h4><a href="#" data-i18n="foot.college">FinTrack for College Students</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.col.app">App</h4><a href="features.html" data-i18n="nav.features">Features</a><a href="different.html" data-i18n="foot.why_different">Why we're different</a><a href="trial.html" data-i18n="foot.trial_link">14-day trial</a><a href="#" data-i18n="foot.support">Contact Support</a></div>
+      <div class="footer-col"><h4 data-i18n="foot.col.legal">Legal</h4><a href="terms.html" data-i18n="foot.terms">Terms</a><a href="#" data-i18n="foot.security">Security</a><a href="/accessibility.html" data-accessibility-link data-i18n="foot.accessibility">Accessibility</a></div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">Copyright © 2026, FinTrack. All Rights Reserved.</p>
-    <div class="footer-legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="#">Security</a><a href="#">Your Privacy Choices</a></div>
+    <p class="footer-copy" data-i18n="foot.copyright">Copyright © 2026, FinTrack. All Rights Reserved.</p>
+    <div class="footer-legal"><a href="terms.html" data-i18n="foot.terms">Terms</a><a href="privacy.html" data-i18n="foot.privacy">Privacy</a><a href="#" data-i18n="foot.security">Security</a><a href="#" data-i18n="foot.privacy_choices">Your Privacy Choices</a></div>
   </div>
 </footer>
 
@@ -789,5 +791,7 @@ footer { background: var(--dark1); padding: 80px 80px 40px; }
   document.querySelectorAll('[data-about-link]').forEach(a => a.addEventListener('click', () => { window.location.href = 'about.html'; }));
   document.querySelectorAll('[data-accessibility-link]').forEach(a => a.addEventListener('click', () => { window.location.href = '/accessibility.html'; }));
 </script>
+<script src="i18n-marketing-content.js"></script>
+<script src="i18n-marketing.js"></script>
 </body>
 </html>
