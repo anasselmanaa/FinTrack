@@ -168,6 +168,11 @@ body {
 }
 .user-profile.is-loaded { opacity: 1; }
 .user-profile:hover { background: var(--bg); }
+.user-profile:focus-visible {
+    outline: 3px solid rgba(16, 185, 129, 0.24);
+    outline-offset: 2px;
+    background: var(--bg);
+}
 
 .user-avatar {
     width: 34px; height: 34px;

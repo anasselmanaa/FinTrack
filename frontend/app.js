@@ -3434,6 +3434,21 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item => {
     });
 });
 
+function openSettingsPageFromProfile() {
+    document.querySelector('.nav-item[data-page="settings"]')?.click();
+}
+
+const sidebarUserProfile = document.getElementById("sidebarUserProfile");
+if (sidebarUserProfile) {
+    sidebarUserProfile.addEventListener("click", openSettingsPageFromProfile);
+    sidebarUserProfile.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openSettingsPageFromProfile();
+        }
+    });
+}
+
 // ══════════════════════════════════════
 //  HELPER — format money
 // ══════════════════════════════════════
