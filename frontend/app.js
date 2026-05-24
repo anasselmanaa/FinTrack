@@ -2749,8 +2749,12 @@ function refreshDynamicI18n() {
 }
 
 function refreshAddNewButtonLabel() {
+    const button = document.getElementById("addNewBtn");
     const label = document.getElementById("addNewBtnLabel");
     const target = document.body.dataset.activePage || "dashboard";
+    if (button) {
+        button.style.display = (target === "dashboard" || target === "categories" || target === "settings") ? "none" : "";
+    }
     if (!label) return;
     label.textContent =
         target === "recurring"   ? t("topnav.add_recurring", "Add Recurring") :
@@ -3392,7 +3396,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item => {
         const addNewBtn = document.getElementById('addNewBtn');
         const addNewBtnLabel = document.getElementById('addNewBtnLabel');
         if (addNewBtn) {
-            addNewBtn.style.display = (target === 'categories' || target === 'settings') ? 'none' : '';
+            addNewBtn.style.display = (target === 'dashboard' || target === 'categories' || target === 'settings') ? 'none' : '';
         }
 
         if (addNewBtnLabel) {
