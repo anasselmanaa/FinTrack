@@ -15,4 +15,4 @@ Disallow: /frontend/forgot-password.html
 Disallow: /frontend/reset-password.html
 Disallow: /frontend/verify-email.html
 
-Sitemap: https://fintrack.app/sitemap.xml
+Sitemap: https://fintrack.art/sitemap.xml

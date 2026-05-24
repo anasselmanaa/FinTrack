@@ -20,9 +20,9 @@ def money_coach_test_state(monkeypatch):
 
 @pytest.fixture
 def client():
-    fintrack.app.config["TESTING"] = True
+    fintrack.art.config["TESTING"] = True
 
-    with fintrack.app.test_client() as test_client:
+    with fintrack.art.test_client() as test_client:
         yield test_client
 
 

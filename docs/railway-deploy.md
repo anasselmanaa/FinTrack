@@ -45,11 +45,11 @@ ANTHROPIC_API_KEY=<your-anthropic-key>
 STRIPE_SECRET_KEY=<your-stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 RESEND_API_KEY=<your-resend-api-key>
-EMAIL_FROM=FinTrack <hello@fintrack.app>
-EMAIL_REPLY_TO=help@fintrack.app
-SUPPORT_EMAIL=help@fintrack.app
-BUGS_EMAIL=bugs@fintrack.app
-IDEAS_EMAIL=ideas@fintrack.app
+EMAIL_FROM=FinTrack <hello@fintrack.art>
+EMAIL_REPLY_TO=help@fintrack.art
+SUPPORT_EMAIL=help@fintrack.art
+BUGS_EMAIL=bugs@fintrack.art
+IDEAS_EMAIL=ideas@fintrack.art
 ```
 
 ## Public URL

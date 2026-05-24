@@ -2083,7 +2083,7 @@ def export_account_data():
                 "    one-way bcrypt hash, which is meaningless to you).\n"
                 "  • Card details (handled by Stripe, never stored by us).\n"
                 "  • Service logs and abuse-prevention hashes.\n\n"
-                "Questions? help@fintrack.app\n"
+                "Questions? help@fintrack.art\n"
             )
             zf.writestr("README.txt", readme)
     finally:

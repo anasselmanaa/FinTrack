@@ -9,8 +9,8 @@ import app as fintrack
 
 @pytest.fixture
 def client():
-    fintrack.app.config["TESTING"] = True
-    with fintrack.app.test_client() as test_client:
+    fintrack.art.config["TESTING"] = True
+    with fintrack.art.test_client() as test_client:
         yield test_client
 
 

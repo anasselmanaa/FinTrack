@@ -8,10 +8,10 @@ try:
 except ImportError:  # pragma: no cover - exercised when dependency is absent
     resend = None
 
-SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", "help@fintrack.app").strip()
-BUGS_EMAIL = os.getenv("BUGS_EMAIL", "bugs@fintrack.app").strip()
-IDEAS_EMAIL = os.getenv("IDEAS_EMAIL", "ideas@fintrack.app").strip()
-TRANSACTIONAL_FROM_EMAIL = os.getenv("EMAIL_FROM", "FinTrack <hello@fintrack.app>").strip()
+SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", "help@fintrack.art").strip()
+BUGS_EMAIL = os.getenv("BUGS_EMAIL", "bugs@fintrack.art").strip()
+IDEAS_EMAIL = os.getenv("IDEAS_EMAIL", "ideas@fintrack.art").strip()
+TRANSACTIONAL_FROM_EMAIL = os.getenv("EMAIL_FROM", "FinTrack <hello@fintrack.art>").strip()
 
 
 def _env_bool(name, default=False):
