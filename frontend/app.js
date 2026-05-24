@@ -221,8 +221,8 @@ const TRANSLATIONS = {
         "dashboard.savings_goals": "Objectifs d'épargne",
 
         // Empty states
-        "empty.accounts.banner": "Connectez des comptes pour voir vos soldes",
-        "empty.accounts.list": "Connectez des comptes pour voir vos soldes ici.",
+        "empty.accounts.banner": "Suivez les soldes par compte en ajoutant des transactions",
+        "empty.accounts.list": "Vos comptes apparaîtront ici à mesure que vous ajoutez des transactions.",
         "empty.budgets.list": "Créez des budgets pour suivre votre progression ici.",
         "empty.invest.list": "Ajoutez des investissements pour voir vos positions ici.",
         "empty.goals.list": "Créez des objectifs pour suivre votre épargne ici.",
@@ -1150,8 +1150,8 @@ const TRANSLATIONS = {
         "dashboard.savings_goals": "Metas de ahorro",
 
         // Empty states
-        "empty.accounts.banner": "Conecta cuentas para ver tus saldos",
-        "empty.accounts.list": "Conecta cuentas para ver tus saldos aquí.",
+        "empty.accounts.banner": "Sigue saldos por cuenta agregando transacciones",
+        "empty.accounts.list": "Tus cuentas aparecerán aquí a medida que añadas transacciones.",
         "empty.budgets.list": "Crea presupuestos para seguir tu progreso aquí.",
         "empty.invest.list": "Agrega inversiones para ver tus posiciones aquí.",
         "empty.goals.list": "Crea metas para seguir tus ahorros aquí.",
@@ -3257,7 +3257,7 @@ function applyDemoDataMode() {
     setText('#stat-income', fmt(0));
     setText('#stat-expenses', fmt(0));
     setText('.tb-amount', fmt(0));
-    setText('#page-dashboard .tb-sub', t('empty.accounts.banner', 'Connect accounts to see balances'));
+    setText('#page-dashboard .tb-sub', t('empty.accounts.banner', 'Track per-account balances by adding transactions'));
     setText('#page-dashboard .donut-amount', fmt(0));
 
     document.querySelectorAll('#page-budgets .stats-row .stat-value, #page-recurring .stats-row .stat-value')
@@ -3272,7 +3272,7 @@ function applyDemoDataMode() {
     setText('#inv-invested-note', t('empty.invest.invested_note', 'Add investments to track cost basis'));
     setText('#portfolioChartSummary', t('empty.invest.portfolio_summary', 'Add investments to compare portfolio performance.'));
 
-    addProductionEmptyNote('#page-dashboard .accounts-list', t('empty.accounts.list', 'Connect accounts to see balances here.'));
+    addProductionEmptyNote('#page-dashboard .accounts-list', t('empty.accounts.list', 'Your accounts will appear here as you add transactions.'));
     addProductionEmptyNote('#page-dashboard .budget-list', t('empty.budgets.list', 'Create budgets to see budget progress here.'));
     addProductionEmptyNote('#page-dashboard .invest-list', t('empty.invest.list', 'Add investments to see portfolio holdings here.'));
     addProductionEmptyNote('#page-dashboard .goals-grid', t('empty.goals.list', 'Create goals to track savings progress here.'));
@@ -3522,6 +3522,48 @@ function renderDashboard(data = {}) {
 
     // Recent transactions list on dashboard
     renderRecentTransactions(data.recent_transactions);
+
+    // Per-account balances rolled up from all transactions
+    renderDashboardAccountsList();
+}
+
+function renderDashboardAccountsList() {
+    const listEl = document.querySelector('#page-dashboard .accounts-list');
+    if (!listEl) return;
+
+    const txs = Array.isArray(allTransactions) ? allTransactions : [];
+    if (txs.length === 0) {
+        // Leave the existing empty-state note in place.
+        return;
+    }
+
+    // Group by account label, sum amounts. Transactions with no account
+    // tagged fall under "Cash" (matches the receipt-scan default).
+    const balances = new Map();
+    for (const tx of txs) {
+        const name = String(tx.account || 'Cash').trim() || 'Cash';
+        balances.set(name, (balances.get(name) || 0) + (parseFloat(tx.amount) || 0));
+    }
+
+    // Sort: largest absolute balance first, so the most-active accounts surface.
+    const rows = Array.from(balances.entries())
+        .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+
+    listEl.innerHTML = rows.map(([name, bal]) => {
+        const isNeg = bal < 0;
+        const displayBal = (isNeg ? '-' : '') + fmt(bal);
+        return `
+            <div class="account-item">
+                <div class="account-icon gray-icon">💳</div>
+                <div class="account-info">
+                    <p class="account-name">${escapeHTML(name)}</p>
+                </div>
+                <div class="account-right">
+                    <p class="account-balance ${isNeg ? 'negative-bal' : ''}">${escapeHTML(displayBal)}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function renderRecentTransactions(txList) {
@@ -8747,6 +8789,16 @@ if (addTransactionBtn) {
 if (dashboardAddTransactionBtn) {
     dashboardAddTransactionBtn.addEventListener("click", openTransactionModal);
 }
+
+// "+ Add" on the Accounts card. In this app's data model an account is
+// just a label on a transaction (Cash / Visa / BMO etc.), so the only
+// way to create one is to add a transaction tagged with that account.
+document.getElementById("dashboardAddAccountBtn")?.addEventListener("click", () => {
+    openTransactionModal();
+    // Focus the Account field after the modal animation so the user lands
+    // exactly where they need to type the new account name.
+    setTimeout(() => document.getElementById("transactionAccount")?.focus(), 100);
+});
 
 const dashboardScanReceiptBtn = document.getElementById("dashboardScanReceiptBtn");
 if (dashboardScanReceiptBtn) {
