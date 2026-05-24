@@ -8502,13 +8502,44 @@ def update_recurring(recurring_id):
         conn.close()
         return jsonify({"error": "Recurring payment not found"}), 404
 
+    # Also propagate the edit to the MOST RECENT auto-created transaction from
+    # this recurring template (the "I just made a typo and want to fix it"
+    # case). Older transactions stay untouched as immutable historical record.
+    cur.execute("""
+        UPDATE transactions
+        SET name = %s,
+            amount = %s,
+            category = %s,
+            account = %s
+        WHERE id = (
+            SELECT transaction_id
+            FROM recurring_payment_history
+            WHERE recurring_id = %s
+              AND user_id = %s
+              AND transaction_id IS NOT NULL
+            ORDER BY created_at DESC
+            LIMIT 1
+        )
+          AND user_id = %s
+    """, (
+        name,
+        amount,
+        category,
+        account,
+        recurring_id,
+        current_user_id(),
+        current_user_id(),
+    ))
+    propagated = cur.rowcount
+
     conn.commit()
     cur.close()
     conn.close()
 
     return jsonify({
         "message": "Recurring payment updated",
-        "recurring": updated
+        "recurring": updated,
+        "transaction_updated": propagated > 0,
     }), 200
 
 
