@@ -3487,7 +3487,12 @@ function getCategoryIcon(categoryName) {
 // ══════════════════════════════════════
 async function loadDashboard() {
     try {
-        const res  = await fetch(API + '/dashboard');
+        // Fetch the explicit accounts list in parallel with dashboard — they
+        // both feed the Accounts card and we want them rendered together.
+        const [res] = await Promise.all([
+            fetch(API + '/dashboard'),
+            loadAccounts(),
+        ]);
         await throwIfNotOk(res, 'Dashboard request failed');
         const data = await res.json();
         lastDashboardData = data;
@@ -3543,19 +3548,44 @@ function renderDashboard(data = {}) {
     renderDashboardAccountsList();
 }
 
+let allAccounts = [];
+
+async function loadAccounts() {
+    try {
+        const res = await fetch(API + '/accounts', { credentials: 'include' });
+        if (!res.ok) {
+            allAccounts = [];
+            return;
+        }
+        const data = await res.json();
+        allAccounts = Array.isArray(data) ? data : [];
+    } catch (err) {
+        if (isAuthError(err)) handleUnauthorized();
+        allAccounts = [];
+    }
+}
+
 function renderDashboardAccountsList() {
     const listEl = document.querySelector('#page-dashboard .accounts-list');
     if (!listEl) return;
 
     const txs = Array.isArray(allTransactions) ? allTransactions : [];
-    if (txs.length === 0) {
+    const explicitAccounts = Array.isArray(allAccounts) ? allAccounts : [];
+
+    if (txs.length === 0 && explicitAccounts.length === 0) {
         // Leave the existing empty-state note in place.
         return;
     }
 
-    // Group by account label, sum amounts. Transactions with no account
-    // tagged fall under "Cash" (matches the receipt-scan default).
+    // Start with $0 entries for every explicit account so accounts with no
+    // transactions still show up.
     const balances = new Map();
+    for (const acct of explicitAccounts) {
+        balances.set(String(acct.name).trim(), 0);
+    }
+
+    // Group transactions by account label, sum amounts. Transactions with no
+    // account tagged fall under "Cash" (matches the receipt-scan default).
     for (const tx of txs) {
         const name = String(tx.account || 'Cash').trim() || 'Cash';
         balances.set(name, (balances.get(name) || 0) + (parseFloat(tx.amount) || 0));
@@ -3580,6 +3610,92 @@ function renderDashboardAccountsList() {
             </div>
         `;
     }).join('');
+}
+
+// ── Add Account modal ──
+function openAccountModal() {
+    const modal = document.getElementById('accountModal');
+    if (!modal) return;
+    document.getElementById('accountForm')?.reset();
+    setMessage('accountFormMessage', '');
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('accountName')?.focus(), 80);
+}
+
+function closeAccountModal() {
+    const modal = document.getElementById('accountModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function setMessage(id, text, severity) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text || '';
+    el.classList.toggle('error', severity === 'error');
+    el.style.display = text ? '' : 'none';
+}
+
+function initializeAccountModal() {
+    const form = document.getElementById('accountForm');
+    if (!form) return;
+
+    document.getElementById('accountModalClose')?.addEventListener('click', closeAccountModal);
+    document.getElementById('accountModalCancel')?.addEventListener('click', closeAccountModal);
+    document.getElementById('accountModal')?.addEventListener('click', (event) => {
+        if (event.target.id === 'accountModal') closeAccountModal();
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById('accountName').value.trim();
+        const type = document.getElementById('accountType').value || null;
+        const rawBalance = document.getElementById('accountOpeningBalance').value.trim();
+        const opening_balance = rawBalance === '' ? null : parseFloat(rawBalance);
+
+        if (!name) {
+            setMessage('accountFormMessage', t('account.modal.error.name', 'Account name is required'), 'error');
+            return;
+        }
+        if (opening_balance !== null && !Number.isFinite(opening_balance)) {
+            setMessage('accountFormMessage', t('account.modal.error.balance', 'Opening balance must be a number'), 'error');
+            return;
+        }
+
+        const submitBtn = document.getElementById('accountSubmitBtn');
+        const originalLabel = submitBtn?.textContent || '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = t('account.modal.saving', 'Saving…');
+        }
+        setMessage('accountFormMessage', '');
+
+        try {
+            const res = await fetch(API + '/accounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ name, type, opening_balance }),
+            });
+            if (!res.ok) {
+                throw await getResponseError(res, t('account.modal.error.save', 'Could not save account'));
+            }
+            await loadAccounts();
+            // Re-pull transactions too if we created a seed transaction, so the
+            // balances roll up correctly.
+            if (typeof loadTransactions === 'function') await loadTransactions();
+            if (typeof loadDashboard === 'function') await loadDashboard();
+            closeAccountModal();
+            showToast(t('account.toast.saved', 'Account added'));
+        } catch (error) {
+            handleFetchError(error, t('account.modal.error.save', 'Could not save account'));
+            setMessage('accountFormMessage', error.message || t('account.modal.error.save', 'Could not save account'), 'error');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+            }
+        }
+    });
 }
 
 function renderRecentTransactions(txList) {
@@ -8806,15 +8922,9 @@ if (dashboardAddTransactionBtn) {
     dashboardAddTransactionBtn.addEventListener("click", openTransactionModal);
 }
 
-// "+ Add" on the Accounts card. In this app's data model an account is
-// just a label on a transaction (Cash / Visa / BMO etc.), so the only
-// way to create one is to add a transaction tagged with that account.
-document.getElementById("dashboardAddAccountBtn")?.addEventListener("click", () => {
-    openTransactionModal();
-    // Focus the Account field after the modal animation so the user lands
-    // exactly where they need to type the new account name.
-    setTimeout(() => document.getElementById("transactionAccount")?.focus(), 100);
-});
+// "+ Add" on the Accounts card opens the dedicated Add Account modal.
+document.getElementById("dashboardAddAccountBtn")?.addEventListener("click", openAccountModal);
+initializeAccountModal();
 
 const dashboardScanReceiptBtn = document.getElementById("dashboardScanReceiptBtn");
 if (dashboardScanReceiptBtn) {

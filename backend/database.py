@@ -191,6 +191,23 @@ def init_db():
     cur.execute("ALTER TABLE recurring_payments ADD COLUMN IF NOT EXISTS last_paid_at TIMESTAMP")
     cur.execute("ALTER TABLE recurring_payments ADD COLUMN IF NOT EXISTS last_paid_for_date DATE")
 
+    # Accounts a user has set up explicitly (Visa, BMO Checking, Cash, etc.).
+    # Coexists with the implicit accounts that fall out of the .account field
+    # on transactions — the dashboard merges both sources. type is metadata
+    # for grouping/icons; can be null. Unique per user so users can't have
+    # two "Cash" accounts that fight for transactions.
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS accounts (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            type TEXT,
+            created_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE (user_id, name)
+        )
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS accounts_user_id_idx ON accounts (user_id)")
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS recurring_payment_history (
             id SERIAL PRIMARY KEY,

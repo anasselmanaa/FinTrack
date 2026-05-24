@@ -4477,6 +4477,117 @@ def add_category():
 
     return jsonify(new_category), 201
 
+
+# ══════════════════════════════════════
+#  ACCOUNTS
+# ══════════════════════════════════════
+#
+# Accounts are explicit user-created labels (Visa, Cash, BMO Chequing, etc.).
+# They coexist with the implicit accounts that fall out of the .account field
+# on transactions — the dashboard merges both sources so existing transactions
+# don't get orphaned.
+
+ACCOUNT_TYPES = {"cash", "checking", "savings", "credit", "investment", "other"}
+
+
+@app.route('/api/accounts', methods=['GET'])
+@login_required
+def list_accounts():
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cur.execute("""
+            SELECT id, name, type, created_at
+            FROM accounts
+            WHERE user_id = %s
+            ORDER BY name ASC
+        """, (current_user_id(),))
+        rows = [dict(r) for r in cur.fetchall()]
+        return jsonify(rows), 200
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.route('/api/accounts', methods=['POST'])
+@login_required
+def create_account():
+    data = request.json or {}
+    name = (data.get('name') or '').strip()
+    account_type = (data.get('type') or '').strip().lower() or None
+    raw_balance = data.get('opening_balance')
+
+    if not name:
+        return jsonify({"error": "Account name is required"}), 400
+    if len(name) > 64:
+        return jsonify({"error": "Account name must be 64 characters or fewer"}), 400
+    if account_type and account_type not in ACCOUNT_TYPES:
+        return jsonify({"error": "Invalid account type"}), 400
+
+    opening_balance = None
+    if raw_balance not in (None, "", "null"):
+        try:
+            opening_balance = Decimal(str(raw_balance))
+        except (InvalidOperation, TypeError):
+            return jsonify({"error": "Opening balance must be a number"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cur.execute("""
+            INSERT INTO accounts (user_id, name, type)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (user_id, name) DO NOTHING
+            RETURNING id, name, type, created_at
+        """, (current_user_id(), name, account_type))
+        row = cur.fetchone()
+        if row is None:
+            return jsonify({"error": "An account with that name already exists"}), 409
+
+        # If they gave us an opening balance, seed a transaction tagged with
+        # this account so the dashboard reflects it from minute one. Same
+        # pattern as the onboarding starting_balance flow.
+        if opening_balance is not None and opening_balance != 0:
+            cur.execute("""
+                INSERT INTO transactions (user_id, name, amount, category, account, date, source)
+                VALUES (%s, %s, %s, %s, %s, CURRENT_DATE, 'account_open')
+            """, (
+                current_user_id(),
+                "Opening Balance",
+                opening_balance,
+                "Income" if opening_balance > 0 else "Other",
+                name,
+            ))
+
+        conn.commit()
+        return jsonify(dict(row)), 201
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.route('/api/accounts/<int:account_id>', methods=['DELETE'])
+@login_required
+def delete_account_record(account_id):
+    """Remove an account label. Existing transactions tagged with that
+    account name keep their tag — we don't touch transactions on account
+    deletion, since that would silently delete real money records."""
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            DELETE FROM accounts
+            WHERE id = %s AND user_id = %s
+        """, (account_id, current_user_id()))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Account not found"}), 404
+        conn.commit()
+        return jsonify({"message": "Account deleted"}), 200
+    finally:
+        cur.close()
+        conn.close()
+
+
 # ══════════════════════════════════════
 #  DASHBOARD SUMMARY
 # ══════════════════════════════════════

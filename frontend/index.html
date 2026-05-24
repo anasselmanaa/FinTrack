@@ -1959,6 +1959,71 @@
     </div>
 </div>
 
+<!-- Add Account Modal -->
+<div class="modal-overlay" id="accountModal" style="display:none">
+    <div class="modal" style="max-width:480px">
+        <div class="modal-header">
+            <h3 data-i18n="account.modal.title">Add Account</h3>
+            <button class="modal-close" id="accountModalClose" type="button">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc" data-i18n="account.modal.desc">Track a new account — checking, credit card, cash, anything you want to follow separately.</p>
+
+            <form id="accountForm">
+                <div class="form-row">
+                    <div class="form-group" style="width:100%">
+                        <label for="accountName" data-i18n="account.modal.name">Account name</label>
+                        <input
+                            type="text"
+                            id="accountName"
+                            class="form-input"
+                            placeholder="e.g. BMO Chequing, Visa, Cash"
+                            data-i18n-placeholder="account.modal.name_placeholder"
+                            maxlength="64"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="accountType" data-i18n="account.modal.type">Type</label>
+                        <select id="accountType" class="form-input">
+                            <option value="" data-i18n="account.modal.type_none">— None —</option>
+                            <option value="checking" data-i18n="account.checking">Checking</option>
+                            <option value="savings" data-i18n="account.savings">Savings</option>
+                            <option value="credit" data-i18n="account.credit">Credit</option>
+                            <option value="cash" data-i18n="account.cash">Cash</option>
+                            <option value="investment" data-i18n="account.investment">Investment</option>
+                            <option value="other" data-i18n="account.other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accountOpeningBalance" data-i18n="account.modal.opening_balance">Opening balance</label>
+                        <input
+                            type="number"
+                            id="accountOpeningBalance"
+                            class="form-input"
+                            placeholder="0.00"
+                            step="0.01"
+                        >
+                    </div>
+                </div>
+
+                <p class="form-hint" data-i18n="account.modal.hint">Leave the opening balance empty if you'd rather start at $0 and let your transactions fill it in.</p>
+
+                <p class="form-hint" id="accountFormMessage" role="status" style="display:none"></p>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="accountModalCancel" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn-primary" id="accountSubmitBtn" data-i18n="account.modal.save">Save Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Quick Add Category Modal -->
 <div class="modal-overlay" id="categoryQuickModal" style="display:none">
     <div class="modal" style="max-width:420px">
