@@ -7610,10 +7610,141 @@ details.coach-history-collapsible > .coach-history-list {
 .cashflow-event-amount.expense { color: var(--red); }
 
 /* ─── What-if modal ─── */
-.whatif-modal { max-width: 560px; }
+.whatif-modal { max-width: 540px; }
 .whatif-modal [hidden] { display: none !important; }
 
-.whatif-form { display: grid; gap: 12px; }
+.whatif-modal-header {
+    align-items: flex-start;
+}
+.whatif-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.whatif-modal-title h3 {
+    margin: 0;
+}
+.whatif-modal-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--green-bg);
+    color: var(--green);
+    flex-shrink: 0;
+}
+
+.whatif-modal-desc {
+    margin: 0 0 22px;
+    color: var(--text-2);
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+
+.whatif-form { display: grid; gap: 16px; }
+
+.whatif-amount-field {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--green-bg), transparent 140%);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.whatif-amount-field:focus-within {
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(35, 83, 71, 0.08);
+}
+.whatif-amount-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.whatif-amount-input-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.whatif-amount-currency {
+    color: var(--text-2);
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+}
+.whatif-amount-input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.whatif-amount-input:focus { outline: none; }
+.whatif-amount-input::-webkit-outer-spin-button,
+.whatif-amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.whatif-amount-input::placeholder { color: var(--text-3); font-weight: 500; }
+
+.whatif-field { display: flex; flex-direction: column; gap: 6px; }
+.whatif-field label {
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.whatif-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.whatif-input:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(35, 83, 71, 0.08);
+}
+.whatif-input::placeholder { color: var(--text-3); }
+
+.whatif-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 520px) {
+    .whatif-field-row { grid-template-columns: 1fr; }
+    .whatif-amount-input { font-size: 24px; }
+}
+
+.whatif-modal-footer {
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.whatif-run-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
 .whatif-result {
     margin-top: 14px;

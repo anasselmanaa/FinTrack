@@ -13505,6 +13505,13 @@ function openWhatIfModal() {
         const pad = (n) => String(n).padStart(2, "0");
         whenInput.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }
+    // Show the user's actual currency symbol instead of always "$".
+    const currencyEl = document.getElementById("whatIfAmountCurrency");
+    if (currencyEl) {
+        const code = (CURRENT_CURRENCY || "USD").toUpperCase();
+        const symbols = { USD: "$", CAD: "C$", EUR: "€", GBP: "£", CNY: "¥", JPY: "¥", MAD: "DH", AUD: "A$", CHF: "Fr" };
+        currencyEl.textContent = symbols[code] || code;
+    }
     modal.style.display = "flex";
 }
 
