@@ -5790,7 +5790,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .budget-duration-presets {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
 }
 

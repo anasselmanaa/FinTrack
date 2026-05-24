@@ -703,17 +703,19 @@ const TRANSLATIONS = {
         // Budgets — modal
         "budgets.modal.create_title": "Créer un budget",
         "budgets.modal.edit_title": "Modifier le budget",
-        "budgets.modal.desc": "Créez un budget mensuel pour une catégorie.",
+        "budgets.modal.desc": "Créez un budget pour une catégorie et une période.",
         "budgets.modal.category": "Catégorie",
         "budgets.modal.select_category": "Choisir une catégorie",
         "budgets.modal.add": "Ajouter",
         "budgets.modal.amount": "Montant",
         "budgets.modal.amount_placeholder": "ex. 500",
         "budgets.modal.start_date": "Date de début",
+        "budgets.modal.end_date": "Date de fin",
         "budgets.modal.length": "Durée du budget",
         "budgets.modal.length_placeholder": "ex. 7",
         "budgets.modal.quick_duration": "Durée rapide",
-        "budgets.modal.quick_duration_hint": "Choisissez un préréglage ou saisissez un nombre de jours ci-dessus.",
+        "budgets.modal.quick_duration_hint": "Facultatif. Choisissez un préréglage pour remplir la date de fin, ou Aucun et utilisez votre propre date.",
+        "budgets.modal.duration_none": "Aucun",
         "budgets.modal.weekly": "Hebdomadaire",
         "budgets.modal.two_weeks": "2 semaines",
         "budgets.modal.monthly": "Mensuel",
@@ -1639,17 +1641,19 @@ const TRANSLATIONS = {
         // Budgets — modal
         "budgets.modal.create_title": "Crear un presupuesto",
         "budgets.modal.edit_title": "Editar presupuesto",
-        "budgets.modal.desc": "Crea un presupuesto mensual para una categoría.",
+        "budgets.modal.desc": "Crea un presupuesto para una categoría y un rango de fechas.",
         "budgets.modal.category": "Categoría",
         "budgets.modal.select_category": "Elegir una categoría",
         "budgets.modal.add": "Agregar",
         "budgets.modal.amount": "Monto",
         "budgets.modal.amount_placeholder": "p. ej. 500",
         "budgets.modal.start_date": "Fecha de inicio",
+        "budgets.modal.end_date": "Fecha de fin",
         "budgets.modal.length": "Duración del presupuesto",
         "budgets.modal.length_placeholder": "p. ej. 7",
         "budgets.modal.quick_duration": "Duración rápida",
-        "budgets.modal.quick_duration_hint": "Elige un valor preestablecido o ingresa un número de días arriba.",
+        "budgets.modal.quick_duration_hint": "Opcional. Elige un valor para completar la fecha de fin, o Ninguno y usa tu propia fecha.",
+        "budgets.modal.duration_none": "Ninguno",
         "budgets.modal.weekly": "Semanal",
         "budgets.modal.two_weeks": "2 semanas",
         "budgets.modal.monthly": "Mensual",
@@ -9500,6 +9504,52 @@ function setBudgetTrackingRule(rule = "category", keyword = "") {
     }
 }
 
+function parseBudgetDateInput(value) {
+    const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    const dateValue = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    dateValue.setHours(0, 0, 0, 0);
+    return Number.isNaN(dateValue.getTime()) ? null : dateValue;
+}
+
+function toBudgetDateInputValue(dateValue) {
+    if (!(dateValue instanceof Date) || Number.isNaN(dateValue.getTime())) return "";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${dateValue.getFullYear()}-${pad(dateValue.getMonth() + 1)}-${pad(dateValue.getDate())}`;
+}
+
+function budgetEndDateFromDays(startDateValue, days) {
+    const startDate = parseBudgetDateInput(startDateValue);
+    const duration = Number.parseInt(days, 10);
+    if (!startDate || Number.isNaN(duration) || duration < 1) return "";
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + duration - 1);
+    return toBudgetDateInputValue(endDate);
+}
+
+function calculateBudgetDaysFromDates(startDateValue, endDateValue) {
+    const startDate = parseBudgetDateInput(startDateValue);
+    const endDate = parseBudgetDateInput(endDateValue);
+    if (!startDate || !endDate) return NaN;
+    return Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+}
+
+function setBudgetDurationPreset(days) {
+    document.querySelectorAll(".budget-duration-btn").forEach(btn => {
+        btn.classList.toggle("active", String(btn.dataset.days || "") === String(days || ""));
+    });
+}
+
+function syncBudgetDaysFromDates() {
+    const startInput = document.getElementById("budgetStartDate");
+    const endInput = document.getElementById("budgetEndDate");
+    const daysInput = document.getElementById("budgetDays");
+    if (!startInput || !endInput || !daysInput) return NaN;
+    const days = calculateBudgetDaysFromDates(startInput.value, endInput.value);
+    daysInput.value = Number.isFinite(days) && days > 0 ? String(days) : "";
+    return days;
+}
+
 function openBudgetModal(budget = null) {
     if (!budgetModal) return;
 
@@ -9510,14 +9560,13 @@ function openBudgetModal(budget = null) {
     const budgetAmountInput = document.getElementById("budgetAmount");
     const budgetStartDateInput = document.getElementById("budgetStartDate");
     const budgetDaysInput = document.getElementById("budgetDays");
+    const budgetEndDateInput = document.getElementById("budgetEndDate");
 
     if (budgetForm) {
         budgetForm.reset();
     }
 
-    document.querySelectorAll(".budget-duration-btn").forEach(btn => {
-        btn.classList.remove("active");
-    });
+    setBudgetDurationPreset("");
 
     if (budget) {
         if (deleteBudgetBtn) {
@@ -9548,23 +9597,21 @@ function openBudgetModal(budget = null) {
         setSelectedBudgetCategory(categoryName, categoryIcon);
 
         if (budgetStartDateInput) {
-            let rawDate = "";
-            if (budget.start_date) {
-                const parsedDate = new Date(budget.start_date);
-                if (!Number.isNaN(parsedDate.getTime())) {
-                    rawDate = parsedDate.toISOString().split("T")[0];
-                }
-            }
+            const rawDate = dateInputValue(budget.start_date || budget.period_start);
             budgetStartDateInput.value = rawDate || new Date().toISOString().split("T")[0];
         }
 
+        const budgetDays = Number.parseInt(budget.period_days || budget.days || 30, 10);
         if (budgetDaysInput) {
-            budgetDaysInput.value = budget.days || 30;
+            budgetDaysInput.value = Number.isFinite(budgetDays) && budgetDays > 0 ? String(budgetDays) : "30";
         }
 
-        document.querySelectorAll(".budget-duration-btn").forEach(btn => {
-            btn.classList.toggle("active", String(btn.dataset.days) === String(budget.days || 30));
-        });
+        if (budgetEndDateInput) {
+            budgetEndDateInput.value = dateInputValue(budget.end_date) || budgetEndDateFromDays(budgetStartDateInput?.value, budgetDays);
+        }
+
+        setBudgetDurationPreset(["7", "14", "30", "90"].includes(String(budgetDays)) ? String(budgetDays) : "");
+        syncBudgetDaysFromDates();
     } else {
         if (deleteBudgetBtn) {
             deleteBudgetBtn.style.display = "none";
@@ -9592,12 +9639,14 @@ function openBudgetModal(budget = null) {
         }
 
         if (budgetDaysInput) {
-            budgetDaysInput.value = "30";
+            budgetDaysInput.value = "";
         }
 
-        document.querySelectorAll(".budget-duration-btn").forEach(btn => {
-            btn.classList.toggle("active", btn.dataset.days === "30");
-        });
+        if (budgetEndDateInput) {
+            budgetEndDateInput.value = "";
+        }
+
+        setBudgetDurationPreset("");
     }
 
     budgetModal.style.display = "flex";
@@ -9832,11 +9881,12 @@ if (budgetForm) {
         const category = document.getElementById("budgetCategory").value;
         const amount = parseFloat(document.getElementById("budgetAmount").value);
         const start_date = document.getElementById("budgetStartDate").value;
-        const days = parseInt(document.getElementById("budgetDays").value, 10);
+        const end_date = document.getElementById("budgetEndDate").value;
+        const days = syncBudgetDaysFromDates();
         const tracking_rule = document.getElementById("budgetTrackingRule").value;
         const match_keyword = document.getElementById("budgetMatchKeyword").value.trim();
 
-        if (!category || Number.isNaN(amount) || !start_date || Number.isNaN(days) || days < 1) {
+        if (!category || Number.isNaN(amount) || !start_date || !end_date || Number.isNaN(days) || days < 1) {
             showToast("Please fill in all budget fields correctly");
             return;
         }
@@ -10807,18 +10857,36 @@ if (quickAddBudgetCategoryBtn) {
 document.querySelectorAll(".budget-duration-btn").forEach(button => {
     button.addEventListener("click", () => {
         const days = button.dataset.days;
+        const budgetStartDateInput = document.getElementById("budgetStartDate");
+        const budgetEndDateInput = document.getElementById("budgetEndDate");
         const budgetDaysInput = document.getElementById("budgetDays");
 
-        if (budgetDaysInput) {
-            budgetDaysInput.value = days;
+        if (days) {
+            if (budgetDaysInput) budgetDaysInput.value = days;
+            if (budgetStartDateInput && budgetEndDateInput) {
+                budgetEndDateInput.value = budgetEndDateFromDays(budgetStartDateInput.value, days);
+            }
+        } else if (budgetDaysInput) {
+            syncBudgetDaysFromDates();
         }
 
-        document.querySelectorAll(".budget-duration-btn").forEach(btn => {
-            btn.classList.remove("active");
-        });
-
-        button.classList.add("active");
+        setBudgetDurationPreset(days);
     });
+});
+
+document.getElementById("budgetStartDate")?.addEventListener("change", () => {
+    const activePreset = document.querySelector(".budget-duration-btn.active")?.dataset.days || "";
+    const endInput = document.getElementById("budgetEndDate");
+    const startInput = document.getElementById("budgetStartDate");
+    if (activePreset && startInput && endInput) {
+        endInput.value = budgetEndDateFromDays(startInput.value, activePreset);
+    }
+    syncBudgetDaysFromDates();
+});
+
+document.getElementById("budgetEndDate")?.addEventListener("change", () => {
+    syncBudgetDaysFromDates();
+    setBudgetDurationPreset("");
 });
 
 // ==============================
